@@ -29,6 +29,11 @@ template(name='nav')
                 i.large.newspaper.icon
                 unless currentUser.hide_labels
                     |posts
+            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/food" class="{{isActiveRoute regex='food'}}" title='food')
+                // +i name='news'
+                i.large.newspaper.icon
+                unless currentUser.hide_labels
+                    |food
             a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/users" class="{{isActiveRoute 'users'}}" title=users)
                 // +i name='groups'
                 i.large.users.icon
@@ -109,118 +114,3 @@ template(name='nav_item')
         i.large.icon(class=icon)
         // unless currentUser.hide_labels
         //     |#{key}s
-
-
-
-template(name='my_latest_activity')
-    .ui.grey.header 
-        i.grey.rss.icon
-        |your activity
-    .ui.list
-        each my_latest_activity
-            .item 
-                img.ui.avatar.image(src="{{c.url author.kiosk_photo width=200 height=200 gravity='face' crop='fill'}}")
-                |#{text} #{body}
-                small #{when}
-
-
-template(name='topbar')
-    .ui.fluid.attached.segment.topbar.top.sidebar
-        .ui.middle.aligned.divided.list
-        .ui.list
-            each recent_alerts
-                +recent_alert
-        a.ui.basic.button.item.close_topbar(href="/inbox")
-            i.inbox.icon
-            |inbox
-        
-template(name='recent_alert')        
-    .item.alert
-        .right.floated.content
-            i.eye.link.icon.mark_read(title='mark read')
-        img.ui.avatar.image(src="{{c.url author.image_id height=200 width=200 gravity='face' crop='fill'}}")
-        .content
-            .header
-                |#{description} 
-            .description #{author.name} #{when}
-            
-            
-            
-template(name='rightbar')
-    .ui.right.sidebar.vertical.small.borderless.menu.rightbar
-        with currentUser
-            a.item.toggle_rightbar.no_blink(href="/user/#{currentUser.username}" class="{{isActiveRoute 'user_layout'}}")
-                img.ui.avatar.compact.image(src="{{c.url currentUser.image_id height=200 width=200 gravity='face' crop='fill'}}")
-                |#{currentUser.name}
-            a.item.toggle_rightbar(href="/user/#{username}" class="{{isActiveRoute regex='user_dashboard'}}")
-                +i name='dashboard'
-                // i.dashboard.icon
-                |dashboard
-            a.item.zoomer.toggle_darkmode
-                if darkmode
-                    +i name='checkmark'
-                else
-                    +i name='light'
-                |dark mode
-            +right_nav_item route='credit' label='credit' icon='money'
-            +right_nav_item route='orders' label='orders' icon='check'
-            +right_nav_item route='subscriptions' label='subscriptions' icon='check'
-            +right_nav_item route='friends' label='friends' icon='friends'
-            // a.item.toggle_rightbar(href="/user/#{username}/pantry" class="{{isActiveRoute 'user_pantry'}}")
-            //     +i name='cupboard' cl='ui avatar image'
-            //     |pantry
-            +right_nav_item route='cart' label='cart' icon='shopping-cart'
-            // a.item.toggle_rightbar(href="/work" class="{{isActiveRoute 'work'}}")
-            //     +i name='trust' cl='ui avatar image'
-            //     |work
-            // a.item.toggle_rightbar(href="/user/#{username}/trips" class="{{isActiveRoute 'user_trips'}}")
-            //     +i name='bicycle' cl='ui avatar image'
-            //     |trips
-            a.item.toggle_rightbar(href="/user/#{currentUser._id}/edit" class="{{isActiveRoute 'user_trips'}}")
-                +i name='settings' 
-                |account
-            // .ui.divider
-            a.item.logout
-                if is_logging_out
-                    i.refresh.loading.large.icon
-                else
-                    +i name='exit-sign' cl='ui avatar image'
-                    // i.sign.out.icon
-                |logout
-        else 
-            a.item.toggle_rightbar(href="/login" class="{{isActiveRoute 'login'}}")
-                +i name='internal' cl='ui avatar image'
-                |login
-            a.item.toggle_rightbar(href="/register" class="{{isActiveRoute 'register'}}")
-                +i name='plus' cl='ui avatar image'
-                |register
-
-
-
-template(name='right_nav_item')
-    a.item.toggle_rightbar(href="/user/#{currentUser.username}/#{route}" class="{{isActiveRoute regex='user_dashboard'}}")
-        +i name=icon cl='ui avatar image'
-        // i.dashboard.icon
-        |#{label}
-
-
-template(name='leftbar')
-    .ui.left.sidebar.ui.vertical.big.borderless.menu
-        +leftbar_item key='posts' icon='newspaper'
-        +leftbar_item key='products' icon='shop'
-        +leftbar_item key='food' icon='food'
-        +leftbar_item key='music' icon='music'
-        +leftbar_item key='transfers' icon='exchange'
-        +leftbar_item key='orders' icon='history'
-        +leftbar_item key='groups' icon='fire'
-        +leftbar_item key='requests' icon='hand holding heart'
-        +leftbar_item key='services' icon='wrench'
-        +leftbar_item key='rentals' icon='clock'
-        +leftbar_item key='users' icon='users'
-            
-template(name='leftbar_item')    
-    a.item.zoomer.fly_right.toggle_leftbar(href="/#{key}")
-        i.large.icon(class=icon)
-        // +i name=icon
-        span #{key}
-                

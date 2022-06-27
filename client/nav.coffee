@@ -57,51 +57,6 @@ Template.nav.onRendered ->
     
         
         
-Template.rightbar.events
-    'click .logout': (e,t)->
-        Session.set('logging_out',true)
-        $('body').toast({
-            title: "logging out"
-            # message: 'Please see desk staff for key.'
-            class : 'black'
-            position:'bottom right'
-            # className:
-            #     toast: 'ui massive message'
-            # displayTime: 5000
-            transition:
-              showMethod   : 'zoom',
-              showDuration : 250,
-              hideMethod   : 'fade',
-              hideDuration : 250
-            })
-        Meteor.logout ->
-            Session.set('logging_out',false)
-            $('body').toast({
-                title: "logged out"
-                # message: 'Please see desk staff for key.'
-                class : 'success'
-                position:'bottom right'
-                # className:
-                #     toast: 'ui massive message'
-                # displayTime: 5000
-                transition:
-                  showMethod   : 'zoom',
-                  showDuration : 250,
-                  hideMethod   : 'fade',
-                  hideDuration : 250
-                })
-            Router.go '/login'
-            $('.ui.rightbar').sidebar('hide')
-            
-        # log_item = {
-        #     type:'logout'
-        #     body: "#{Meteor.user().username} logged out"
-        #     }
-        # Meteor.call 'create_log', log_item,->
-            
-        # $(e.currentTarget).closest('.grid').transition('slide left', 500)
-        
-
 Template.nav.events
     'keyup .global_search': ->
         val = $('.global_search').val()
