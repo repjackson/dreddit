@@ -1,0 +1,321 @@
+template(name='products')
+    .ui.stackable.padded.grid 
+        .four.wide.column
+            .ui.inline.header 
+                +i name='shopping-cart'
+                |#{product_count}
+                |products
+            .ui.large.icon.input
+                +i name='shopping-cart'
+                input.product_search(type='text' placeholder='search products...' value=current_search)
+            // .ui.large.icon.input
+            //     +i name='menu'
+            //     input.menu_search(type='text' placeholder='search menu...' value=current_search)
+            each picked_tags
+                button.ui.blue.compact.circular.button.unpick_tag(tabindex='0')
+                    //- i.remove.icon
+                    | #{this}
+            each tag_results
+                button.ui.large.label.button.pick_tag(tabindex="0" class=result_class title=count)
+                    |#{name}
+                    // small #{count}
+
+        .twelve.wide.column
+            +session_icon_button key='view_mode' value='grid' icon='grid' 
+            +session_icon_button key='view_mode' value='list' icon='list'
+        
+            unless one_result
+                .ui.inline.header(title='result count') #{result_docs.count}
+                +sort_direction_toggle
+                // +sort_key_toggle
+                +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                +session_set key='sort_key' value='views' label='views' icon='eye'
+                if session_is 'model' 'event'
+                    +session_set key='sort_key' value='start_datatime' label='start' icon='calendar'
+                +session_set key='limit' value=10
+                +session_set key='limit' value=25
+                +session_set key='limit' value=100
+        
+            if subs_ready
+                if session_is 'view_mode' 'list'
+                    .ui.large.selection.list 
+                        each product_docs
+                            +product_item
+                else
+                    .ui.centered.stackable.cards 
+                        each product_docs
+                            +product_card
+                
+            else 
+                .ui.basic.center.aligned.segment
+                    +ibig name='product' cl='spinning'
+
+
+template(name='product_card')
+    .card
+        a.fly_right(href="/product/#{_id}")
+            img.ui.image.zoomer(src=image)
+        .content
+            a.ui.header(href="/product/#{_id}")
+                | #{title}
+            // .ui.label #{link}
+            .smallcut !{content}
+            .ui.label #{points}p
+            // .ui.label #{type}
+            .ui.label ##{id}
+            .ui.label #{relevance}
+            if _author_username
+                a.ui.label.fly_down(href="/user/#{_author_username}/product")
+                    i.user.icon
+                    |#{_author_username}
+            each tags 
+                .ui.label #{this}
+            if currentUser.admin_mode
+                +delete_button
+            if details.glutenFree
+                .ui.big.label
+                    +i name='no-gluten'
+                    |gluten free
+            with details
+                .ui.big.label(title='aggregateLikes')
+                    i.thumbs.up.icon
+                    |#{aggregateLikes}
+                .ui.big.label(title='')
+                    i.clock.up.icon
+                    |ready in 
+                    strong #{readyInMinutes}
+                    |minutes
+                .ui.big.label(title='servings')
+                    i.hashtag.icon
+                    strong #{servings}
+                    |servings
+
+template(name='product_item')
+    .item
+        a.fly_right(href="/product/#{_id}")
+            if subs_ready
+                img.ui.inline.small.image.zoomer(src=image)
+                a.ui.inline.header(href="/product/#{_id}")
+                    | #{title}
+                // .ui.label #{link}
+                span.smallcut !{content}
+                .ui.label #{points}p
+                // .ui.label #{type}
+                .ui.label ##{id}
+                .ui.label #{relevance}
+                if _author_username
+                    a.ui.label.fly_down(href="/user/#{_author_username}/product")
+                        i.user.icon
+                        |#{_author_username}
+                each tags 
+                    .ui.label #{this}
+                if currentUser.admin_mode
+                    +delete_button
+                if details.glutenFree
+                    .ui.big.label
+                        +i name='no-gluten'
+                        |gluten free
+                with details
+                    .ui.label(title='aggregateLikes')
+                        i.thumbs.up.icon
+                        |#{aggregateLikes}
+                    .ui.label(title='')
+                        i.clock.up.icon
+                        |ready in 
+                        strong #{readyInMinutes}
+                        |minutes
+                    .ui.label(title='servings')
+                        i.hashtag.icon
+                        strong #{servings}
+                        |servings
+            else 
+                i.shopping.cart.loading.big.icon
+
+template(name='product_view')
+    with current_doc 
+        img.ui.fluid.image.checkin_banner(src=image)
+        .ui.stackable.padded.grid 
+            .sixteen.wide.column 
+                a.ui.button(href="/products")
+                    i.chevron.left.icon
+                    +i name='product'
+                    |shop
+                .ui.inline.header !{title}
+                with details
+                    each breadcrumbs 
+                        .ui.label.pick_product_tag #{this}
+                    .ui.green.inline.header $#{price}
+                    .item 
+                        |#{servings}
+                        |servings
+                        
+            .eight.wide.column
+                img(src=image)
+                +comments
+                +voting_full
+                a.ui.label(href=link target='_window') #{link}
+                // .ui.label #{type}
+                .ui.label #{relevance}
+                .ui.big.label id #{id}
+                
+                +i name='tags'
+                each tags 
+                    .ui.compact.button.pick_product_tag
+                        |#{this}
+                .f7 !{content}
+                if currentUser.admin_mode
+                    +call_watson key='content' mode='html'
+                .ui.inline.header 
+                    |related products
+                if currentUser.admin_mode
+                    .ui.button.get_details get details
+                // +viewing_info
+            .eight.wide.column 
+                with details
+                    .ui.header details
+                    .f7 #{generatedText}
+                    .ui.animated.list 
+                        if currentUser.admin_mode
+                            .item id #{id}
+                        // .item title #{title}
+                            // .item bars #{bars}
+                        // .item imageType #{imageType}
+                        .ui.inline.header 
+                            +i name='badge'
+                            |badges 
+                        each badges
+                            .ui.label #{this}
+                        div
+                        .ui.inline.header 
+                            +i name='badge'
+                            |important badges
+                        each importantBadges
+                            .ui.label #{this}
+            .eight.wide.column 
+                with details
+                    .ui.small.inline.header 
+                        +i name='ingredients'
+                        |ingredients
+                    each split_ingredient_list
+                        .ui.compact.button.pick_product_tag
+                            |#{this}
+                    
+                    .ui.list
+                        // .item ingredientList #{ingredientList}
+                        // .item ingredients #{ingredients}
+                        .item likes #{likes}
+                        .item aisle #{aisle}
+                        .item nutrition
+                        .ui.list
+                            each nutrition.nutrients
+                                .item 
+                                    .content
+                                        .header #{name}
+                                        .description
+                                            | #{amount}
+                                            | #{unit}
+                                            | #{percentOfDailyNeeds}%/daily
+                            //     .item percentProtein #{percentProtein}
+                            //     .item percentFat #{percentFat}
+                            //     .item percentCarbs #{percentCarbs}
+                        // .ui.list
+                        //     each servings
+                        //         .item number #{number}
+                        //         .item size #{size}
+                        //         .item unit #{unit}
+                        .item spoonacularScore #{spoonacularScore}
+            .eight.wide.column 
+                with details
+                    .ui.header 
+                        +i name='ingredients'
+                        |#{ingredientCount}
+                        |ingredients 
+                    
+                    each ingredients
+                        .ui.label 
+                            .header #{name}
+                            .description !{description}
+                                if safety_level
+                                    .ui.label safety_level #{safety_level}
+
+                +print_this
+
+            if watson
+                .twelve.wide.column
+                    +watson_view
+            .four.wide.column
+                // +text_view key='size_content' label='size content' 
+                a.ui.circular.button(href=product_link)
+                    // i.wordpress.large.icon
+                    i.external.icon
+                    |#{product_link}
+                if is_product
+                    +boolean_view key='gluten_free' label='gluten free' icon='no-gluten'
+                    +boolean_view key='vegetarian' label='vegetarian' icon='vegetarian-mark'
+                    +boolean_view key='no_sugar_added' label='no sugar added' icon='no-sugar2'
+                    +boolean_view key='vegan' label='vegan' icon='vegan-symbol'
+                    +boolean_view key='paleo' label='paleo' icon='caveman'
+                    +boolean_view key='local' label='local' icon='marker'
+                    +boolean_view key='nut_free' label='nut free' icon='no-peanut'
+                    +boolean_view key='rescued' label='rescued' icon='nothing-found'
+                    +boolean_view key='organic' label='organic' icon='organic-product'
+                    +boolean_view key='no_gmo' label='no gmo' icon='no-gmo'
+                    +boolean_view key='jar' label='jar container (requires deposit & return)' icon='mason-jar'
+                    // .ui.header #{menu_section}
+                            +link_edit key='amazon_referral_link' label='amazon referral link' icon='amazon'
+                    // +boolean_view key='has_2cup' label='2 cup' icon='cup'
+                    div
+                    .ui.inline.header 
+                        +i name='ingredients'
+                        |ingredients
+                    each ingredients
+                        .ui.large.basic.label.goto_ingredient #{this}
+                    div
+                +link_view key='amazon_referral_link' label='amazon link' icon='amazon'
+                +link_view key='external_link' label='external link' icon='globe'
+                
+                // +product_orders
+            .four.wide.column
+                .ui.header #{price_points} points
+                .ui.header $#{price_usd}
+                .ui.big.green.button.add_to_cart
+                    i.cart.plus.large.icon
+                    |add to cart
+                +bookmark_button
+                // .ui.large.button.generate_qrcode
+                //     i.large.qrcode.icon
+                //     |generate qr code
+                // #qrcode(width='400px')
+                if is_managing_inventory
+                    .ui.segment
+                        +product_inventory
+                .ui.list
+                    a.item(href=product_link title=product_link target='_window') 
+                        i.external.icon
+                        |external link
+                    .item calculated inventory
+                    .item #{total_units_sold} total units sold
+                    .item $#{total_revenue} total revenue
+                    // .item expected inventory
+                    // .item query params: #{query_params}
+                i.refresh.large.link.icon.calc_stats(title='refresh_stats')
+            .four.wide.column
+                +product_reviews
+            .four.wide.column
+                +product_subscriptions
+                // .ui.green.large.button.add_to_cart
+                //     // i.cart.plus.large.icon
+                //     +i name='add-shopping-cart--v1' cl='ui avatar image'
+                //     |add to cart
+                // .ui.link.card.zoomer.goto_source
+                //     img.ui.fluid.image(src="{{c.url product_source.image_id width=200 height=200 gravity='face' crop='fill'}}")
+                //     .content
+                //         .ui.header.zoomer
+                //             |#{product_source.title}
+                .ui.header 
+                    i.fork.icon
+                    |related products
+                each related_products
+                    a.ui.header(href="/doc/#{_id}") #{title}
+                        

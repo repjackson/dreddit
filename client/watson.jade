@@ -1,0 +1,321 @@
+template(name='tone')
+    .ui.small.inline.header 
+        |tone
+    each tone.classifications
+        +tone_item 
+        
+template(name='tone_item')
+    // if is class_name 'polite'
+    //     +i name='polite'
+    // else
+    .ui.label {{to_percent confidence}}% #{class_name}
+
+// polite: 0.457755
+// excited: 0.326561
+// sympathetic: 0.147908
+// satisfied: 0.106636
+// sad: 0.046149
+// frustrated: 0.036289
+// impolite: 0.010317
+
+template(name='doc_sentiment') 
+    // if is doc_sentiment_label 'positive'
+    //     .ui.green.large.label(title='positive sentiment')
+    //         // i.large.plus.icon
+    //         strong {{ to_percent doc_sentiment_score }}%
+    //         // | positive
+    // else
+    //     .ui.red.large.label(title='negative sentiment')
+    //         // | negative
+    //         // i.large.minus.icon
+    //         strong {{ to_percent doc_sentiment_score }}%
+    .ui.tiny.progress.inline(data-percent=sentiment_score_percent class=sentiment_bar_class)
+        .bar
+        .progress
+
+
+template(name='small_sentiment') 
+    .ui.tiny.progress(data-percent=sentiment_score_percent class=sentiment_bar_class)
+        .bar
+        .progress
+//- 
+template(name='doc_emotion') 
+    // .spacer
+    // .ui.dividing.inline.header 
+    //     | emotion
+    //- with watson.emotion
+    //- div
+    //- if above_50 'joy_percent'
+        //- .spacer
+        //- .rounded(class=omega_dark_mode_class style="height:7px;width:{{to_percent joy_percent}}%;background-color:green" title="{{to_percent joy_percent}}% joy")
+    // if joy_percent
+        // .ui.center.aligned.segment
+        // .ui.multiple.small.progress.no_border(data-total='100' data-value="{{ to_percent joy_percent }},{{ to_percent sadness_percent }},{{ to_percent fear_percent }},{{ to_percent disgust_percent }},{{ to_percent anger_percent }}")
+        //     .green.bar
+        //         // .progress
+        //     .blue.bar
+        //         // .progress
+        //     .black.bar
+        //         // .progress
+        //     .orange.bar
+        //         // .progress
+        //     .red.bar
+        //         // .progress
+    if above_50 joy_percent
+        span.ui.large.green.text(class="{{calculated_size joy_percent}}") {{ to_percent joy_percent }}% joy 
+            |&nbsp;
+    if above_50 sadness_percent
+        span.ui.large.blue.text(class="{{calculated_size sadness_percent}}") {{ to_percent sadness_percent}}% sad 
+            |&nbsp;
+        //- .spacer
+        //- .rounded(class=omega_dark_mode_class style="height:7px;width:{{to_percent sadness_percent}}%;background-color:blue" title="{{to_percent sadness_percent}}% sad")
+    if above_50 fear_percent
+        span.ui.large.grey.text(class="{{calculated_size fear_percent}}") {{ to_percent fear_percent }}% fear 
+            |&nbsp;
+        //- .spacer
+    //- .rounded(class=omega_dark_mode_class style="height:7px;width:{{to_percent fear_percent}}%;background-color:grey" title="{{to_percent fear_percent}}% fear")
+    if above_50 disgust_percent
+        span.ui.large.orange.text(class="{{calculated_size disgust_percent}}") {{ to_percent disgust_percent }}% disgust 
+            |&nbsp;
+        //- .spacer
+    //- .rounded(class=omega_dark_mode_class style="height:7px;width:{{to_percent disgust_percent}}%;background-color:orange" title="{{to_percent disgust_percent}}% disgust")
+    if above_50 anger_percent
+        span.ui.large.red.text(class="{{calculated_size anger_percent}}") {{ to_percent anger_percent }}% anger 
+            |&nbsp;
+        //- .spacer
+    //- .rounded(class=omega_dark_mode_class style="height:7px;width:{{to_percent anger_percent}}%;background-color:red" title="{{to_percent anger_percent}}% anger")
+    // .spacer
+
+template(name='autotag')
+    button.ui.large.icon.button.autotag
+        i.dna.icon
+        // |autotag
+        if watson 
+            i.checkmark.icon
+//- 
+template(name='call_visual')
+    #call_visual.ui.large.icon.button(title='analyze')
+        i.chess.knight.icon
+
+
+template(name='keywords')
+    // .ui.grey.inline.header 
+    //     |#{watson.keywords.length} keywords
+    .ui.four.column.stackable.grid
+        each watson.keywords
+            .ui.column
+                span.large120(class="{{calculated_size 'relevance'}}" title="{{ to_percent relevance }}% relevant") #{text}
+                .ui.small.label(title='relevant') {{ to_percent relevance }}% rel
+                .ui.small.label {{ sentiment.label }} {{ to_percent sentiment.score }}%:
+                .ui.small.label(title='instance count') #{count}x
+                .description
+                    if emotion
+                        with emotion
+                            // .ui.multiple.progress.no_border(data-total='100' data-value="{{ to_percent joy}},{{ to_percent sadness}},{{ to_percent fear}},{{ to_percent disgust}},{{ to_percent anger}}" title="{{ to_percent joy}},{{ to_percent sadness}},{{ to_percent fear}},{{ to_percent disgust}},{{ to_percent anger}}")
+                            .ui.multiple.small.progress.zoomer.pointer(data-total='100' data-value="{{ to_percent joy}},{{ to_percent sadness}},{{ to_percent fear}},{{ to_percent disgust}},{{ to_percent anger}}" )
+                                .green.bar
+                                    // .progress
+                                .blue.bar
+                                    // .progress
+                                .black.bar
+                                    // .progress
+                                .orange.bar
+                                    // .progress
+                                .red.bar
+                                    // .progress
+                            .ui.popup
+                                span {{ to_percent sadness }}% sad
+                                    .rounded(style="height:5px;width:{{to_percent sadness}}%;background-color:blue" title="{{to_percent sadness}}% sad" class=currentUser.invert_class)
+                                span {{ to_percent joy }}% joy
+                                    .rounded(style="height:5px;width:{{to_percent joy}}%;background-color:green" title="{{to_percent joy}}% sadness" class=currentUser.invert_class)
+                                span {{ to_percent disgust }}% disgust
+                                    .rounded(style="height:5px;width:{{to_percent disgust}}%;background-color:orange" title="{{to_percent disgust}}% disgust" class=currentUser.invert_class)
+                                span {{ to_percent fear }}% fear
+                                    .rounded(style="height:5px;width:{{to_percent fear}}%;background-color:black" title="{{to_percent fear}}% fear" class=currentUser.invert_class)
+                                span {{ to_percent anger }}% anger
+                                    .rounded(style="height:5px;width:{{to_percent anger}}%;background-color:red" title="{{to_percent anger}}% anger" class=currentUser.invert_class)
+
+
+
+
+template(name='entities')
+    // .ui.grey.header 
+    //     |#{watson.entities.length} entities
+    .ui.four.column.stackable.grid
+        each watson.entities
+            .ui.column
+                +entity_type_icon
+                span.large120.set_entity_name(class="{{calculated_size 'relevance'}}" title="{{ to_percent relevance }}% relevant") #{text}
+                // .spacer
+                .ui.small.label(title='relevant') {{ to_percent relevance }}%
+                .ui.small.label(title="sentiment") {{ sentiment.label }} {{ to_percent sentiment.score }}%
+                .ui.small.label(title='count') #{count}x
+                .ui.small.label(title='confident') {{ to_percent confidence}}% con
+                with disambiguation
+                    // .ui.small.inline.header subtypes
+                    each subtype
+                        .ui.tiny.label #{this}
+                    a.ui.tiny.grey.header.set_entity_name(href=dbpedia_resource target='_window') name
+                        |#{name}
+                if emotion
+                    with emotion
+                        .ui.multiple.small.progress.zoomer.pointer(data-total='100' data-value="{{ to_percent joy}},{{ to_percent sadness}},{{ to_percent fear}},{{ to_percent disgust}},{{ to_percent anger}}" )
+                            .green.bar
+                                // .progress
+                            .blue.bar
+                                // .progress
+                            .black.bar
+                                // .progress
+                            .orange.bar
+                                // .progress
+                            .red.bar
+                                // .progress
+                        .ui.popup
+                            span {{ to_percent sadness }}% sad
+                                .rounded(style="height:5px;width:{{to_percent sadness}}%;background-color:blue" title="{{to_percent sadness}}% sad" class=currentUser.invert_class)
+                            span {{ to_percent joy }}% joy
+                                .rounded(style="height:5px;width:{{to_percent joy}}%;background-color:green" title="{{to_percent joy}}% sadness" class=currentUser.invert_class)
+                            span {{ to_percent disgust }}% disgust
+                                .rounded(style="height:5px;width:{{to_percent disgust}}%;background-color:orange" title="{{to_percent disgust}}% disgust" class=currentUser.invert_class)
+                            span {{ to_percent fear }}% fear
+                                .rounded(style="height:5px;width:{{to_percent fear}}%;background-color:black" title="{{to_percent fear}}% fear" class=currentUser.invert_class)
+                            span {{ to_percent anger }}% anger
+                                .rounded(style="height:5px;width:{{to_percent anger}}%;background-color:red" title="{{to_percent anger}}% anger" class=currentUser.invert_class)
+
+
+template(name='entity_type_icon')
+    span(title=type)
+        if is type 'Person'
+            +i name='user'
+        else if is type 'Organization'
+            +i name='building'
+        else if is type 'Location'
+            +i name='marker'
+        else if is type 'EmailAddress'
+            +i name='email'
+        else
+            .ui.small.grey.inline.header #{type}
+
+
+
+template(name='keyword_list')
+    .ui.small.grey.inline.header 
+        |#{watson_keywords.length} keywords
+    each watson_keywords
+        .ui.large.label #{this}
+        span(class="{{calculated_size 'relevance'}}") #{this}
+
+
+
+template(name='concept_list')
+    .ui.small.grey.inline.header 
+        |#{watson_concepts.length} concepts
+    each watson_concepts
+        .ui.large.label #{this}
+
+
+
+template(name='concepts')
+    .ui.small.grey.inline.header 
+        |#{watson.concepts.length} concepts
+    // .large150
+    each watson.concepts
+        span.ui.text(class="{{calculated_size 'relevance'}}" title="{{to_percent relevance}}% relevant")
+            a(href=dbpedia_resource target='_blank') 
+                |#{text}
+                |&nbsp;
+
+
+template(name='visual_classes')
+    //- .ui.small.grey.inline.header 
+    //-     |#{visual_classes.length} visual classes
+    .ui.list
+        each visual_classes
+            .item
+                div(class="{{calculated_size 'score'}}" title="{{to_percent score}}%") #{class}
+                // small {{to_percent score}}%
+                small #{type_hierarchy}
+
+
+
+template(name='categories')
+    .ui.small.grey.inline.header 
+        |#{watson.categories.length} categories
+    .ui.list
+        each watson.categories
+            .item
+                strong #{label}
+                |{{ to_percent score }}%
+                each explanation.relevant_text 
+                    .ui.small.compact.button.add_text #{text}
+
+
+//- 
+//- 
+//- 
+template(name='relations')
+    .ui.list 
+        each watson.relations 
+            .item
+                .ui.inline.header type: #{type}
+                if is type 'residesIn'
+                    i.home.big.icon
+                else if is type 'locatedAt'
+                    i.marker.big.icon
+                .ui.inline.header !{sentence}
+                .ui.label score: #{score}
+                each arguments
+                    .ui.label #{text}
+                        .ui.label location #{location}
+                        each entities
+                            .ui.label #{type}
+                            // .ui.label.pick_flat_tag #{text}
+    
+
+template(name='semantic_roles')
+    .ui.header semantic roles
+    each semantic_roles
+        .ui.header #{subject.text}
+        .ui.header #{sentence}
+        .ui.header #{object.text}
+        .ui.header #{acton.verb.text} #{action.verb.tense}
+        .ui.header #{acton.text} #{action.normalized}
+
+
+template(name='watson_view')
+    +relations
+    +tone
+    +doc_sentiment
+    +doc_emotion
+    +concepts
+    +categories
+    +entities
+    +semantic_roles
+    // +keyword_list
+    +concept_list
+    +keywords
+    // .ui.hidden.divider
+    //- if dev
+    //-     .ui.styled.accordion
+    //-         .title 
+    //-             i.code.icon
+    //-         .content
+    //-             +jsonView(json=watson)
+    //- +personality
+    //- +consumption_preferences
+    
+
+template(name='call_watson')
+    a.ui.icon.button.zoomer.autotag(title='analyze emotions')
+        // i.chess.large.grey.icon
+        +i name='dna-helix'
+        |analyze
+    if current_doc.watson 
+        i.checkmark.icon
+        
+template(name='call_tone')
+    .ui.image.link.big.label.zoomer.call_tone.pointer
+        //i.chess.icon
+        +i name='dna-helix'
+        |analyze tone
+    

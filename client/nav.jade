@@ -1,0 +1,278 @@
+template(name='nav')
+    // #topnav.topnav.ui.attached.borderless.big.four.item.menu.hscroll(class=darkmode_class)
+        https://fomantic-ui.com/elements/icon.html#/icon
+    // #topnav.topnav.ui.attached.borderless.big.menu.hscroll(style="background-color:#{currentUser.theme_color_main}")
+    #topnav.topnav.ui.attached.borderless.menu.hscroll
+        if is_connected
+            a.icon.item.toggle_leftbar
+                i.large.bars.grey.icon
+            if currentUser
+                if unread_count
+                    a.item(href="/user/#{currentUser.username}/inbox" title='unread messages')
+                        // +i name='inbox'
+                        i.envelope.icon
+                        strong #{unread_count}
+                    a.item.zoomer.clear_read(title='mark all read')
+                        i.envelope.icon
+                        i.remove.icon
+        unless subs_ready
+            .icon.item
+                +i name='one-ring' cl='spinning'
+                i.yin.yang.large.loading.icon
+        if subs_ready
+            a.item.mobile.only(href="/search" title='global search')
+                i.search.large.icon
+            .item.mobile.hidden
+                .ui.icon.input
+                    i.search.icon
+                    input.global_search(type='text' placeholder='search...')
+            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/products" class="{{isActiveRoute 'products'}}" title=products)
+                // +i name='shopping-cart'
+                i.large.shopping.cart.icon
+                // unless currentUser.hide_labels
+                //     |products
+            // +nav_item key='product' icon='shopping-cart'
+            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/posts" class="{{isActiveRoute regex='post'}}" title='posts')
+                // +i name='news'
+                i.large.newspaper.icon
+                // unless currentUser.hide_labels
+                //     |posts
+            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/users" class="{{isActiveRoute 'users'}}" title=users)
+                // +i name='groups'
+                i.large.users.icon
+                // unless currentUser.hide_labels
+                //     |users
+            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/groups" class="{{isActiveRoute regex='group'}}" title='groups')
+                // +i name='campfire'
+                i.large.fire.icon
+                // unless currentUser.hide_labels
+                //     |groups
+            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/food" class="{{isActiveRoute regex='food'}}" title='food')
+                i.large.food.icon
+                // +i name='food'
+                // unless currentUser.hide_labels
+                //     |recipes
+            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/music" class="{{isActiveRoute regex='music'}}" title='music')
+                i.large.music.icon
+                // +i name='music'
+                // unless currentUser.hide_labels
+                //     |music
+            +nav_item key='event' icon='calendar'
+            +nav_item key='transfer' icon='exchange'
+            +nav_item key='service' icon='wrench'
+            +nav_item key='rental' icon='clock'
+            +nav_item key='task' icon='tasks'
+            // +nav_item key='checkin' icon='checkmark'
+            +nav_item key='log' icon='code'
+        unless currentUser
+            // a.item(href="/register" title='register')
+            //     +i name='plus'
+            //     span.mobilehidden register            
+            a.item(href='/login' title='login' class="{{isActiveRoute 'login'}}" ) 
+                i.sign.in.large.icon
+                // +i name='internal'
+                // span.mobilehidden login
+        unless is_connected
+            a.item.zoomer.reconnect
+                i.yin.yang.big.loading.icon
+                +i name='disconnected'
+                |relink
+                i.large.circular.refresh.link.icon.zoomer.reconnect(title='reconnect now')
+        .right.menu
+            if currentUser
+                a.fly_up.zoomer.item.tada(href="/user/#{currentUser.username}" class=user_nav_button_class title='profile' class="{{isActiveRoute 'profile'}}" )
+                    if currentUser.image_id
+                        img.ui.avatar.image(src="{{c.url currentUser.image_id width=300 height=300 gravity='face' crop='fill'}}")
+                    else
+                        i.user.icon
+                    strong #{currentUser.username}
+                    |&nbsp;
+                a.fly_up.zoomer.item.tada(href="/user/#{currentUser.username}" title='bank' class="{{isActiveRoute 'user_points'}}" )
+                    |{{points_to_coins currentUser.points}}c
+                a.icon.item.zoomer.fly_down.add_doc(title='add doc')
+                    // +i name='plus'
+                    i.large.plus.icon
+                // a.icon.item(href="/mail/inbox")
+            a.icon.item.toggle_rightbar.no_blink
+                // .ui.avatar.image
+                //     if currentUser.image_id
+                //         img.ui.mini.inline.image(src="{{c.url currentUser.image_id width=200 height=200 gravity='face' crop='fill'}}")
+                //     else
+                //         i.user.big.icon
+                // strong.mobilehidden #{currentUser.name}
+                i.bars.large.grey.icon
+                            
+                            
+template(name='footer')
+    .ui.fluid.segment.stackable.grid.alpha
+        .two.column.row
+            .column
+                // .ui.accordion
+                //     .title.zoomer
+                //         .ui.small.inline.header 
+                //             |goldrun is community supported and will never sell your info
+                //         // i.dropdown.grey.icon
+                //     .content
+                //         img.ui.image(src="{{c.url 'dao_venmo'}}")
+                // +music
+                if currentUser.admin
+                    with currentUser
+                        +boolean_edit key='admin_mode' label='admin mode' icon='shield'
+                        
+                if currentUser.admin_mode
+                    .ui.inline.header 
+                        i.blog.icon
+                        | #{all_docs.count}
+                        |docs
+                    each all_docs 
+                        .ui.image.label 
+                            img.ui.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+                            |#{title}
+                            +model_label
+                            +print_this
+                            |#{when}
+            if currentUser.admin_mode
+                .column
+                    .ui.inline.header 
+                        i.chess.icon
+                        |#{result_docs.count}
+                        |results
+                    each result_docs 
+                        .ui.label #{name}: #{count} [#{model}]
+                    .ui.inline.header 
+                        i.users.icon
+                        |#{all_users.count}
+                        |users
+                    each all_users
+                        .ui.label 
+                            a(href="/user/#{username}") 
+                                img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+                                |#{username}
+                                
+                            +print_this
+            
+            
+
+
+
+template(name='nav_item')
+    a.item.zoomer.fly_right.clear_search.go_route.tada.mobile.hidden(href="/m/#{key}" class="{{nav_item_class key}}" title=key)
+        // +i name=icon
+        i.large.icon(class=icon)
+        // unless currentUser.hide_labels
+        //     |#{key}s
+
+
+
+template(name='my_latest_activity')
+    .ui.grey.header 
+        i.grey.rss.icon
+        |your activity
+    .ui.list
+        each my_latest_activity
+            .item 
+                img.ui.avatar.image(src="{{c.url author.kiosk_photo width=200 height=200 gravity='face' crop='fill'}}")
+                |#{text} #{body}
+                small #{when}
+
+
+template(name='topbar')
+    .ui.fluid.attached.segment.topbar.top.sidebar
+        .ui.middle.aligned.divided.list
+        .ui.list
+            each recent_alerts
+                +recent_alert
+        a.ui.basic.button.item.close_topbar(href="/inbox")
+            i.inbox.icon
+            |inbox
+        
+template(name='recent_alert')        
+    .item.alert
+        .right.floated.content
+            i.eye.link.icon.mark_read(title='mark read')
+        img.ui.avatar.image(src="{{c.url author.image_id height=200 width=200 gravity='face' crop='fill'}}")
+        .content
+            .header
+                |#{description} 
+            .description #{author.name} #{when}
+            
+            
+            
+template(name='rightbar')
+    .ui.right.sidebar.vertical.small.borderless.menu.rightbar
+        with currentUser
+            a.item.toggle_rightbar.no_blink(href="/user/#{currentUser.username}" class="{{isActiveRoute 'user_layout'}}")
+                img.ui.avatar.compact.image(src="{{c.url currentUser.image_id height=200 width=200 gravity='face' crop='fill'}}")
+                |#{currentUser.name}
+            a.item.toggle_rightbar(href="/user/#{username}" class="{{isActiveRoute regex='user_dashboard'}}")
+                +i name='dashboard'
+                // i.dashboard.icon
+                |dashboard
+            a.item.zoomer.toggle_darkmode
+                if darkmode
+                    +i name='checkmark'
+                else
+                    +i name='light'
+                |dark mode
+            +right_nav_item route='credit' label='credit' icon='money'
+            +right_nav_item route='orders' label='orders' icon='check'
+            +right_nav_item route='subscriptions' label='subscriptions' icon='check'
+            +right_nav_item route='friends' label='friends' icon='friends'
+            // a.item.toggle_rightbar(href="/user/#{username}/pantry" class="{{isActiveRoute 'user_pantry'}}")
+            //     +i name='cupboard' cl='ui avatar image'
+            //     |pantry
+            +right_nav_item route='cart' label='cart' icon='shopping-cart'
+            // a.item.toggle_rightbar(href="/work" class="{{isActiveRoute 'work'}}")
+            //     +i name='trust' cl='ui avatar image'
+            //     |work
+            // a.item.toggle_rightbar(href="/user/#{username}/trips" class="{{isActiveRoute 'user_trips'}}")
+            //     +i name='bicycle' cl='ui avatar image'
+            //     |trips
+            a.item.toggle_rightbar(href="/user/#{currentUser._id}/edit" class="{{isActiveRoute 'user_trips'}}")
+                +i name='settings' 
+                |account
+            // .ui.divider
+            a.item.logout
+                if is_logging_out
+                    i.refresh.loading.large.icon
+                else
+                    +i name='exit-sign' cl='ui avatar image'
+                    // i.sign.out.icon
+                |logout
+        else 
+            a.item.toggle_rightbar(href="/login" class="{{isActiveRoute 'login'}}")
+                +i name='internal' cl='ui avatar image'
+                |login
+            a.item.toggle_rightbar(href="/register" class="{{isActiveRoute 'register'}}")
+                +i name='plus' cl='ui avatar image'
+                |register
+
+
+
+template(name='right_nav_item')
+    a.item.toggle_rightbar(href="/user/#{currentUser.username}/#{route}" class="{{isActiveRoute regex='user_dashboard'}}")
+        +i name=icon cl='ui avatar image'
+        // i.dashboard.icon
+        |#{label}
+
+
+template(name='leftbar')
+    .ui.left.sidebar.ui.vertical.big.borderless.menu
+        +leftbar_item key='posts' icon='newspaper'
+        +leftbar_item key='products' icon='shop'
+        +leftbar_item key='food' icon='food'
+        +leftbar_item key='music' icon='music'
+        +leftbar_item key='transfers' icon='exchange'
+        +leftbar_item key='orders' icon='history'
+        +leftbar_item key='groups' icon='fire'
+        +leftbar_item key='requests' icon='hand holding heart'
+        +leftbar_item key='services' icon='wrench'
+        +leftbar_item key='rentals' icon='clock'
+        +leftbar_item key='users' icon='users'
+            
+template(name='leftbar_item')    
+    a.item.zoomer.fly_right.toggle_leftbar(href="/#{key}")
+        i.large.icon(class=icon)
+        // +i name=icon
+        span #{key}
+                

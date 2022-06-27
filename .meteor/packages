@@ -1,0 +1,35 @@
+# Meteor packages used by this project, one per line.
+# Check this file (and the other files in this directory) into your repository.
+#
+# 'meteor add' and 'meteor remove' will edit this file for you,
+# but you can also edit it by hand.
+
+meteor-base@1.4.0             # Packages every Meteor app needs to have
+iron:router@=1.0.13
+mongo@1.11.0                   # The database Meteor supports right now
+session@1.2.0                 # Client-side reactive dictionary for your app
+tracker@1.2.0                 # Meteor's client-side reactive programming library
+
+
+random@1.2.0
+manuel:reactivearray
+meteorhacks:aggregate
+mobile-experience@1.1.0
+
+blaze-html-templates
+dburles:collection-helpers
+zimme:active-route
+momentjs:moment
+reactive-var@1.0.11
+matb33:collection-hooks
+mquandalle:jade
+underscore@1.0.10
+coffeescript
+tmeasday:publish-counts
+reywood:publish-composite
+multiply:iron-router-progress
+ecmascript
+modules
+shell-server
+flowkey:hotkeys
+http

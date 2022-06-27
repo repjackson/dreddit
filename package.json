@@ -1,0 +1,9 @@
+{
+	"dependencies": {
+		"@babel/runtime": "^7.9.2"
+	},
+	"scripts": {
+		"start": "MONGO_URL=mongodb+srv://daoadmin:daoadminpassword@cluster1-etul3.mongodb.net/daodb meteor --settings settings.json",
+		"local": "meteor --settings settings.json"
+	}
+}

@@ -1,0 +1,1002 @@
+template(name='current_viewers')
+    .ui.inline.header 
+        +i name='binoculars'
+        |#{current_viewer_users.count} current viewers
+    each current_viewer_users
+        +user_info
+
+template(name='visibility_settings')
+    .title
+        .ui.inline.header
+            +i name='visible'
+            |visibility
+        +key_value_icon key='visibility' value='published' icon='checkmark' classes='green'
+        +key_value_icon key='visibility' value='private' icon='lock' classes='blue'
+        +key_value_icon key='visibility' value='draft' icon='checkmark' classes='orange'
+    .content
+        +key_value_edit key='visibility' value='published' icon='checkmark' classes='green'
+        +key_value_edit key='visibility' value='private' icon='lock' classes='blue'
+        +key_value_edit key='visibility' value='draft' icon='checkmark' classes='orange'
+        if private 
+            .ui.header 
+                i.lock.icon
+                |private
+        if friends_only
+            .ui.header 
+                +i name='friends'
+                |friends only
+
+
+
+template(name='send_points_button')
+    .ui.circular.button.send_points.fly_right
+        +i name='donate'
+        unless currentUser.hide_labels
+            |send points
+        
+        
+template(name='edit_button')
+    a.ui.icon.large.button.fly_down.zoomer(href="/doc/#{_id}/edit" title="edit #{title}")
+        // +i name='edit'
+        i.large.pencil.icon
+        unless currentUser.hide_labels
+            |edit
+
+        
+template(name='log_item')
+    .ui.item(class=read_class)
+        |#{body}
+        +when
+        +read_button
+        // +group_info
+        +author_info
+        if in_dev 
+            +print_this
+        
+template(name='model_label')
+    span.pick_model(title="view #{model}s")
+        if is model 'post' 
+            +i name='news'
+        else if is model 'event'
+            +i name='calendar'
+        else if is model 'product'
+            +i name='shopping-cart'
+        else if is model 'group'
+            +i name='campfire'
+        else if is model 'reddit'
+            +i name='reddit'
+        else if is model 'service'
+            +i name='service'
+        else if is model 'log'
+            +i name='event-log'
+        else if is model 'task'
+            +i name='tasks'
+        else if is model 'checkin'
+            +i name='checkmark'
+        else if is model 'transfer'
+            +i name='exchange'
+
+    // .ui.label 
+    //     |#{model}
+                            
+     
+     
+     
+template(name='author_segment')     
+    with _author
+        a.ui.link.horizontal.card.alpha.zoomer.fly_right(href="/user/#{username}") 
+            .content
+                .ui.inline.header 
+                    |author
+                .ui.inline.header
+                    img.ui.avatar.image(src="{{c.url image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                    |#{name}
+                .ui.label 
+                    |#{points}pts
+                +view_label
+                
+                
+template(name='view_label')
+    .ui.label(title='views')
+        i.grey.eye.icon
+        |#{profile_views}
+
+     
+template(name='group_info')
+    i.fire.icon
+    with related_group_doc
+        a.ui.large.image.label.zoomer.zoom(title='group' href="/doc/#{_id}") 
+            // +i name='campfire'
+            img.ui.image.invert(src="{{c.url image_id width=200 height=200}}")
+            |#{title}
+        
+        
+template(name='audience_settings')
+    .ui.header
+        +i name='audience'
+        |audience
+    +boolean_edit key='private' label='private' 
+    if private 
+        +multi_user_edit key='access_user_ids' label='user picker' direct=true
+        
+        
+template(name='loading_icon')
+    .ui.center.aligned.segment
+        i.massive.yin.yang.loading.grey.thin.icon
+
+
+
+template(name='publish_button')
+    if published
+        .ui.animated.button.unpublish
+            .visible.content
+                |published
+            .hidden.content
+                i.undo.icon
+                |unpublish
+    else 
+        .ui.button.publish 
+            i.eye.icon
+            |publish  
+    
+        
+        
+template(name='request_button')
+    .ui.button.request
+        +i name='hand-holding-heart'
+        unless currentUser.hide_labels
+            |request
+
+template(name='session_icon_button')
+    .ui.icon.circular.button.set_session_value(class=session_icon_button_class)
+        +i name=icon
+
+template(name='session_key_value_edit')
+    .ui.button.set_key_value(class=set_key_value_class)
+        if key_value_is 'key' 'sort_key'
+            if session_is 'sort_key' value
+                if sorting_up
+                    i.sort.amount.down.icon
+                else
+                    i.sort.amount.up.icon
+        if icon 
+            +i name=icon cl='ui avatar image'
+            // i.icon(class=icon)
+        |#{label}
+
+template(name='key_value_edit')
+    a.ui.image.link.big.label.set_key_value.zoomer(class=calculated_class)
+        if icon 
+            // +i name=icon cl='ui avatar image'
+            i.large.icon(class=icon)
+        // if is_selected
+        if label
+            |#{label}
+        else 
+            |#{value}
+            
+
+
+template(name='author_block')
+    a.ui.link.card(href="/user/#{_author.username}")
+        img.ui.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+        .content
+            small 
+                i.edit.icon
+                |author
+            a.ui.inline.header
+                |#{_author.username}
+                |#{points}pts
+
+
+
+
+
+template(name='favorite_icon_toggle')
+    i.large.red.heart.link.circular.icon.toggle_fav.invert(class=icon_class)
+
+
+template(name='sort_direction_toggle')
+    if session_is 'sort_direction' -1
+        .ui.icon.compact.circular.button.toggle(title='toggle sort direction')
+            i.sort.down.large.icon
+            // +i name='sort-down'
+    else
+        .ui.icon.compact.circular.button.toggle(title='toggle sort direction')
+            // +i name='sort-up'
+            i.sort.up.large.icon
+
+
+// template(name='music')
+//     iframe(style="border-radius:12px" src="https://open.spotify.com/embed/track/0RAvy97QRPzO2AfK5Dw6j3?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture")
+
+template(name='limit_menu')
+    .ui.inline.small.grey.header
+        |limit
+    .ui.compact.menu
+        .ui.simple.dropdown.item
+            strong #{current_limit}
+            i.dropdown.icon
+            .menu
+                +set_limit amount=1
+                +set_limit amount=5
+                +set_limit amount=10
+                +set_limit amount=20
+
+
+
+template(name='add_doc_button')
+    .ui.circular.icon.button.add_doc(title="add #{model}")
+        +i name='plus'
+        
+        
+template(name='doc_array_toggle')
+    // if currentUser
+    .ui.button.toggle(class=doc_array_toggle_class title=label)
+        if in_list
+            if remove_icon
+                i.large.icon(class=remove_icon)
+            |#{remove_label}
+        else
+            if add_icon
+                i.large.icon(class=add_icon)
+            |#{add_label}
+        |#{label}
+    //- each list_users
+        //-     +user_info
+        
+template(name='session_toggle') 
+    .ui.icon.button.toggle_session_var(class=session_toggle_class title=key)
+        i.large.icon(class=icon)
+        // if on
+        //     i.checkmark.icon
+        //     // |#{key}
+        // else    
+        //     // |#{key}
+        
+        
+template(name='bookmark_button')
+    if currentUser
+        .ui.icon.compact.button.toggle_bookmark(class=bookmark_button_class title=label)
+            if is_bookmarked
+                // |bookmarked
+                i.red.bookmark.large.icon
+                // - i.large.icon(class=remove_icon)
+            else
+                // |bookmark
+                i.large.bookmark.icon
+                //- i.large.icon(class=add_icon)
+        //- each list_users
+        //-     +user_info
+
+template(name='comments')
+    .title
+        .ui.inline.header
+            i.chat.outline.icon
+            |#{doc_comments.count}
+            |comments
+        // if can_add
+        .ui.icon.large.fluid.input
+            i.plus.icon
+            input.add_comment(model='text' placeholder='add...')
+        // else 
+        // .ui.icon.large.disabled.input(title='not enough points to comment (-2p)')
+        //     i.plus.icon
+        //     input.add_comment(model='text' placeholder='not enough points (-2pt)')
+    .content
+        // if currentUser
+        .ui.comments
+            each doc_comments
+                +doc_comment
+            
+            
+            
+template(name='doc_comment')            
+    .comment
+        .content
+            .ui.small.inline.header #{body}
+            if can_edit 
+                +session_boolean_toggle_icon key='editing_mode' icon='pencil' 
+                if session_is 'editing_mode' true
+                    +text_edit key='body' direct=true
+            .meta #{when}
+                |by 
+                if anon 
+                    .ui.label 
+                        i.user.icon
+                        |anon
+                else
+                    a(href="/user/#{_author.username}") #{_author.name}
+                if currentUser
+                    unless is_author
+                        +voting_small
+                if can_edit
+                    +remove_icon
+                    +boolean_edit_icon key='anon' icon='lock' tooltip='anonymous'
+                if currentUser.admin_mode 
+                    +single_user_edit key='_author_id' direct=true
+                                
+                            
+                            
+                                
+template(name='reviews')
+    .ui.header
+        +i name='popular-topic' cl='ui inline image'
+        |reviews
+    div
+    // if currentUser
+    .ui.fluid.icon.large.input
+        i.plus.icon
+    .ui.reviews
+        each doc_reviews
+            .comment
+                .content
+                    .ui.header #{body}
+                    .meta #{when}
+                        |by 
+                        // a(href="/user/#{author.username}") #{author.first_name} #{author.last_name}
+                            // if currentUser
+                        +voting_small
+                        // if can_edit
+                        //     +remove_button
+
+
+template(name='viewing')
+    div
+    .ui.inline.header #{views} views
+    +view_button
+    .ui.inline.header viewed by
+    each read_ids
+        +user_info
+
+
+template(name='read_button')
+    if currentUser
+        unless viewed_by
+            i.large.link.circular.eye.icon.mark_read
+        else 
+            if is_dev
+                i.large.link.circular.eye.icon.mark_unread
+                .ui.icon.button.mark_unread
+                    i.cancel.icon
+
+
+template(name='view_info')            
+    .ui.label
+        i.eye.icon
+        |#{views}
+
+template(name='member_info')            
+    .ui.label(title='members')
+        i.users.icon
+        |#{member_ids.length}
+
+
+
+template(name='user_info')
+    // with user_from_id this
+    with user_doc
+        a.ui.big.link.image.zoomer.label.zoom(href="/user/#{username}" title="view #{name}'s profile`")
+            img.ui.avatar.image.zoomer(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+            strong.zoomer #{name}
+            small.zoomer @#{username}
+    // .ui.header #{this}
+
+template(name='user_avatar')
+    // with user_from_id this
+    with user_doc
+        a.fly_right(href="/user/#{username}" title="view #{name}'s profile`")
+            img.ui.avatar.image.zoomer(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+    // .ui.header #{this}
+
+
+template(name='session_boolean_toggle_icon')
+    i.link.circular.icon(class="#{icon} #{calculated_class}")
+template(name='session_boolean_toggle')
+    .ui.compact.button.toggle_session_key(class=calculated_class)
+        if icon
+            +i name=icon cl='ui avatar image'
+        |#{label}
+        //- if icon_view 
+        //- else 
+            if label
+                |#{label}
+            else 
+                |#{value}
+
+template(name='session_set')
+    a.ui.large.image.label.zoomer.set_session_value(class=set_button_class title="sort by #{label}")
+        if icon
+            i.large.icon(class=icon)
+            // +i name=icon
+        // if icon_view 
+        // else 
+        // if is_active
+        unless hide_label
+            if label
+                |#{label}
+            else 
+                |#{value}
+           
+           
+template(name='favorites')
+    .ui.inline.header 
+        +i name='heart'
+        |favorites
+    +favorite_icon_toggle
+    each favorited_usernames
+        a.ui.large.label.zoomer.zoom(href="/user/#{this}") #{this}
+
+                
+                
+                
+template(name='set_sort_key')
+    .ui.circular.button.set_sort(class=sort_button_class)
+        if color
+            .ui.label(class=color) #{label}
+        else 
+            if emoji
+                em(data-emoji=emoji)
+            else if icon
+                i.icon(class=icon)
+            |#{label}
+
+
+// template(name='set_sort_key')
+//     .item.set_sort
+//         if color
+//             .ui.label(class=color) #{label}
+//         else 
+//             if emoji
+//                 em(data-emoji=emoji)
+//             else if icon
+//                 i.icon(class=icon)
+//             |#{label}
+
+template(name='events_column')
+    .ui.accordion
+        h4.active.title
+            // +i name='edit-property' cl='ui inline image'
+            //- i.rss.icon
+            | log
+            i.dropdown.icon
+        .active.content
+            .ui.feed
+                each log_events
+                    .event
+                        .label
+                            img.ui.rounded.image(src="{{c.url object.image width=400 height=400 gravity='face' crop='fill'}}")
+                        .content
+                            .summary
+                                |#{body}
+                                .date
+                                    |#{when}
+                                if is_dev
+                                    +remove_button
+
+
+
+
+
+template(name='toggle_edit')
+    .ui.button.toggle_edit
+        i.pencil.icon
+
+template(name='user_list_info')
+    a.ui.button.item(href="/user/#{user._id}/view")
+        img.ui.avatar.image(src=user.profile.profilePic title=name)
+        |#{user.profile.name}
+        +user_status user
+
+
+template(name='view_full_button')
+    a.ui.icon.button(href="/view/#{_id}" class=cl data-tooltip='View Full')
+        i.double.icon
+        |view
+
+template(name='user_status')
+    if online 
+        // .ui.label(class='{{labelClass}}') 
+        .ui.empty.label(title='online')
+        // img.ui.avatar.image(src="https://img.icons8.com/connection-user_status-on/color/48" title='Online' width="48" height="48")
+        // |Online
+    else if idle
+        .ui.empty.yellow.label(title='idle')
+        // .ui.label(class='{{labelClass}}') Idle
+    // else 
+    //     |Offline
+
+
+
+template(name='username_info')
+    .ui.small.compact.button.goto_profile
+        if is_member
+            img.ui.avatar.image(src="{{c.url user.image_id width=100}}")
+        else if user.kiosk_photo
+            img.ui.avatar.image(src="{{c.url user.kiosk_photo width=100}}")
+        else if user.image_id
+            img.ui.avatar.image(src="{{c.url user.image_id width=100}}")
+        |#{user.name}
+        //- |@#{user.username}
+        +user_status user
+
+
+template(name='role_editor')
+    each roles
+        .ui.button #{this}
+
+template(name='author_info')
+    with _author
+        a.ui.large.image.inveted.label(href="/user/#{username}")
+            if image_id
+                img.ui.avatar.image.invert(src="{{c.url image_id width=200 height=200 gravity='face' crop='fill'}}")
+            small by 
+            strong #{name}
+
+template(name='creation_info')
+    .ui.small.inline.header #{when}
+
+
+template(name='user_list_toggle')
+    if currentUser
+        .ui.icon.compact.button.toggle(class=user_list_toggle_class title=label)
+            if in_list
+                i.large.icon(class=remove_icon)
+            else
+                i.large.icon(class=add_icon)
+            //- +ismall name=icon
+            //- |#{label}
+        //- each list_users
+        //-     +user_info
+
+
+template(name='voting')
+    // unless is_author
+    i.thumbs.up.large.circular.link.icon.zoomer.upvote(class=upvote_class)
+    // .ui.icon.button.upvote(title='upvote')
+    //- each upvoter_ids
+    //-     +user_info
+    i.thumbs.down.large.circular.link.icon.zoomer.downvote(class=downvote_class)
+    // .ui.icon.button.downvote(title='downvote')
+    //     i.thumbs.down.icon(class=downvote_class)
+    //- each downvoter_ids
+    //-     +user_info
+    if points
+        span(title='points')
+            i.coins.icon
+            strong #{points}
+    if anon_points
+        strong #{anon_points} anon pts
+    
+
+template(name='voting_small')
+    if points
+        strong #{points}
+    i.thumbs.up.link.icon.upvote(class=upvote_class)
+    //- each upvoter_ids
+    //-     +user_info
+    i.thumbs.down.link.icon.downvote(class=downvote_class)
+    //- each downvoter_ids
+    //-     +user_info
+
+
+
+template(name='voting_full')
+    // +ismall name='elections'
+    // .ui.inline.header 
+    //     |voting
+    // .ui.large.icon.circular.button.upvote(title='upvote' class=upvote_class)
+    // unless is_author
+    i.thumbs.up.big.circular.link.icon.zoomer.upvote(class=upvote_class)
+        //- |like
+    // .ui.big.icon.circular.button.downvote(title='downvote' class=downvote_class)
+    i.thumbs.down.big.circular.link.icon.zoomer.downvote(class=downvote_class)
+    // i.thumbs.down.outline.icon
+    //- |dislike
+    if points
+        .ui.large.label(title='points') #{points}pts
+        if anon_points
+            .ui.large.label(title='anon points') #{anon_points} anon pts
+    if upvoter_ids
+        div
+        .ui.small.inline.green.header 
+            i.thumbs.up.outline.icon
+            |upvoters
+        each _upvoters
+            +user_info
+    if downvoter_ids
+        div
+        .ui.small.inline.red.header 
+            i.thumbs.down.outline.icon
+            |downvoters
+        each _downvoters
+            +user_info
+// template(name='voting_full')
+//     // +ismall name='elections'
+//     // .ui.inline.header 
+//     //     |voting
+//     // ..upvote(title='upvote')
+//     i.thumbs.up.big.circular.link.icon.upvote(class=upvote_class)
+//         //- |like
+//     // .ui.large.icon.circular.button.downvote(title='downvote')
+//     i.thumbs.down.big.circular.link.icon.downvote(class=downvote_class)
+//         //- |dislike
+//     if points
+//         .ui.large.label(title='points') #{points} pts
+//         .ui.large.label(title='anon points') #{anon_points} anon pts
+//     if upvoter_ids
+//         .ui.small.header 
+//             i.thumbs.up.icon
+//             |upvoters
+//         each upvoter_ids
+//             +user_info
+//     if downvoter_ids
+//         .ui.small.header 
+//             i.thumbs.up.icon
+//             |downvoters
+//         each downvoter_ids
+//             +user_info
+
+
+
+template(name='view_button')
+    a.ui.icon.compact.button.view(title='view' href="/m/#{model}/#{_id}/view")
+        //- i.right.chevron.large.icon
+        +i name='chevron right' cl='ui mini inline image'
+
+
+template(name='remove_button')
+    .ui.red.button.remove_doc(title='delete')
+        i.remove.large.icon
+        |delete
+
+template(name='remove_icon')
+    i.remove.icon.remove_doc(title='delete')
+    //- |Delete
+
+template(name='add_button')
+    a.ui.large.button.add(title="add #{model}")
+        //- |#{model.icon}
+        if model.icon
+            //- i.icon(class=icon)
+            +ismall name=model.icon cl='ui inline image'
+        else 
+            i.plus.icon
+        if label
+            |#{label}
+        //- |#{model}
+
+
+
+
+template(name='toggle_button')
+    .ui.icon.toggle.button(title=label)
+        i.icon(class=icon)
+    each picked
+        |#{username}
+
+
+template(name='view_user_button')
+    .view_user.view(title="view #{username}")
+        i.play.icon
+        |View
+
+
+template(name='print_this')
+    .ui.icon.button.print
+        i.orange.code.icon
+
+
+
+template(name='friend_button')
+    if is_friend
+        .ui.button.remove_friend
+            i.plus.icon
+            |friend
+    else 
+        .ui.button.add_friend
+            i.minus.icon
+            |unfriend
+            
+            
+
+template(name='follow_button')
+    if is_following
+        .ui.button.unfollow
+            i.plus.icon
+            +i name='add-user-male'
+            |follow
+    else 
+        .ui.button.follow
+            +i name='checked-user-male'
+            i.minus.icon
+            |unfollow
+            
+            
+template(name='subscribe_button')
+    if is_subscribed
+        .ui.button.unsubscribe
+            i.plus.icon
+            +i name='add-user-male'
+            |subscribe
+    else 
+        .ui.button.subscribe
+            +i name='checked-user-male'
+            i.minus.icon
+            |unsubscribe
+            
+            
+
+template(name='join_button')
+    if is_member
+        .ui.animated.button.leave
+            .hidden.content
+                i.minus.icon
+                |leave
+            .visible.content
+                i.checkmark.green.icon
+                |member
+    else 
+        .ui.button.join
+            i.plus.icon
+            |join
+    // if currentUser
+    //     +doc_array_toggle key='member_ids' value=currentUser._id add_label='join' remove_label='leave'
+    // else 
+    //     a.ui.big.button(href="/login")
+    //         +i name='internal'
+    //         |join
+            
+            
+            
+template(name='flat_tag_selector')
+    // a.ui.big.image.rounded.label.zoomer.pointer.select_tag.select_term(href='#' title="#{count} results" class="#{selector_class} #{thinking_class}")
+    a.ui.compact.tiny.image.label.zoomer.select_flat_tag(title="#{count} results" class="#{selector_class} #{thinking_class}")
+        if term
+            if term.metadata.image
+                img.ui.mini.rounded.inline.image.superzoom(src=term.metadata.image )    
+        | #{this}
+        // if in_dev
+        //     small #{count}
+            
+template(name='search_input')
+    .ui.icon.search.large.input
+        if current_search.length
+            i.delete.link.icon.zoomer.clear_search
+        else 
+            i.search.icon
+        input.query(type='text' autocomplete="off" placeholder="search #{key}..." value=current_search)
+
+
+
+       
+       
+template(name='facet')
+    if icon
+        +i name=icon
+    if label 
+        |#{label}
+    each picked_tags
+        button.ui.blue.compact.circular.button.unpick_tag(tabindex='0')
+            //- i.remove.icon
+            | #{this}
+    each facet_results
+        button.ui.circular.compact.button.pick_tag(tabindex="0" class=result_class title=count)
+            |#{name}
+            // small #{count}
+
+            
+// template(name='comments')
+//     // .ui.hidden.divider
+//     // .ui.inline.grey.header
+//     //     i.chat.outline.icon
+//     //     |comments
+//     // div
+//     // if currentUser
+//     .ui.icon.fluid.input
+//         i.chat.icon
+//         input.add_comment(model='text' placeholder='add comment...')
+//     .ui.comments
+//         each doc_comments
+//             .comment
+//                 .content
+//                     .ui.inline.small.grey.header #{body}
+//                     span #{when}
+//                         // |by 
+//                         a(href="/user/#{author.username}") #{author.username}
+//                         if currentUser
+//                             +voting_small
+//                             if can_edit
+//                                 +remove_button
+
+
+// template(name='creation_info')
+//     .ui.header added by #{_author_username}
+//     |#{when}
+
+
+// template(name='set_sort_direction')
+//     .ui.compact.icon.button.set_sort_direction(title='toggle sort direction')
+//         if sorting_up
+//             i.sort.amount.down.large.icon
+//         else
+//             i.sort.amount.up.large.icon
+
+// template(name='viewing')
+//     div
+//     if currentUser
+//         unless viewed_by
+//             .ui.icon.compact.button.mark_read
+//                 i.eye.icon
+//         else 
+//             if is_dev
+//                 .ui.icon.compact.button.mark_unread
+//                     i.cancel.icon
+//     .ui.inline.small.grey.header viewed by
+//     each read_ids
+//         +user_info
+
+// template(name='user_info')
+//     with user_doc
+//         a.ui.image.big.label.spaced(href="/user/#{username}")
+//             img.ui.avatar.image(src="{{c.url image_id width=200 height=200 gravity='face' crop='fill'}}")
+//             |#{username}
+
+// template(name='session_boolean_toggle')
+//     .ui.compact.button.toggle_session_key(class=calculated_class)
+//         +i name=icon cl='ui avatar image'
+//         |#{label}
+//         //- if icon_view 
+//         //- else 
+//             if label
+//                 |#{label}
+//             else 
+//                 |#{value}
+
+// template(name='session_edit_value_button')
+//     .ui.button.set_session_value(class=calculated_class)
+//         if icon_view 
+//             i.icon(class=icon)
+//         else 
+//             if label
+//                 |#{label}
+//             else 
+//                 |#{value}
+
+
+// template(name='set_sort_key')
+//     .ui.small.compact.button.set_key(class=sort_key_class)
+//         if color
+//             .ui.label(class=color) #{label}
+//         else 
+//             if emoji
+//                 em(data-emoji=emoji)
+//             else if icon
+//                 // +i name=icon cl='ui avatar image'
+//                 i.large.icon(class=icon)
+//             |#{label}
+
+// template(name='goto_model')
+//     if is_staff
+//         a.goto_model(href="/m/#{slug}" title="goto #{slug}")
+//             i.external.blue.icon
+//             //- +i name='external-link'
+
+// template(name='events_column')
+//     .ui.accordion
+//         h4.active.title
+//             // +i name='edit-property' cl='ui inline image'
+//             //- i.rss.icon
+//             | log
+//             i.dropdown.icon
+//         .active.content
+//             .ui.feed
+//                 each log_events
+//                     .event
+//                         .label
+//                             img.ui.rounded.image(src="{{c.url object.image width=400 height=400 gravity='face' crop='fill'}}")
+//                         .content
+//                             .summary
+//                                 |#{body}
+//                                 .date
+//                                     |#{when}
+//                                 if is_dev
+//                                     +remove_button
+
+
+
+
+// template(name='follow')
+//     .ui.segment
+//         .ui.header
+//             i.user.plus.icon
+//             |follow
+//         +user_list_toggle key='follower_ids' icon='rss' add_label='Follow' remove_label='Unfollow' color=
+
+
+// template(name='toggle_edit')
+//     .ui.button.toggle_edit
+//         i.pencil.icon
+
+// template(name='user_list_info')
+//     a.ui.button.item(href="/user/#{user._id}/")
+//         img.ui.avatar.image(src=user.profile.profilePic title=name)
+//         |#{user.profile.name}
+//         +user_status user
+
+// //- template(name='call_watson')
+// //-     .ui.button.autotag
+// //-         //- i.chess.icon
+// //-         +ismall name='dna-helix'
+// //-         |call watson
+
+// template(name='view_full_button')
+//     a.ui.icon.button(href="//#{_id}" class=cl data-tooltip='View Full')
+//         i.double.icon
+//         |view
+
+// template(name='user_status')
+//     if online 
+//         // .ui.label(class='{{labelClass}}') 
+//         .ui.empty.label(title='online')
+//         // img.ui.avatar.image(src="https://img.icons8.com/connection-user_status-on/color/48" title='Online' width="48" height="48")
+//         // |Online
+//     else if idle
+//         .ui.empty.yellow.label(title='idle')
+//         // .ui.label(class='{{labelClass}}') Idle
+//     // else 
+//     //     |Offline
+
+
+// template(name='role_editor')
+//     each roles
+//         .ui.button #{this}
+
+// template(name='author_info')
+//     with author
+//         a.ui.compact.button(href="/user/#{username}")
+//             if kiosk_photo
+//                 img.ui.avatar.image(src="{{c.url kiosk_photo width=100 height=100 gravity='face' crop='fill'}}")
+//             else if image_id
+//                 img.ui.avatar.image(src="{{c.url image_id width=100 height=100 gravity='face' crop='fill'}}")
+//             |by #{first_name} #{last_name}
+
+
+
+// template(name='user_list_toggle')
+//     if currentUser
+//         .ui.icon.compact.button.toggle(class=user_list_toggle_class title=label)
+//             if in_list
+//                 i.large.icon(class=remove_icon)
+//             else
+//                 i.large.icon(class=add_icon)
+//             //- +ismall name=icon
+//             //- |#{label}
+//         //- each list_users
+//         //-     +user_info
+
+
+// template(name='voting')
+//     .ui.icon.button.upvote(title='upvote')
+//         i.thumbs.up.icon(class=upvote_class)
+//     each upvoter_ids
+//         +user_info
+//     .ui.icon.button.downvote(title='downvote')
+//         i.thumbs.down.icon(class=downvote_class)
+//     each downvoter_ids
+//         +user_info
+//     if points
+//         strong #{points} pts
+//     if anon_points
+//         strong #{anon_points} anon pts
+    
+
+// template(name='voting_small')
+//     if points
+//         strong #{points}
+//     i.thumbs.up.link.icon.upvote(class=upvote_class)
+//     //- each upvoter_ids
+//     //-     +user_info
+//     i.thumbs.down.link.icon.downvote(class=downvote_class)
+//     //- each downvoter_ids
+//     //-     +user_info

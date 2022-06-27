@@ -1,0 +1,468 @@
+template(name='food')
+    img.ui.fluid.image.checkin_banner.invert(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
+    .ui.stackable.padded.grid 
+        .sixteen.wide.column
+            .ui.inline.header 
+                +i name='food'
+                |{{comma food_count}}
+                |recipes
+            each picked_types
+                button.ui.compact.big.button.unpick_type(tabindex='0')
+                    //- i.remove.icon
+                    | #{this}
+            each types_results
+                button.ui.large.label.button.pick_type(tabindex="0" class=result_class title=count)
+                    |#{name}
+                    // small #{count}
+            each picked_food_tags
+                +unpick_food_tag
+            .ui.large.icon.input
+                i.search.icon
+                input.food_search(type='text' placeholder='search recipes...' value=current_search)
+            each tag_results
+                +agg_food_tag
+                // button.ui.large.label.button.pick_tag(tabindex="0" class=result_class title=count)
+                    // |#{name}
+                    // small #{count}
+
+        .sixteen.wide.column.scrolling
+            if subs_ready
+                if one_recipe
+                    each recipe_docs
+                        +recipe_card_big
+                    // with one_doc
+                    //     +recipe_doc
+                else if two_recipes
+                    .ui.centered.stackable.two.cards 
+                        each recipe_docs
+                            +recipe_card
+                else 
+                    .ui.centered.stackable.cards 
+                        each recipe_docs
+                            +recipe_card
+            else 
+                .ui.basic.center.aligned.segment
+                    +ibig name='food' cl='spinning'
+                    
+                    
+                    
+template(name='unpick_food_tag')
+    button.ui.big.image.link.label.zoomer.unpick_tag.pointer(tabindex="0" class="#{loading_class} #{active_term_class}")
+        // i.minus.icon
+        if flat_term_image
+            img.ui.inline.image.superzoomer.invert(src=flat_term_image)
+        
+        strong #{this}
+                    
+                    
+template(name='agg_food_tag') 
+    // button.ui.big.compact.active.fade.animated.button.result(tabindex="0" title=count)
+    button.ui.image.basic.big.label.result.zoomer(tabindex="0" title=count)
+        // .visible.content
+        if subs_ready
+            img.ui.fluid.image.zoomer.invert(src=term_image.image)
+        else 
+            i.yin.yang.grey.loading.icon
+        | #{name}
+        // .hidden.content
+        //     |+ #{title}
+        // if term.image
+        //     //- button.ui.compact.button(tabindex="0" title=count)
+        //     //- img.ui.mini.inline.image(src=term.image)
+        //     img.ui.mini.inline.image(src=term.image)
+        //     .ui.inline.small.thin.header(class=tag_result_class) #{title}
+        // else
+        //     //- button.ui.compact.button(tabindex="0" title=count)
+        //- small #{count}
+
+                    
+                    
+template(name='recipe_card')
+    // a.card(href="/food/#{_id}")
+    .card.call_watson
+        a.fly_right(href="/food/#{_id}")
+            img.ui.fluid.image.zoomer(src=image)
+        .content
+            a.ui.header(href="/food/#{_id}")
+                | #{name}
+            // .ui.label #{link}
+            a.smallcut.zoomer(href="/food/#{_id}") !{content}
+            .ui.label #{points}p
+            // .ui.label #{type}
+            .ui.label ##{id}
+            .ui.label #{relevance}
+            if _author_username
+                a.ui.label.fly_down(href="/user/#{_author_username}/food")
+                    i.user.icon
+                    |#{_author_username}
+            each tags 
+                a.ui.label.zoomer.pick_food_tag #{this}
+            if currentUser.admin_mode
+                +delete_button
+            if details.glutenFree
+                .ui.big.label
+                    +i name='no-gluten'
+                    |gluten free
+            with details
+                .ui.label(title='aggregateLikes')
+                    i.thumbs.up.icon
+                    |#{aggregateLikes}
+                .ui.label(title='')
+                    i.clock.up.icon
+                    |ready in 
+                    strong #{readyInMinutes}
+                    |minutes
+                .ui.label(title='servings')
+                    i.hashtag.icon
+                    strong #{servings}
+                    |servings
+            .content
+                |mined #{_when} by #{_author_username}
+template(name='delete_button')
+    .ui.icon.button.delete_this(title='delete this')
+        i.large.remove.red.icon        
+            
+            
+template(name='recipe_card_big')
+    .ui.fluid.card
+        img.ui.fluid.image.checkin_banner.invert(src=image)
+        .ui.stackable.padded.grid 
+            .sixteen.wide.column 
+                .ui.inline.big.header #{name}
+                with details 
+                    .ui.big.label(title='aggregateLikes')
+                        i.thumbs.up.icon
+                        |#{aggregateLikes}
+                    .ui.big.label(title='')
+                        i.clock.icon
+                        |ready in 
+                        strong #{readyInMinutes}
+                        |minutes
+                    .ui.big.label(title='')
+                        i.dollar.icon
+                        strong #{pricePerServing}
+                        |/ serving
+                    .ui.big.label(title='servings')
+                        i.hashtag.icon
+                        strong #{servings}
+                        |servings
+                    if glutenFree
+                        .ui.big.label
+                            +i name='no-gluten'
+                            |gluten free
+                    if dairyFree
+                        .ui.big.label
+                            +i name='no-milk'
+                            |dairy free
+                
+            .eight.wide.column 
+                img.ui.centered.fluid.image.rounded.zoomer.invert(src=image)
+                .ui.hidden.divider
+                +voting_full
+            .eight.wide.column
+                a.ui.label(href=link target='_window') #{link}
+                // .ui.label #{type}
+                .ui.label #{relevance}
+                .ui.header #{id}
+                
+                +i name='tags'
+                each tags 
+                    .ui.compact.button.pick_food_tag
+                        |#{this}
+            .sixteen.wide.column
+                .f7 !{content}
+                if currentUser.admin_mode
+                    +call_watson key='content' mode='html'
+            .eight.wide.column
+                .ui.header 
+                    |related recipes
+                .ui.header details
+                if currentUser.admin_mode
+                    .ui.button.get_details get details
+                +viewing_info
+            .eight.wide.column
+                with details
+                    .ui.list 
+                        .item
+                            small license: 
+                            strong #{license}
+                        .item
+                            small source name: 
+                            strong #{sourceName}
+                        .item
+                            small source Url: 
+                            strong #{sourceUrl}
+                        .item
+                            small spoonacular source url: 
+                            strong #{spoonacularSourceUrl}
+                        .item
+                            small health score: 
+                            strong #{healthScore}
+                        .item
+                            small spoonacular score: 
+                            strong #{spoonacularScore}
+                        .item
+                            small price per serving: 
+                            strong #{pricePerServing}
+                        .item
+                            small analyzed instructions: 
+                            strong #{analyzedInstructions}
+                        .item
+                            small cheap: 
+                            strong #{cheap}
+                        .item
+                            small credits text: 
+                            strong #{creditsText}
+                        .item
+                            small cuisines: 
+                            strong #{cuisines}
+                        .item
+                            small diets: 
+                            strong #{diets}
+                        .item
+                            small gaps: 
+                            strong #{gaps}
+            .sixteen.wide.column
+                .ui.header 
+                    +i name='list'
+                    |instructions
+                .ui.large.selection.animated.list 
+                    each instruction_steps
+                        .item.zoomer
+                            |##{number}:
+                            strong #{step}
+                .ui.header 
+                    +i name='ingredients'
+                    |ingredients
+                .ui.doubling.four.cards
+                    each details.extendedIngredients
+                        .card
+                            img.ui.image(src="https://spoonacular.com/cdn/ingredients_250x250/#{image}")
+                            .content
+                                .header #{originalName}
+                                .ui.list
+                                    .item 
+                                        small aisle:
+                                        strong #{aisle}
+                                    .item 
+                                        small amount:
+                                        strong #{amount}
+                                    .item 
+                                        small consistency:
+                                        strong #{consistency}
+                                    // .item 
+                                    //     small id:
+                                    //     strong #{id}
+                                    .item 
+                                        small measures:
+                                        strong #{measures}
+                                    // .item 
+                                    //     small meta:
+                                    //     strong #{meta}
+                                    // .item 
+                                    //     small name:
+                                    //     strong #{name}
+                                    // .item 
+                                    //     small nameClean:
+                                    //     strong #{nameClean}
+                                    // .item 
+                                    //     small original:
+                                    //     strong #{original}
+                                    // .item 
+                                    //     small originalName:
+                                    //     strong #{originalName}
+                                    .item 
+                                        small unit:
+                                        strong #{unit}
+                                if currentUser.admin_mode
+                                    +print_this
+                if currentUser.admin_mode
+                    +print_this
+    
+            if watson
+                .sixteen.wide.column
+                    +watson_view
+
+            
+template(name='food_page')
+    with current_doc 
+        img.ui.fluid.image.checkin_banner.invert(src=image)
+        .ui.stackable.padded.grid 
+            .sixteen.wide.column 
+                a.ui.button(href="/food")
+                    +i name='food'
+                    |food
+                .ui.inline.header #{name}
+                with details 
+                    .ui.big.label(title='aggregateLikes')
+                        i.thumbs.up.icon
+                        |#{aggregateLikes}
+                    .ui.big.label(title='')
+                        i.clock.icon
+                        |ready in 
+                        strong #{readyInMinutes}
+                        |minutes
+                    .ui.big.label(title='')
+                        i.dollar.icon
+                        strong #{pricePerServing}
+                        |/ serving
+                    .ui.big.label(title='servings')
+                        i.hashtag.icon
+                        strong #{servings}
+                        |servings
+                    if glutenFree
+                        .ui.big.label
+                            +i name='no-gluten'
+                            |gluten free
+                    if dairyFree
+                        .ui.big.label
+                            +i name='no-milk'
+                            |dairy free
+                
+            .five.wide.column 
+                img.ui.centered.fluid.image.rounded.zoomer.invert(src=image)
+                .ui.hidden.divider
+                +comments
+                +voting_full
+                a.ui.label(href=link target='_window') #{link}
+                // .ui.label #{type}
+                .ui.label #{relevance}
+                .ui.header #{id}
+                
+                +i name='tags'
+                each tags 
+                    .ui.compact.button.pick_food_tag
+                        |#{this}
+                .f7 !{content}
+                if currentUser.admin_mode
+                    +call_watson key='content' mode='html'
+            .five.wide.column
+                .ui.header 
+                    |related recipes
+                .ui.header details
+                if currentUser.admin_mode
+                    .ui.button.get_details get details
+                +viewing_info
+            .five.wide.column
+                with details
+                    .ui.list 
+                        .item
+                            small license: 
+                            strong #{license}
+                        .item
+                            small source name: 
+                            strong #{sourceName}
+                        .item
+                            small source Url: 
+                            strong #{sourceUrl}
+                        .item
+                            small spoonacular source url: 
+                            strong #{spoonacularSourceUrl}
+                        .item
+                            small health score: 
+                            strong #{healthScore}
+                        .item
+                            small spoonacular score: 
+                            strong #{spoonacularScore}
+                        .item
+                            small price per serving: 
+                            strong #{pricePerServing}
+                        .item
+                            small analyzed instructions: 
+                            strong #{analyzedInstructions}
+                        .item
+                            small cheap: 
+                            strong #{cheap}
+                        .item
+                            small credits text: 
+                            strong #{creditsText}
+                        .item
+                            small cuisines: 
+                            strong #{cuisines}
+                        .item
+                            small diets: 
+                            strong #{diets}
+                        .item
+                            small gaps: 
+                            strong #{gaps}
+            .five.wide.column
+                .ui.header 
+                    +i name='list'
+                    |instructions
+                .ui.large.selection.animated.list 
+                    each instruction_steps
+                        .item.zoomer
+                            |##{number}:
+                            strong #{step}
+                .ui.header 
+                    +i name='ingredients'
+                    |ingredients
+                .ui.doubling.four.cards
+                    each details.extendedIngredients
+                        .card
+                            img.ui.image(src="https://spoonacular.com/cdn/ingredients_250x250/#{image}")
+                            .content
+                                .header #{originalName}
+                                .ui.list
+                                    .item 
+                                        small aisle:
+                                        strong #{aisle}
+                                    .item 
+                                        small amount:
+                                        strong #{amount}
+                                    .item 
+                                        small consistency:
+                                        strong #{consistency}
+                                    // .item 
+                                    //     small id:
+                                    //     strong #{id}
+                                    .item 
+                                        small measures:
+                                        strong #{measures}
+                                    // .item 
+                                    //     small meta:
+                                    //     strong #{meta}
+                                    // .item 
+                                    //     small name:
+                                    //     strong #{name}
+                                    // .item 
+                                    //     small nameClean:
+                                    //     strong #{nameClean}
+                                    // .item 
+                                    //     small original:
+                                    //     strong #{original}
+                                    // .item 
+                                    //     small originalName:
+                                    //     strong #{originalName}
+                                    .item 
+                                        small unit:
+                                        strong #{unit}
+                                +print_this
+
+                +print_this
+
+            if watson
+                .sixteen.wide.column
+                    +watson_view
+            
+            
+            
+            
+template(name='user_food')
+    a.ui.button(href="/food")
+        i.chevron.left.icon
+        +i name='food'
+        |food
+    // .ui.inline.header 
+    //     +i name='food'
+    //     |#{user_task_docs.count} food
+    .ui.header 
+        +i name='spade'
+        |mined
+    .ui.header
+        i.large.thumbs.up.green.icon
+        |liked
+    .ui.header
+        i.large.thumbs.down.red.icon
+        |liked
+        

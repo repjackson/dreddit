@@ -1,0 +1,73 @@
+template(name='search')
+    .ui.padded.grid
+        .sixteen.wide.column
+            .ui.inline.header
+                i.search.icon
+                |search:
+            .ui.inline.header
+                strong  #{current_search}
+            .ui.icon.input
+                i.search.icon
+                input.search_input(type='text' placeholder='search...')
+                
+            .ui.selection.animated.link.divided.list
+                each search_results
+                    if is model 'post'
+                        +post_search_result
+                    if is model 'group'
+                        +group_search_result
+                    if is model 'product'
+                        +group_product_result
+                        
+template(name='post_search_result')                        
+    a.item(href="/post/#{_id}")
+        img(src="{{c.url image_id height=300 width=500 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+        .ui.inline.header #{title} 
+        .ui.basic.label
+            i.database.icon
+            |#{model}
+        if _author_username
+            a.ui.basic.label(href="/user/#{_author_username") #{_author_username}
+        if in_dev
+            +print_this
+        |#{when}
+        each tags
+            .ui.label #{this}
+                
+            
+template(name='group_product_result')                        
+    a.item(href="/product/#{_id}")
+        img(src="{{c.url image_id height=300 width=500 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+        .ui.inline.header #{title} 
+        .ui.basic.label
+            i.shop.icon
+            |#{model}
+        |$#{price_usd}
+        |#{price_points}pts
+        if _author_username
+            a.ui.basic.label(href="/user/#{_author_username") #{_author_username}
+        if in_dev
+            +print_this
+        |#{when}
+        each tags
+            .ui.label #{this}
+                
+            
+template(name='group_search_result')                        
+    a.item(href="/group/#{_id}")
+        img.ui.small.inline.image(src="{{c.url image_id height=500 }}" class=currentUser.invert_class)
+        .ui.inline.header #{title} 
+        .ui.basic.label
+            i.database.icon
+            |#{model}
+        if _author_username
+            a.ui.basic.label(href="/user/#{_author_username") #{_author_username}
+        if in_dev
+            +print_this
+        |#{when}
+        each tags
+            .ui.label #{this}
+        each group_members
+            .ui.label #{username}
+                
+            

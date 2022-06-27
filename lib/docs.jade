@@ -1,0 +1,183 @@
+template(name='docs')
+    img.ui.image.checkin_banner(src="{{c.url 'mountains' height=1000 crop='crop'}}")
+
+    .ui.stackable.padded.grid 
+        // .sixteen.wide.column
+            // .ui.inline.header 
+            //     +i name='cube'
+            //     |#{post_docs.count} docs
+            // +facet key='doc_sentiment_label' icon='happy'
+        .four.wide.column
+            .ui.inline.header
+                +i name=current_model_icon
+                |{{session_get 'model'}}s
+            .ui.button.add_model
+                i.plus.large.icon
+            +search_input key='title'
+            div
+            +facet key='tag'
+            // div
+            // +facet key='timestamp_tag' icon='clock' label='added'
+            // +session_boolean_toggle key='view_mine' label='mine' icon='user'
+            // +session_boolean_toggle key='view_private' label='private' icon='lock'
+        .twelve.wide.column
+            unless one_result
+                .ui.inline.header(title='result count') #{result_docs.count}
+                +sort_direction_toggle
+                // +sort_key_toggle
+                +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                +session_set key='sort_key' value='views' label='views' icon='eye'
+                if session_is 'model' 'event'
+                    +session_set key='sort_key' value='start_datatime' label='start' icon='calendar'
+                +session_set key='limit' value=10
+                +session_set key='limit' value=25
+                +session_set key='limit' value=100
+            .scrolling
+                if subs_ready
+                    if no_results 
+                        .ui.center.aligned.segment 
+                            .ui.header no results
+                            .ui.big.button.add_new_doc
+                                |add #{current_search}
+                    if one_result
+                        .ui.one.cards
+                            each result_docs 
+                                +doc_card_big
+                    else
+                        .ui.centered.cards
+                            each result_docs 
+                                +doc_card
+                else 
+                    +loading_segment
+                    
+template(name='loading_segment')
+    .ui.center.aligned.basic.segment
+        i.massive.yin.yang.loading.grey.icon
+
+
+template(name='sort_key_toggle')
+    .ui.image.big.label.toggle_sort.pointer.zoomer(title=sort_title)
+        i.sort.icon
+        +i name=sort_icon
+        |{{session_get 'sort_label'}}
+
+
+template(name='doc_card')
+    .ui.card.alpha
+        // if background_image_id
+        //     img.ui.image.item_background(src="{{c.url background_image_id height=1000 crop='crop'}}")
+        // else if image_id
+        //     img.ui.image.item_background(src="{{c.url image_id height=400 crop='crop'}}")
+        if youtube_id
+            +youtube_view key='youtube_id'
+        else if image_id
+            a.ui.image.fly_right.zoomer(href="/doc/#{_id}")
+                img(src="{{c.url image_id height=300 width=500 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+        .content
+            // +model_label
+            if published 
+                i.green.eye.icon.invert(title='published')
+            else 
+                i.yellow.save.icon.invert(title='draft')
+            a.ui.inline.header.fly_right(href="/doc/#{_id}" class=emotion_color) #{title}
+            // .smallcut
+            //     | !{content}
+        
+        .content
+            .right.floated.meta
+                |#{_when}
+                // +when_label
+            span(title='author')
+                img.ui.avatar.image(src="{{c.url _author.image_id height=300 width=300 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                |#{_author.username}
+            // +author_info
+        +Template.dynamic template=card_template
+        .content
+            if is_dev
+                +print_this
+            +voting
+            +favorite_icon_toggle
+            if price
+                .ui.big.label 
+                    |#{price}pts
+            // i.big.link.cart.plus.green.icon.add_to_cart
+            .ui.large.label
+                i.eye.icon
+                |#{views}
+            .ui.label   
+                i.line.chart.icon
+                |#{points} 
+            if group_id     
+                +group_info
+            each five_tags 
+                .ui.label #{this}
+            // if watson 
+            //     +doc_sentiment
+            //     +doc_emotion
+
+            a.ui.circular.icon.button.zoomer.fly_right(href="/doc/#{_id}")
+                +i name='chevron-right'
+
+template(name='doc_card_big')
+    .ui.stackable.padded.grid.alpha
+        // if background_image_id
+        //     img.ui.image.item_background(src="{{c.url background_image_id height=1000 crop='crop'}}")
+        // else if image_id
+        //     img.ui.image.item_background(src="{{c.url image_id height=400 crop='crop'}}")
+        .eight.wide.column
+            if youtube_id
+                +youtube_view key='youtube_id'
+            else if image_id
+                a.ui.image.rounded.fly_right.zoomer(href="/doc/#{_id}")
+                    img(src="{{c.url image_id height=500 width=500 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+        .eight.wide.column
+            // +model_label
+            if published 
+                i.green.eye.icon.invert(title='published')
+            else 
+                i.yellow.save.icon.invert(title='draft')
+            a.ui.inline.header.fly_right(href="/doc/#{_id}" class=emotion_color) #{title}
+            // .smallcut
+            //     | !{content}
+        
+            .right.floated.meta
+                |#{_when}
+                // +when_label
+            span(title='author')
+                img.ui.avatar.image(src="{{c.url _author.image_id height=300 width=300 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                |#{_author.username}
+            // +author_info
+            +Template.dynamic template=card_template
+            .smallscroll
+                |!{content}
+            if is_dev
+                +print_this
+            +voting
+            +favorite_icon_toggle
+            if price
+                .ui.big.label 
+                    |#{price}pts
+            // i.big.link.cart.plus.green.icon.add_to_cart
+            .ui.large.label
+                i.eye.icon
+                |#{views}
+            .ui.label   
+                i.line.chart.icon
+                |#{points} 
+            if group_id     
+                +group_info
+            each five_tags 
+                .ui.label #{this}
+            if watson 
+                +doc_sentiment
+                +doc_emotion
+
+            a.ui.circular.icon.button.zoomer.fly_right(href="/doc/#{_id}")
+                +i name='chevron-right'
+
+
+
+template(name='when_label')
+    .ui.large.label(title='created when')
+        |#{_when}

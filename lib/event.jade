@@ -1,0 +1,24 @@
+template(name='events')
+    .ui.stackable.padded.grid 
+        .sixteen.wide.column
+            .ui.inline.header 
+                +i name='events'
+                // |#{artist_docs.count} artists
+            if current_search 
+                i.large.red.circular.link.remove.icon.clear
+            .ui.large.input 
+                input.artist_search(type='text' placeholder='search artist...' value=current_search)
+            +i name='database'
+            each picked_models
+                button.ui.blue.compact.circular.button.unpick_model(tabindex='0')
+                    //- i.remove.icon
+                    | #{this}
+            each model_results
+                button.ui.circular.compact.black.button.pick_model(tabindex="0" class=result_class title=count)
+                    if is name 'artist'
+                        +i name='artist'
+                    else if is name 'album'
+                        +i name='database'
+                    |#{name}
+                    // small #{count}
+        .four.wide.column.scrolling

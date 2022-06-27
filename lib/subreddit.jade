@@ -1,0 +1,779 @@
+template(name='subreddits')
+    .ui.stackable.padded.grid 
+        // .sixteen.wide.column
+            // .ui.inline.header 
+            //     +i name='cube'
+            //     |#{post_docs.count} docs
+            // +facet key='doc_sentiment_label' icon='happy'
+        .sixteen.wide.column
+            .ui.inline.header
+                +i name='fire'
+                |tribes
+            // +facet key='tag'
+            each picked_subreddit_tags
+                .ui.active.button.unpick_subreddit_tag
+                    |#{this}
+            .ui.large.icon.input
+                i.search.icon
+                input.subreddit_search(type='text' placeholder='search subreddits...' value=current_search)
+            each subreddit_tag_results
+                .ui.compact.button.pick_subreddit_tag
+                    |#{name}
+            each picked_sources
+                .ui.button.unpick_source
+                    |#{this}
+            each source_results
+                if name
+                    .ui.button.pick_source
+                        |#{name}
+                else
+                    .ui.button.pick_source
+                        |none
+                // button.ui.large.label.button.pick_tag(tabindex="0" class=result_class title=count)
+                    // |#{name}
+                    // small #{count}
+
+            // div
+            // +facet key='timestamp_tag' icon='clock' label='added'
+            // +session_boolean_toggle key='view_mine' label='mine' icon='user'
+            // +session_boolean_toggle key='view_private' label='private' icon='lock'
+        .sixteen.wide.column
+            unless one_result
+                .ui.inline.header(title='result count') #{result_docs.count}
+                +sort_direction_toggle
+                // +sort_key_toggle
+                +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                +session_set key='sort_key' value='views' label='views' icon='eye'
+                +session_set key='sort_key' value='member_count' label='members' icon='line-chart'
+                +session_set key='limit' value=10
+                +session_set key='limit' value=25
+                +session_set key='limit' value=100
+            .scrolling
+                if subs_ready
+                    // if one_result
+                    //     .ui.one.cards
+                    //         each subreddit_results 
+                    //             +subreddit_card_big
+                    // else
+                    .ui.centered.cards
+                        each subreddit_results 
+                            +subreddit_card
+                // else 
+                //     .ui.basic.center.aligned.segment 
+                //         i.massive.loading.fire.icon
+
+template(name='subreddit_layout')
+    div(class=darkmode_class)
+        // unless currentUser.darkmode
+        +nav
+        .ui.bottom.attached.pushable.segment.scrollin.fullheight(class=darkmode_class)
+            // img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
+            +topbar
+            +leftbar
+            +rightbar
+            .scrolling
+                with current_doc
+                    if background_image_id
+                        img.ui.image.checkin_banner(src="{{c.url background_image_id height=1000 crop='crop'}}")
+                    else 
+                        img.ui.image.checkin_banner(src="{{c.url image_id height=1000 crop='crop'}}")
+                    .ui.stackable.padded.grid
+                        .sixteen.wide.column
+                            a.ui.circular.icon.button.fly_left(href="/subreddits" title="back to subreddits")
+                                i.chevron.left.icon
+                                +model_label
+                            .ui.large.inline.header 
+                                //- small viewing
+                                | #{title}
+                            +subreddit_nav_item section='dashboard' icon='dashboard'
+                            if has_posts
+                                +subreddit_nav_item section='posts' icon='news'
+                            if has_events
+                                +subreddit_nav_item section='events' icon='calendar'
+                            if has_membership
+                                +subreddit_nav_item section='membership' icon='subreddits'
+                            +subreddit_nav_item section='related' icon='fork'
+                            if has_products
+                                +subreddit_nav_item section='products' icon='shopping-cart'
+                            
+                            +subreddit_nav_item section='checkins' icon='checkmark'
+                        .five.wide.column
+                            +subreddit_sidebar
+                            
+                        .eleven.wide.column
+                            div
+                            +yield
+    +footer
+    
+    
+    
+    
+template(name='subreddit_sidebar')
+    if image_id 
+        img.ui.rounded.centered.large.image(src="{{c.url image_id width=800 crop='scale'}}")
+    if image_id2
+        img.ui.rounded.image.zoomer(src="{{c.url image_id2}}")
+
+    if can_edit
+        a.ui.button(href="/subreddit/#{_id}/edit")
+            i.pencil.icon
+            |edit
+    if youtube_id 
+        span(title='has youtube video')
+            +i name='youtube'
+    if tone 
+        +tone
+    +publish_info
+    if facebook_link 
+        a.zoomer(href=facebook_link target='_window' title='visit facebook page')
+            +i name='facebook'
+    if instagram_link
+        a.zoomer(href=instagram_link target='_window' title='visit instagram page')
+            +i name='instagram'
+    if twitter_link
+        a.zoomer(href=twitter_link target='_window' title='visit twitter page')
+            +i name='twitter'
+    if link 
+        a.ui.big.compact.button.zoomer(href=link target='_window' title=link)
+            i.external.icon
+            |link
+            // |#{hostname}
+    i.big.eye.icon(title="#{read_user_ids.length} viewers") 
+    each read_user_ids
+        +user_avatar
+    +comments
+    +author_segment
+    .ui.inline.header                                
+        |#{tags.length}
+        +i name='tags'
+    span.flat_tags
+        each tags 
+            a.ui.label.pick_flat_tag.zoomer(title='browse tag') #{this}
+    +message_author_button
+    +subreddit_widget
+    div
+    +voting_full
+    div
+    if nsfw
+        .ui.red.large.label
+            +i name='18-plus'
+            |nsfw
+    +favorites
+    +viewing_info
+        
+template(name='subreddit_membership')
+    .ui.header 
+        +i name='subreddits'
+        |subreddit memberships
+    if member_ids
+        i.big.users.icon(title="#{member_ids.length} members") 
+        each member_ids
+            +user_avatar
+        // img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+    .ui.header
+        +i name='subreddits'
+        |#{_members.count} members
+        // .ui.button.add_user_member
+        //     |add member
+    each _members 
+        .ui.label #{username}
+    // +multi_user_view key='member_ids' label='members' 
+    +join_button
+    // if leaders_id
+    //     .ui.inline.header 
+    //         +i name='crown' cl='ui avatar image'
+    //         // i.crown.icon
+    //         |leaders: 
+    //     each leader_ids 
+    //         +user_info
+    // div
+    // .ui.inline.header 
+    //     +i name='subreddits'
+    //     // i.users.icon
+    //     |#{member_ids.length} members
+    // each member_ids
+    //     +user_info
+
+
+    
+    
+template(name='subreddit_section')
+    +Template.dynamic template=section_template
+            
+            
+template(name='subreddit_nav_item')        
+    a.ui.compact.button.zoomer(href="/subreddit/#{current_doc._id}/#{section}")
+        +i name=icon
+        |#{section}
+            
+            
+template(name='subreddit_dashboard')
+    +subreddit_members_small
+    +subreddit_posts
+    .ui.one.column.grid 
+        .column
+            if youtube_id
+                +youtube_view key='youtube_id'
+            .ui.segment.alpha.scrolling
+                |!{content}
+            div
+        .column
+            +voting_full
+            div
+            if nsfw
+                .ui.red.large.label
+                    +i name='18-plus'
+                    |nsfw
+            +subreddit_stats
+            +follow_button
+            +tips
+            if has_price
+                +post_orders
+            div
+            +current_viewers
+        .column
+            if link
+                a.ui.circular.button(href=link target='_window')
+                    i.external.icon
+                    |#{link}
+                // .spacer
+            // div
+            if address
+                a.ui.compact.circular.button(href=address_link target='_window')
+                    i.marker.icon
+                    |#{address}
+            if in_dev 
+                i.circular.link.large.refresh.icon.refresh_subreddit_stats
+        .column
+            .ui.header
+                +i name='rss'
+                |activity
+            .ui.list 
+                each subreddit_log_docs 
+                    .item 
+                        |#{body} 
+                        +when
+                        +author_info
+        if has_shop
+            +subreddit_products
+                
+               
+               
+template(name='subreddit_related')
+    .content
+        .ui.header 
+            +i name='connect'
+            |related subreddits 
+        .ui.cards
+            each related_subreddit_docs
+                +subreddit_card
+
+          
+          
+template(name='subreddit_checkins')          
+    .ui.inline.header 
+        +i name='checkmark'
+        |checkins
+    if checked_in
+        .ui.big.red.button.checkout  
+            +i name='exit'
+            |checkout
+            |#{current_time}
+    else
+        .ui.big.green.button.checkin
+            +i name='internal'
+            |checkin
+            |#{current_time}
+    .ui.large.list
+        each checkin_docs 
+            .item 
+                strong 
+                    if active 
+                        i.large.green.clock.icon.invert(title='active')
+                    a.zoomer(href="/user/#{_author.username}")
+                        img.ui.avatar.image(src="{{c.url _author.image_id width=200 height=200}}")
+                        |#{_author.username}
+                small #{_when}
+                span(title="signed out {{long_date checkout_timestamp}}")
+                    i.red.sign.out.large.icon.invert
+                    |{{from_now checkout_timestamp}}
+                    small {{long_date checkout_timestamp}}
+    
+template(name='subreddit_stats')    
+    .ui.dividing.header 
+        +i name='line-chart'
+        |stats
+    .ui.big.list
+        .item 
+            i.grey.line.chart.icon
+            |#{post_views_ranking} post views ranking
+        .item 
+            i.grey.eye.icon
+            |#{views} views
+        .item
+            i.grey.line.chart.icon
+            |#{views_ranking} view ranking
+        .item 
+            i.grey.user.secret.icon
+            |#{anon_views} anon views
+        .item 
+            |#{points}
+            |points
+        .item 
+            |#{tip_total}
+            |tip total
+        .item 
+            i.user.icon
+            |#{member_ids.length} members
+        .item #{event_ids.length} events
+        .item #{transfer_ids.length} credits exchanged
+    if watson 
+        .column
+            +watson_view
+        if tone 
+            +tone
+    //     each log_items
+    //         +log_item
+    //     i.refresh.link.icon.refresh_subreddit_stats
+            
+
+template(name='subreddit_products')
+    .column
+        .ui.header 
+            +i name='shop'
+            |shop
+        .ui.list 
+            each subreddit_products 
+                a.item(href="/subreddit/#{_id}")
+                    img.ui.avatar.image(src="{{c.url image_id width=200 height=200}}")
+                    |#{title}
+
+template(name='subreddit_posts')
+    .column
+        .ui.inline.header 
+            +i name='news'
+            |subreddit posts
+        if currentUser 
+            .ui.icon.button.add_subreddit_post(title='add subreddit post')
+                i.plus.icon
+        .ui.selection.animated.list
+            each subreddit_post_docs 
+                a.ui.header.fly_right(href="/subreddit/#{_id}") #{title}
+        if is source 'reddit'
+            .ui.header reddit posts
+            each subreddit_reddit_docs
+                +post_item
+
+
+template(name='subreddit_events')
+    .column
+        .ui.inline.header
+            +i name='calendar' 
+            // i.calendar.large.icon
+            |events
+        if currentUser 
+            .ui.icon.button.add_subreddit_event(title='add subreddit event')
+                i.plus.icon
+        .ui.link.animated.list
+            each subreddit_events
+                a.item(href="/event/#{_id}") 
+                    img.ui.avatar.image(src="{{c.url image_id width=200 height=200}}")
+                    .content
+                        .header #{title}
+                        .description
+                            if is_repeating
+                                i.refresh.icon
+                                |every #{repeating_day}
+                            if start_datetime
+                                |{{from_now start_datetime}}
+
+
+
+template(name='subreddit_edit')
+    with current_doc
+        .ui.stackable.padded.grid
+            .row
+                .eight.wide.column
+                    if in_dev 
+                        +print_this
+                    +model_label
+                
+                    .ui.inline.header 
+                        +i name='pencil'
+                        |editing #{model}: #{title}
+                    if published
+                        a.ui.big.icon.fluid.green.button.zoom.zoomer(href="/subreddit/#{_id}" title='save')
+                            i.checkmark.big.icon
+                    else 
+                        a.ui.large.green.button.zoom.zoomer.publish(href="/subreddit/#{_id}" title='save & publish')
+                            i.checkmark.big.icon
+                            i.eye.big.icon
+                            |save and publish -10p
+                        a.ui.large.icon.yellow.button.zoom.zoomer(href="/subreddit/#{_id}" title='save')
+                            i.save.big.icon
+                            |save draft                       
+                    // +boolean_edit key='published' label='published (-10)' 
+                    div
+                    +text_edit key='title' label='title' 
+                    .ui.one.column.stackable.grid
+                        .column
+                            +image_edit key='image_id' label='image' 
+                            .ui.horizontal.divider or
+                            +image_link_edit key='image_link' label='image link'
+                            +image_edit key='background_image_id' label='background image' 
+                            .ui.horizontal.divider or
+                            +image_link_edit key='background_image_link' label='background image link'
+                        .column
+                            if watson 
+                                +i name='dna-helix' title='analyzed'
+                            if tone 
+                                +i name='happy' title='has tone'
+                            +html_edit key='content' label='content'
+                            if watson 
+                                i.large.green.checkmark
+                            +call_watson key='content'
+                            +call_tone
+                        .column
+                            +array_edit key='tags' label='tags' icon='tags'
+                            div
+                            +array_edit key='location_tags' label='location tags' icon='marker' direct=true
+                        .column
+                            +subreddit_picker
+                        .column
+                            .ui.inline.header
+                                +i name='link'
+                                |links
+                            if link 
+                                +i name='link'
+                            if facebook_link
+                                +i name='facebook'
+                            if instagram_link
+                                +i name='instagram'
+                            if twitter_link
+                                +i name='twitter'
+                            if youtube_link
+                                +i name='youtube'
+                            +link_edit key='link' label='link'
+                            +link_edit key='facebook_link' label='facebook link' icon='facebook'
+                            +link_edit key='instagram_link' label='instagram link' icon='instagram'
+                            +link_edit key='twitter_link' label='twitter link' icon='twitter'
+                            +link_edit key='youtube_link' label='youtube link' icon='youtube'
+                            +visibility_settings
+                            +boolean_edit key='nsfw' label='nsfw' icon='18-plus'
+                        .column
+                            .ui.inline.header
+                                +i name='youtube'
+                                |youtube
+                            +youtube_edit key='youtube_id' label='youtube id'
+                    
+                    +remove_button                
+                .eight.wide.column
+                    .ui.inline.header 
+                        +i name='cube'
+                        |subreddit modules
+                    +boolean_edit key='has_checkin' label='checkin' icon='clock' 
+                    +boolean_edit key='has_products' label='shop' icon='shop' 
+                    +boolean_edit key='has_posts' label='posts' icon='news' 
+                    +boolean_edit key='has_events' label='events' icon='calendar' 
+                    +boolean_edit key='has_chat' label='chat' icon='chat' 
+                    +boolean_edit key='has_members' label='membership' icon='subreddits' 
+                    +boolean_edit key='has_tasks' label='tasks' icon='tasks' 
+                    if has_members 
+                        .ui.segment 
+                            .ui.header 
+                                +i name='subreddits'
+                                |membership settings
+                            +multi_user_edit key='member' label='members' 
+                            +boolean_edit key='premium_membership' label='premium' icon='membership-card'
+                            if premium_membership
+                                +number_edit key='membership_cost' label='cost (points)' icon='coins'
+                    
+                    +single_user_edit key='leader' label='leader' icon='crown' 
+                    // +multi_user_edit key='leader_ids' label='leaders' icon='crown' 
+                    div
+                    +text_edit key='contact_info' label='contact info' icon='info' 
+                    +text_edit key='source' label='source' icon='info' 
+                    +key_value_edit key='source' value='reddit' icon='reddit'
+                    +key_value_edit key='source' value='local' icon='yin yang'
+                    +boolean_edit key='private' label='private' 
+                   
+template(name='subreddit_card')
+    .ui.card.alpha.pull_subreddit
+        // if background_image_id
+        //     img.ui.image.item_background(src="{{c.url background_image_id height=1000 crop='crop'}}")
+        // else if image_id
+        //     img.ui.image.item_background(src="{{c.url image_id height=400 crop='crop'}}")
+        if youtube_id
+            +youtube_view key='youtube_id'
+        else if image_id
+            a.ui.image.fly_right.zoomer(href="/subreddit/#{_id}")
+                img(src="{{c.url image_id height=300 width=500 crop='fit'}}" class=currentUser.invert_class)
+        if reddit_data.banner_img
+            a.ui.image.fly_right.zoomer(href="/subreddit/#{_id}")
+                img(src=reddit_data.banner_img class=currentUser.invert_class)
+        if reddit_data.banner_background_image
+            a.ui.image.fly_right.zoomer(href="/subreddit/#{_id}")
+                img(src=reddit_data.banner_background_image class=currentUser.invert_class)
+        .content
+            // +model_label
+            if reddit_data.over_18 
+                i.large.red.exclamation.icon(title='nsfw')
+            if published 
+                i.green.eye.icon.invert(title='published')
+            else 
+                i.yellow.save.icon.invert(title='draft')
+            if reddit_data.header_img
+                a.ui.image.fly_right.zoomer(href="/subreddit/#{_id}")
+                    img(src=reddit_data.header_img class=currentUser.invert_class)
+            if reddit_data.display_name 
+                a.ui.inline.header.fly_right(href="/subreddit/#{_id}" class=emotion_color) 
+                    img.ui.image.invert(src=reddit_data.icon_img class=currentUser.invert_class)
+                    |#{reddit_data.display_name}
+            else 
+                a.ui.inline.header.fly_right(href="/subreddit/#{_id}" class=emotion_color) !{title}
+            // .smallcut
+            //     | !{content}
+            // if reddit_data.subscribers 
+            //     .ui.label(title'subscribers/member count')
+            //         i.users.icon 
+            //         |#{reddit_data.subscribers} #{member_count}
+        .content
+            .right.floated.meta
+                |#{_when}
+                // +when_label
+            span(title='author')
+                img.ui.avatar.image(src="{{c.url _author.image_id height=300 width=300 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                |#{_author.username}
+            // +author_info
+            |#{member_ids.length} members
+            // .smallscroll
+            //     |!{description}
+            //+ismall name='tags' cl='ui inline image'
+            if location 
+                i.red.marker.icon 
+                |#{location}
+            // a.zoomer(href="/subreddit/#{_id}")
+            //     i.chevron.right.large.circular.icon
+            // if is_admin
+            //     .ui.small.header slug: #{slug}
+            // if can_edit
+            //     a.ui.circular.icon.button(href="/subreddit/#{_id}/edit")
+            //         i.pencil.blue.icon
+        .content
+            if reddit_data.public_description
+                |!{reddit_data.public_description}
+            if is_dev
+                +print_this
+            +voting
+            +favorite_icon_toggle
+            if price
+                .ui.big.label 
+                    |#{price}pts
+            // i.big.link.cart.plus.green.icon.add_to_cart
+            .ui.large.label
+                i.eye.icon
+                |#{views}
+            .ui.label   
+                i.line.chart.icon
+                |#{points} 
+            if subreddit_id     
+                +subreddit_info
+            each seven_tags 
+                .ui.label.flat_subreddit_tag_pick #{this}
+            if watson 
+                +doc_sentiment
+                +doc_emotion
+
+            a.ui.circular.icon.button.zoomer.fly_right(href="/subreddit/#{_id}")
+                +i name='chevron-right'
+
+                    
+template(name='subreddit_card_big')
+    .ui.horizontal.card.alpha
+        // if background_image_id
+        //     img.ui.image.item_background(src="{{c.url background_image_id height=1000 crop='crop'}}")
+        // else if image_id
+        //     img.ui.image.item_background(src="{{c.url image_id height=400 crop='crop'}}")
+        if youtube_id
+            +youtube_view key='youtube_id'
+        else if image_id
+            a.ui.image.fly_right.zoomer(href="/subreddit/#{_id}")
+                img(src="{{c.url image_id }}" class=currentUser.invert_class)
+        .content
+            // +model_label
+            if published 
+                i.green.eye.icon.invert(title='published')
+            else 
+                i.yellow.save.icon.invert(title='draft')
+            a.ui.inline.header.fly_right(href="/subreddit/#{_id}" class=emotion_color) #{title}
+            // .smallcut
+            //     | !{content}
+        
+            .right.floated.meta
+                |#{_when}
+                // +when_label
+            span(title='author')
+                img.ui.avatar.image(src="{{c.url _author.image_id height=300 width=300 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                |#{_author.username}
+            // +author_info
+            |#{member_ids.length} members
+            // .smallscroll
+            //     |!{description}
+            //+ismall name='tags' cl='ui inline image'
+            if location 
+                i.red.marker.icon 
+                |#{location}
+            // a.zoomer(href="/subreddit/#{_id}")
+            //     i.chevron.right.large.circular.icon
+            // if is_admin
+            //     .ui.small.header slug: #{slug}
+            // if can_edit
+            //     a.ui.circular.icon.button(href="/subreddit/#{_id}/edit")
+            //         i.pencil.blue.icon
+            if is_dev
+                +print_this
+            +voting
+            +favorite_icon_toggle
+            if price
+                .ui.big.label 
+                    |#{price}pts
+            // i.big.link.cart.plus.green.icon.add_to_cart
+            .ui.large.label
+                i.eye.icon
+                |#{views}
+            .ui.label   
+                i.line.chart.icon
+                |#{points} 
+            if subreddit_id     
+                +subreddit_info
+            each five_tags 
+                .ui.label #{this}
+            // if watson 
+            //     +doc_sentiment
+            //     +doc_emotion
+
+            a.ui.circular.icon.button.zoomer.fly_right(href="/subreddit/#{_id}")
+                +i name='chevron-right'
+
+                    
+
+
+    
+    
+template(name='subreddit_members_small')
+    a.ui.header.zoomer(href="/subreddits")
+        +i name='subreddits'
+        |members
+    +join_button
+    each subreddit_members
+        a.ui.big.image.label.zoomer.fly_down(href="/user/#{username}")
+            img.ui.image.invert(src="{{c.url image_id width=300 height=300}}")
+            |#{username}
+                
+template(name='subreddits_small')
+    a.ui.header.zoomer(href="/subreddits")
+        +i name='subreddits'
+        |subreddits
+    .ui.selection.animated.list.smallscroll
+        each subreddit_docs
+            a.item(href="/subreddit/#{_id}")
+                img.ui.avatar.image(src="{{c.url image_id width=200 height=200}}")
+                |#{title}
+                
+                
+               
+template(name='subreddit_widget')
+    if subreddit_id
+        .ui.header 
+            +i name='campfire'
+            |related subreddit
+        with subreddit_doc
+            a.ui.card.fly_right.zoomer(href="/subreddit/#{_id}")
+                img.ui.image(src="{{c.url image_id width=500 height=500}}")
+                .content
+                    .ui.header 
+                        |#{title}
+                    |!{description}
+                    +view_info
+                    +member_info
+               
+                
+template(name='subreddit_picker')
+    .title
+        .ui.inline.header
+            +i name='campfire'
+            |subreddit
+        with subreddit_doc
+            .ui.inline.header 
+                |#{subreddit_id}
+            a.ui.big.label(href="/subreddit/#{_id}")
+                img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+                |#{title}
+    .content
+        with subreddit_doc
+            .ui.inline.header 
+                |#{subreddit_id}
+            a.ui.big.label(href="/subreddit/#{_id}")
+                img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+                |#{title}
+            .ui.compact.button.remove_subreddit.zoomer(title='clear selection')
+                i.remove.large.icon
+                |remove
+        else 
+            .ui.icon.large.input 
+                if subreddit_search_value
+                    i.large.red.remove.link.icon.zoomer.clear_search
+                else 
+                    i.search.icon
+                input.subreddit_search(type='text' placeholder='search' value=subreddit_search_value)
+            if subreddit_results
+                .ui.selection.link.animated.list
+                    each subreddit_results
+                        .ui.item.pick_subreddit.zoomer
+                            img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+                            |#{title}
+                            if private 
+                                i.lock.icon(title='private subreddit')
+            // else if subreddit_search_value
+            .ui.button.create_subreddit
+                |add #{subreddit_search_value}
+        
+                
+
+
+template(name='user_subreddits')   
+    if user_subreddit_memberships.count
+        .ui.inline.header 
+            +i name='subreddits'
+            |#{current_user.username}'s
+            |subreddits
+        .ui.two.column.stackable.grid
+            .column
+                .ui.header 
+                    i.users.icon
+                    |#{user_subreddit_memberships.count}
+                    |memberships
+                .ui.selection.link.animated.large.divided.list    
+                    each user_subreddit_memberships
+                        // +doc_item
+                        a.item.zoomers.fly_left(href="/subreddit/#{_id}")
+                            img.ui.tiny.inline.rounded.image(src="{{c.url image_id height=200 width=200 background='white' crop='pad'}}")
+                            .ui.inline.header
+                                strong #{title}
+                            each three_tags 
+                                .ui.small.label #{this}
+            .column
+                .ui.header 
+                    i.pencil.icon
+                    |#{authored_subreddit_docs.count}
+                    |authored subreddits
+                .ui.selection.link.animated.large.list    
+                    each authored_subreddit_docs
+                        // +doc_item
+                        a.item.zoomers.fly_left(href="/subreddit/#{_id}")
+                            img.ui.tiny.inline.image(src="{{c.url image_id height=200 width=200 background='white' crop='pad'}}")
+                            .ui.inline.header
+                                strong #{title}
+                            each three_tags 
+                                .ui.small.label #{this}

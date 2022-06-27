@@ -1,0 +1,694 @@
+template(name='users')
+    .ui.padded.stackable.grid
+        .sixteen.wide.column
+            .ui.inline.header
+                i.large.users.icon
+                |#{redditor_count}
+                |users
+            // if currentUser.admin
+            //     .ui.icon.button.add_user
+            //         i.plus.large.icon
+            // if currentUser
+            //     +session_boolean_toggle key='view_friends' label='friends' icon='friends'
+            // +i name='campfire'
+            // if picked_user_groups
+            //     #clear_groups.ui.primary.icon.compact.button
+            //         i.remove.icon
+            //     each picked_user_groups
+            //         .unselect_group.ui.primary.compact.button
+            //             strong #{this}
+            // each all_groups
+            //     .ui.compact.button.select_group(class=cloud_tag_class) 
+            //         strong #{name}
+            if picked_user_tags
+                // #clear_tags.ui.primary.icon.compact.button
+                //     i.remove.icon
+                each picked_user_tags
+                    .unpick_user_tag.ui.primary.compact.button
+                        strong #{this}
+            .ui.large.icon.input
+                i.search.icon
+                input.user_search(type='text' placeholder='search users...' value=current_search)
+            i.large.tags.icon
+            each all_user_tags
+                .ui.compact.button.pick_user_tag(class=cloud_tag_class) 
+                    strong #{name}
+        .four.wide.column
+            .ui.inline.header  
+                i.big.marker.icon
+                |locations
+            each location_tags 
+                .ui.large.label #{name}
+            div
+            i.large.exclamation.icon
+            each picked_porn_tags
+                .unpick_porn_tag.ui.primary.compact.button
+                    strong #{this}
+            each porn_tag_results
+                .ui.compact.button.pick_porn_tag(class=cloud_tag_class title=name) 
+                    if name
+                        |adult 
+                        small #{count}
+                    else 
+                        |safe
+                        small #{count}
+            +session_icon_button key='view_mode' value='grid' icon='th' 
+            +session_icon_button key='view_mode' value='list' icon='list'
+            +sort_direction_toggle
+            +session_set key='sort_key' value='comment_karma' label='comment karma' icon='chat'
+            +session_set key='sort_key' value='comment_karma_rank' label='comment karma rank' icon='line chart'
+            +session_set key='sort_key' value='post_karma' label='post karma' icon='newspaper'
+            +session_set key='sort_key' value='createdAt' label='joined' icon='clock'
+            +session_set key='sort_key' value='views' icon='eye'
+        .twelve.wide.column
+            // +session_set key='view_limit' value=1
+            // +session_set key='view_limit' value=10 label='10'
+            // +session_set key='view_limit' value=20 label='20'
+            // +session_set key='view_limit' value=50 label='30'
+            with emotion_avg_result
+                // .ui.label
+                //     |{{to_percent avg_sent_score}}%
+                //     small sentiment
+                if above_50 avg_joy_score
+                    .ui.green.big.label
+                        |{{to_percent avg_joy_score}}%
+                        small joyful
+                if above_50 avg_anger_score
+                    .ui.red.big.label
+                        |{{to_percent avg_anger_score}}%
+                        small angry
+                if above_50 avg_sadness_score
+                    .ui.blue.big.label
+                        |{{to_percent avg_sadness_score}}%
+                        small sad
+                if above_50 avg_disgust_score
+                    .ui.orange.big.label
+                        |{{to_percent avg_disgust_score}}%
+                        small disgusted
+                if above_50 avg_fear_score
+                    .ui.grey.big.label
+                        |{{to_percent avg_fear_score}}%
+                        small fearful
+
+            .scrollin.alpha
+                if subs_ready
+                    if session_is 'view_mode' 'grid'
+                        // if one_result
+                        //     .ui.stackable.centered.one.cards
+                        //         each redditor_docs
+                        //             +redditor_card
+                        // else
+                        .ui.stackable.centered.centered.cards
+                            each redditor_docs
+                                +redditor_card
+                    else if session_is 'view_mode' 'list'
+                        .ui.divided.selection.animated.list
+                            each redditor_docs
+                                +redditor_item
+                // if subs_ready
+                //     if session_is 'view_mode' 'grid'
+                //         if one_result
+                //             .ui.stackable.centered.one.cards
+                //                 each user_docs
+                //                     +user_card
+                //         else
+                //             .ui.stackable.centered.centered.cards
+                //                 each user_docs
+                //                     +user_card
+                //     else if session_is 'view_mode' 'list'
+                //         .ui.divided.selection.animated.list
+                //             each user_docs
+                //                 +user_item
+                // else 
+                //     +loading_segment
+
+template(name='redditor_card')
+    // a.ui.card.zoomer.fly_left(href="/user/#{username}")
+    .ui.card.zoomer.calc_stats
+        // unless background_image_id
+        //     img.ui.centered.image(class=currentUser.invert_class src="{{c.url image_id width=400 height=300 crop='fill' gravity='face'}}")    
+        if reddit_data.subreddit.banner_img
+            a.fly_right.zoomer(href="/u/#{reddit_data.name}" style="color:#{theme_color};")
+                img.invert.ui.fluid.image(src=reddit_data.subreddit.banner_img)
+        .content
+            a.fly_right.zoomer(href="/u/#{reddit_data.name}" style="color:#{theme_color};")
+                img.ui.small.inline.image.invert.rounded(src=reddit_data.icon_img)
+        
+            if reddit_data.snoovatar_img
+                a.fly_right.zoomer(href="/u/#{reddit_data.name}" style="color:#{theme_color};")
+                    img.invert.ui.tiny.inline.image(src=reddit_data.snoovatar_img)
+            // if reddit_data.icon_img
+            //     img.invert.ui.tiny.inline.image(src=reddit_data.icon_img)
+            a.ui.inline.header.pointer.blink.fly_right(href="/u/#{reddit_data.name}" style="color:#{theme_color};")
+                |@#{reddit_data.name}
+            // .ui.large.label #{points}pts
+                //- |#{username}
+            if reddit_data.subreddit.over_18
+                .ui.red.label.invert
+                    |nsfw
+            if comment_karma_rank
+                .ui.large.label(title='comment karma rank')
+                    i.line.chart.icon 
+                    |#{comment_karma_rank}
+            if location_tags 
+                i.large.marker.icon 
+                each location_tags 
+                    .ui.label #{this}
+            with reddit_data
+                if total_karma
+                    .ui.large.label
+                        i.thumbs.up.icon
+                        |#{total_karma}
+                if link_karma
+                    .ui.large.label
+                        i.linkify.icon
+                        |#{link_karma}
+                if comment_karma
+                    .ui.large.label
+                        i.chat.icon
+                        |#{comment_karma}
+            with reddit_data.subreddit
+                .ui.small.inline.header !{public_description}
+            if tags 
+                each seven_tags 
+                    a.ui.small.label.flat_user_tag.zoomer #{this}
+            if profile_views
+                .ui.inline.header(title='profile views') 
+                    i.eye.icon
+                    |#{profile_views}
+            if watson 
+                +doc_sentiment
+                +doc_emotion
+            if currentUser.admin_mode 
+                +print_this
+            
+
+template(name='redditor_item')
+    // a.ui.card.zoomer.fly_left(href="/user/#{username}")
+    .ui.item.zoomer.call_watson
+        // unless background_image_id
+        //     img.ui.centered.image(class=currentUser.invert_class src="{{c.url image_id width=400 height=300 crop='fill' gravity='face'}}")    
+        if reddit_data.subreddit.banner_img
+            a.fly_right(href="/u/#{reddit_data.name}" style="color:#{theme_color};")
+                img.invert.ui.fluid.image(src=reddit_data.subreddit.banner_img)
+        .content
+            img.ui.small.inline.image.invert.rounded(src=reddit_data.icon_img)
+        
+            if reddit_data.snoovatar_img
+                a.fly_right(href="/u/#{reddit_data.name}" style="color:#{theme_color};")
+                    img.invert.ui.tiny.inline.image(src=reddit_data.snoovatar_img)
+            // if reddit_data.icon_img
+            //     img.invert.ui.tiny.inline.image(src=reddit_data.icon_img)
+            a.ui.inline.header.pointer.blink.fly_right(href="/u/#{reddit_data.name}" style="color:#{theme_color};")
+                |@#{reddit_data.name}
+            // .ui.large.label #{points}pts
+                //- |#{username}
+            if reddit_data.subreddit.over_18
+                .ui.red.label.invert
+                    |nsfw
+            if comment_karma_rank
+                .ui.large.label(title='comment karma rank')
+                    i.line.chart.icon 
+                    |#{comment_karma_rank}
+            if location_tags 
+                i.large.marker.icon 
+                each location_tags 
+                    .ui.label #{this}
+                    
+            with reddit_data
+                if total_karma
+                    .ui.large.label
+                        i.thumbs.up.icon
+                        |#{total_karma}
+                if link_karma
+                    .ui.large.label
+                        i.linkify.icon
+                        |#{link_karma}
+                if comment_karma
+                    .ui.large.label
+                        i.chat.icon
+                        |#{comment_karma}
+            with reddit_data.subreddit
+                .ui.small.inline.header !{public_description}
+            if tags 
+                each seven_tags 
+                    a.ui.small.label.flat_user_tag.zoomer #{this}
+            if profile_views
+                .ui.inline.header(title='profile views') 
+                    i.eye.icon
+                    |#{profile_views}
+            if watson 
+                +doc_sentiment
+                +doc_emotion
+                
+            +print_this
+            
+            
+template(name='user_card')
+    a.ui.card.zoomer.fly_left(href="/user/#{username}")
+        // unless background_image_id
+        //     img.ui.centered.image(class=currentUser.invert_class src="{{c.url image_id width=400 height=300 crop='fill' gravity='face'}}")    
+        if image_id
+            img.invert.ui.fluid.image(src="{{c.url image_id height=500 width=500 gravity='face' crop='fill'}}") 
+        // else 
+        //     img(class=currentUser.invert_class src="{{c.url 'blank-profile' height=500 width=500 gravity='face' crop='fill'}}") 
+        //     .ui.fade.reveal.image
+        //         .visible.content
+        //             img(class=currentUser.invert_class src="{{c.url image_id height=500 width=500 gravity='face' crop='fill'}}") 
+        //         .hidden.content
+        //             img(class=currentUser.invert_class src="{{c.url background_image_id height=500 width=500 gravity='face' crop='fill'}}") 
+
+        .content
+            a.ui.inline.header.pointer.blink(href="/user/#{username}" style="color:#{theme_color};")
+                |#{name}
+            |@#{username}
+            .ui.large.label #{points}pts
+                //- |#{username}
+            if points
+                .ui.inline.header(style="color:#{current_user.theme_color};") #{points}pts
+            if one_ratio
+                .ui.label(style="color:#{current_user.theme_color};" title='one ratio') {{to_percent one_ratio}}%
+            if flow_volume
+                .ui.label(style="color:#{current_user.theme_color};" title='flow volume') #{flow_volume}
+            if debit_tags
+                div
+                i.gift.icon(title='gifted tags')
+                each debit_tags
+                    .ui.small.label #{title}
+            if credit_tags
+                div
+                i.chevron.down.icon(title='received gift tags')
+                each credit_tags
+                    .ui.small.label #{title}
+            // if bio 
+            //     .smallcut
+            //         |!{bio}
+            if tags 
+                each five_tags 
+                    .ui.label #{this}
+            if online
+                .ui.green.label online
+            if current_status
+                div
+                .ui.small.inline.header(title='status' style="color:#{theme_color};")
+                    i.small.clock.icon
+                    |!{current_status}
+            // div
+            // i.line.chart.icon(title='levels')
+            // each levels
+            //     .ui.small.label(style="color:#{theme_color};") #{this}
+            // unless is_this_user
+            //     i.red.gift.pointer.debit.big.icon
+            //     i.teal.concierge.bell.pointer.request.big.icon
+            //     i.blue.chat.pointer.message.big.disabled.icon
+            if profile_views
+                .ui.inline.header(title='profile views') 
+                    i.eye.icon
+                    |#{profile_views}
+            .ui.large.black.label(title='profile views') 
+                i.eye.icon
+                |#{profile_views}
+            +join
+
+template(name='join')
+    .ui.label(title='joined')
+        i.user.plus.icon
+        |{{from_now createdAt}}
+            
+template(name='user_item')
+    a.item.fly_left.zoomers(href="/user/#{username}")
+        .content
+            img.ui.tiny.inline.rounded.image(class=currentUser.invert_class src="{{c.url image_id }}")    
+            // unless avatar_image_id
+
+            a.ui.inline.header.pointer.blink(href="/user/#{username}" style="color:#{theme_color};")
+                |#{name}
+            small @#{username}
+            if points
+                .ui.inline.header(style="color:#{current_user.theme_color};") #{points}p
+            if one_ratio
+                .ui.label(style="color:#{current_user.theme_color};" title='one ratio') {{to_percent one_ratio}}%
+            if flow_volume
+                .ui.label(style="color:#{current_user.theme_color};" title='flow volume') #{flow_volume}
+            // if debit_tags
+            //     div
+            //     i.gift.icon(title='gifted tags')
+            //     each debit_tags
+            //         .ui.small.label #{title}
+            // if credit_tags
+            //     div
+            //     i.chevron.down.icon(title='received gift tags')
+            //     each credit_tags
+            //         .ui.small.label #{title}
+            if tags 
+                each five_tags 
+                    .ui.large.label #{this}
+            if online
+                .ui.green.label online
+            if current_status
+                div
+                .ui.small.inline.header(title='status' style="color:#{theme_color};")
+                    i.small.clock.icon
+                    |!{current_status}
+            each user_groups
+                |#{title}
+            // div
+            // i.line.chart.icon(title='levels')
+            // each levels
+            //     .ui.small.label(style="color:#{theme_color};") #{this}
+            // unless is_this_user
+            //     i.red.gift.pointer.debit.big.icon
+            //     i.teal.concierge.bell.pointer.request.big.icon
+            //     i.blue.chat.pointer.message.big.disabled.icon
+            
+            +join
+
+template(name='addtoset_user')
+    // .ui.small.compact.button.toggle_value(class=ats_class) #{key} #{value}
+    .ui.small.compact.button.toggle_value(class=ats_class) +#{value}
+    
+
+
+template(name='user_email')
+    .ui.small.inline.header #{email_address}
+    if email_verified
+        .ui.label 
+            i.green.checkmark.icon
+            |verified
+    else
+        .ui.orange.label 
+            i.ban.icon
+            |unverified
+        
+
+template(name='big_user_card')
+    with user
+        //- .ui.card
+        //- .ui.card(class=resident_status_class)
+        .ui.card
+            .image
+                img.ui.rounded.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+            .content
+                a.header(href="/user/#{username}")
+                     |#{first_name} #{last_name} 
+                    //- .meta @#{username}
+                    //- +array_view key='tags' label='Tags' direct=true
+            if is_staff
+                .content
+                    +array_view key='roles' direct=true
+                        
+template(name='user_button')
+    a.ui.compact.button(href="/user/#{user.username}/")
+        if user.kiosk_photo
+            img.ui.avatar.inline.image(src="{{c.url user.kiosk_photo width=300 height=300 gravity='face' crop='fill'}}")
+        else if user.image_id
+            img.ui.avatar.inline.image(src="{{c.url user.image_id width=300 height=100 gravity='face' crop='fill'}}")
+        //- .visible.content
+        |#{user.first_name} #{user.last_name}
+        //- |@#{user.username}
+        +user_status user
+        //- .hidden.content
+        //-     |view
+        //-     i.right.chevron.icon
+
+
+
+// // template(name='user_card')
+// //     with user
+// //         .ui.card
+// //             //- if is_staff
+// //             a.image(href="/user/#{username}")
+// //                 img.ui.tiny.image(src="{{c.url image_id width=200 height=200 gravity='face' crop='fill'}}")
+// //             .content    
+// //                 .header 
+// //                     a.header(href="/user/#{username}") #{name} 
+// //                     .meta @#{username}
+// //                     if is_admin
+// //                         div
+// //                         +user_email
+// //                 //- +emails_edit    
+// //         //- +user_status user
+
+
+// template(name='user_email')
+//     .ui.small.inline.header #{email_address}
+//     if email_verified
+//         .ui.label 
+//             i.green.checkmark.icon
+//             |verified
+//     else
+//         .ui.orange.label 
+//             i.ban.icon
+//             |unverified
+        
+
+// template(name='big_user_card')
+//     with user
+//         //- .ui.card
+//         //- .ui.card(class=resident_status_class)
+//         .ui.card
+//             .image
+//                 img.ui.rounded.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+//             .content
+//                 a.header(href="/user/#{username}")
+//                      |#{first_name} #{last_name} 
+//                     //- .meta @#{username}
+//                     //- +array_view key='tags' label='Tags' direct=true
+//             if is_staff
+//                 .content
+//                     +array_view key='roles' direct=true
+                        
+// template(name='user_button')
+//     a.ui.compact.button(href="/user/#{user.username}/")
+//         if user.kiosk_photo
+//             img.ui.avatar.inline.image(src="{{c.url user.kiosk_photo width=300 height=300 gravity='face' crop='fill'}}")
+//         else if user.image_id
+//             img.ui.avatar.inline.image(src="{{c.url user.image_id width=300 height=100 gravity='face' crop='fill'}}")
+//         //- .visible.content
+//         |#{user.first_name} #{user.last_name}
+//         //- |@#{user.username}
+//         +user_status user
+//         //- .hidden.content
+//         //-     |view
+//         //-     i.right.chevron.icon
+
+
+// template(name='username_info')
+//     .ui.small.compact.button.goto_profile
+//         if is_member
+//             img.ui.avatar.image(src="{{c.url user.image_id width=100}}")
+//         else if user.kiosk_photo
+//             img.ui.avatar.image(src="{{c.url user.kiosk_photo width=100}}")
+//         else if user.image_id
+//             img.ui.avatar.image(src="{{c.url user.image_id width=100}}")
+//         |#{user.name}
+//         //- |@#{user.username}
+//         +user_status user
+
+template(name='redditor_view')
+    with current_redditor
+        if reddit_data.subreddit.banner_img
+            img.ui.fluid.image.checkin_banner.invert(src=reddit_data.subreddit.banner_img)
+        // else
+        //     img.ui.fluid.image.checkin_banner(src=url)
+        .ui.stackable.padded.grid 
+            .eleven.wide.column
+                a.ui.compact.large.button.fly_left.zoomer(href="/users" title='back to browse')
+                    i.chevron.left.icon
+                    i.big.users.icon
+                    |users
+                with reddit_data
+                    .ui.inline.header #{name}
+                    .ui.disabled.button overview
+                    .ui.disabled.button submitted
+                    .ui.disabled.button comments
+                    .ui.disabled.button upvoted
+                    .ui.disabled.button downvoted
+                    .ui.disabled.button hidden
+                    .ui.disabled.button saved
+                    .ui.disabled.button gilded
+
+                    strong #{subreddit.public_description}
+                    div
+                    .ui.inline.header
+                        i.edit.icon
+                        |#{user_post_docs.count}
+                        |posts
+                    .ui.icon.button.get_user_posts(title='get posts')
+                        i.large.refresh.icon
+                    .ui.divided.list 
+                        each user_post_docs
+                            +user_post_doc
+                    // .ui.label pref_show_snoovatar: #{pref_show_snoovatar}
+                    // .ui.label snoovatar_img: #{snoovatar_img}
+                    .ui.label snoovatar_size: #{snoovatar_size}
+                    .ui.label verified: #{verified}
+                    img(src=snoovatar_img)
+                    with subreddit
+                        // img(src=banner_img)
+                        img.ui.rounded.image(src=header_img)
+                        img.ui.rounded.image(src=community_icon)
+                        .ui.label accept_followers #{accept_followers}
+                        // .ui.label banner_img #{banner_img}
+                        // .ui.label banner_size #{banner_size}
+                        // .ui.label community_icon #{community_icon}
+                        .ui.label default_set #{default_set}
+                        .ui.label description #{description}
+                        .ui.label disable_contributor_requests #{disable_contributor_requests}
+                        .ui.label display_name #{display_name}
+                        .ui.label display_name_prefixed #{display_name_prefixed}
+                        .ui.label free_form_reports #{free_form_reports}
+                        // .ui.label header_img #{header_img}
+                        // .ui.label header_size #{header_size}
+                        // .ui.label icon_color #{icon_color}
+                        // .ui.label icon_img #{icon_img}
+                        // .ui.label icon_size #{icon_size}
+                        // .ui.label is_default_banner #{is_default_banner}
+                        // .ui.label is_default_icon #{is_default_icon}
+                        .ui.label key_color #{key_color}
+                        .ui.label link_flair_enabled #{link_flair_enabled}
+                        .ui.label link_flair_position #{link_flair_position}
+                        .ui.label previous_names #{previous_names}
+                        .ui.label primary_color #{primary_color}
+                        .ui.label quarantine #{quarantine}
+                        .ui.label restrict_commenting #{restrict_commenting}
+                        .ui.label restrict_posting #{restrict_posting}
+                        .ui.label show_media #{show_media}
+                        .ui.label submit_link_label #{submit_link_label}
+                        .ui.label submit_text_label #{submit_text_label}
+                        .ui.label subscribers #{subscribers}
+                        .ui.label title #{title}
+                        .ui.label url #{url}
+                        .ui.label user_is_banned #{user_is_banned}
+                        .ui.label user_is_contributor #{user_is_contributor}
+                        .ui.label user_is_moderator #{user_is_moderator}
+                        .ui.label user_is_muted #{user_is_muted}
+                        .ui.label user_is_subscriber #{user_is_subscriber}
+
+
+                .ui.inline.header !{title}
+                // blockquote(class="imgur-embed-pub" lang="en" data-id="UsxLSe0")
+                //     a(href=rd.url) Lauren, supergirl, batgirl [Super best friends &amp; lauren faust])
+                // script(async src="//s.imgur.com/min/embed.js" charset="utf-8")
+                a.ui.header(href=rd.url target='_window') #{rd.url}
+                
+                // with rd
+                //     embed(src=url)
+                // if rd.media_embed
+                //     // 
+                //     |!{unescaped_content}
+                // +call_watson key=rd.selftext
+                if watson 
+                    +watson_view
+                if in_dev
+                    +print_this
+                // +comments
+            .five.wide.column
+                i.large.refresh.icon.calc_redditor_stats(title='calc stats')
+                if comment_karma_rank
+                    .ui.header comment karma rank: #{comment_karma_rank}
+                with reddit_data
+                    img.ui.image.invert.rounded(src=icon_img)
+                    .ui.header 
+                        i.chat.icon
+                        |#{comment_karma} comment karma
+                    .ui.header 
+                        i.clock.icon
+                        |created {{from_now_utc created}}
+                    if over_18
+                        .ui.red.header 
+                            |NSFW
+                    if accept_followers
+                        .ui.label 
+                            i.checkmark.icon
+                            |accept_followers
+                    .ui.label has_subscribed: #{has_subscribed}
+                    if has_verified_email
+                        .ui.label 
+                            i.mail.green.icon
+                            |verified email
+                    // .ui.label hide_from_robots: #{hide_from_robots}
+                    // .ui.label icon_img: #{icon_img}
+                    // .ui.label id: #{id}
+                    // .ui.label is_blocked: #{is_blocked}
+                    // .ui.label is_employee: #{is_employee}
+                    // .ui.label is_friend: #{is_friend}
+                    // .ui.label is_gold: #{is_gold}
+                    // .ui.label is_mod: #{is_mod}
+                    // .ui.label link_karma: #{link_karma}
+
+                .ui.list 
+                    .item permalink #{permalink}
+                    // .item redditor_id #{redditor_id}
+                    .item 
+                        small mined by
+                        strong #{_author_username}
+                .ui.button.pull_redditor
+                    i.download.icon
+                    |get redditor
+                div
+                +voting_full
+                .ui.large.label.zoomer
+                    +i name='chat'
+                    |#{comment_count} comments
+                if over_18
+                    .ui.large.red.label.zoomer(title='adult content')
+                        +i name='18-plus'
+                a.ui.large.button.zoomer(href=url target='_window')
+                    i.external.icon
+                    | #{url}
+                each tags 
+                    a.ui.large.label.zoomer.pick_flat_tag(title='search tag') #{this}
+                a.ui.big.label.zoomer.picker.goto_subreddit(title='browse subredditor')
+                    +i name='redditor'
+                    |tribe #{subreddit}
+                .ui.big.label 
+                    +i name='facebook-like'
+                    | #{ups} upvotes
+                .ui.big.label 
+                    +i name='chat'
+                    | #{num_comments} comments
+            .sixteen.wide.column.scrollin
+                .ui.big.center.aligned.inline.header(class=emotion_color) 
+                    if price
+                        i.large.coins.icon(title='price')
+                    if private 
+                        i.large.lock.icon(title='private')
+                    if sentiment 
+                        if is sentiment 'positive'
+                            +i name='happy'
+                        else 
+                            +i name='sad'
+                if subtitle
+                    .ui.small.header #{subtitle}
+                // a.ui.header(href="/user/#{target.username}")
+                //     |#{target.username}
+
+
+template(name='user_post_doc')
+    .ui.item
+        with reddit_data
+            div 
+            |#{link_title}
+            div 
+            i.chat.icon
+            if selfText
+                |#{selfText}
+            if body
+                |#{body}
+            a.ui.label.zoomer(href="https://www.reddit.com/r/#{subreddit}") #{subreddit}
+            a(href=link_permalink target='_window' title=link_permalink)
+                i.large.external.link.icon.zoomer
+            .ui.label 
+                small created
+                |{{from_now_utc created}}
+        |mined #{_when}
+        each tags 
+            .ui.label #{this}
+        unless watson 
+            i.large.chess.link.circular.icon.call_watson_comment
+        if watson 
+            +doc_emotion
+            +doc_sentiment
+        if currentUser.admin_mode
+            +print_this

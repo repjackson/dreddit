@@ -1,0 +1,455 @@
+template(name='posts')
+    img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
+    .ui.stackable.padded.grid
+        .row
+            .sixteen.wide.column
+                .ui.inline.header(title='i know right?')
+                    +i name='news'
+                    |{{comma total_post_count}}
+                    |posts
+                // unless full_doc_id
+                if currentUser
+                    .ui.circular.icon.button.toggle_porn(title='toggle adult' class=porn_class)
+                        i.skull.crossbones.large.icon
+                each picked_tags
+                    +unpick_tag
+                    //- button.ui.active.large.button.unpick_tag(tabindex='0' style=background_style class=emotion_color)
+                //- .ui.inline.small.header(class=emotion_color) {{fixed omega_doc.current_max_emotion_percent}}% #{omega_doc.current_most_emotion}
+                // if not_searching 
+                //     .ui.center.aligned.segment
+                if unpicked_groups
+                    .ui.inline.header 
+                        +i name='campfire'
+                        |groups
+                    each unpicked_groups
+                        .ui.label #{name}
+                
+                //         i.massive.yin.yang.grey.icon
+                // +session_toggle key='view_images' label='images' icon='image'
+                // +session_toggle key='view_external' label='external' icon='external'
+                .ui.icon.input(class=search_class title="#{emotion_avg_result.avg_sent_score} sentiment")
+                    // if is_loading
+                    //     if home_subs_ready
+                    unless is_loading
+                        i.search.link.icon.refresh_agg
+                        // i.yin.yang.big.loading.link.icon.reconnect
+                    if is_loading
+                        i.yin.yang.big.loading.icon
+                    //- input#search(type='text' autofocus='' autocomplete="off" value=current_query)
+                    input#search(type='text' autofocus='' autocomplete="off" placeholder='')
+                    //- .ui.header #{connection.status}
+                    with emotion_avg_result
+                        // .ui.label
+                        //     |{{to_percent avg_sent_score}}%
+                        //     small sentiment
+                        if above_50 avg_joy_score
+                            .ui.green.big.label
+                                |{{to_percent avg_joy_score}}%
+                                small joyful
+                        if above_50 avg_anger_score
+                            .ui.red.big.label
+                                |{{to_percent avg_anger_score}}%
+                                small angry
+                        if above_50 avg_sadness_score
+                            .ui.blue.big.label
+                                |{{to_percent avg_sadness_score}}%
+                                small sad
+                        if above_50 avg_disgust_score
+                            .ui.orange.big.label
+                                |{{to_percent avg_disgust_score}}%
+                                small disgusted
+                        if above_50 avg_fear_score
+                            .ui.grey.big.label
+                                |{{to_percent avg_fear_score}}%
+                                small fearful
+                    
+                unless connected
+                    //- .ui.header disconnected
+                    //- .ui.hidden.divider
+                    .ui.big.button.reconnect
+                        i.lightning.icon
+                        |reconnect
+                // .ui.hidden.divider
+                unless is one_result
+                    span.sorting
+                        +session_icon_button key='view_mode' value='grid' icon='grid' 
+                        +session_icon_button key='view_mode' value='list' icon='list'
+                        +sort_direction_toggle
+                        +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                        +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
+                        +session_set key='sort_key' value='domain' label='domain' icon='globe'
+                        +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
+                        +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                    
+                if connected
+                    // if searching 
+                    //     each terms 
+                    //         +search_term
+                    // else 
+                    unless full_doc_id
+                        each unpicked_tags
+                            +agg_tag
+                // .ui.hidden.divider
+            .sixteen.wide.column
+                +doc_results
+                
+template(name='doc_results')
+    if subs_ready
+        if session_is 'view_mode' 'list'
+            .ui.segment.alpha
+                .ui.selection.animated.divided.list 
+                    each doc_results
+                        +post_item
+        else
+            if full_doc_id
+                with full_doc 
+                    +post_card_big
+            else if one_result
+                .ui.stackable.centered.link.one.cards
+                    each doc_results
+                        +post_card_big
+            else 
+                .ui.stackable.centered.link.cards.scrolling
+                    each doc_results
+                        +post_card
+                    // +small_card
+    else 
+        if picked_tags
+            .ui.center.aligned.basic.segment
+                +ibig name='news' cl='spinning'
+                +ibig name='reddit' cl='spinning'
+                // i.massive.yin.yang.grey.loading.icon
+                            
+template(name='unpick_tag')
+    button.ui.big.image.link.label.zoomer.unpick_tag.pointer(tabindex="0" class="#{loading_class} #{active_term_class}")
+        // i.minus.icon
+        if flat_term_image
+            img.ui.inline.image.superzoomer.invert(src=flat_term_image)
+        
+        strong #{this}
+
+                            
+template(name='post_card')
+    .card.autotag(title="#{ups} ups, created #{_when}")
+        if watson.metadata.image.length
+            // |watson image
+            a.fly_right(href="/post/#{_id}")
+                img.ui.fluid.image.zoomer(src=watson.metadata.image title='view article')
+        
+        else if is_image
+            a.fly_right(href="/post/#{_id}")
+                img.ui.image.zoomer(src=url title='view article')
+        else if has_thumbnail
+            a.fly_right(href="/post/#{_id}")
+                img.ui.fluid.image.zoomer(src=thumbnail title='view article')
+        if rd.media_embed.content
+            // 
+            |!{unescaped_content}
+        else if rd.selftext_html
+            |!{unescaped}
+
+        .content
+            a.ui.grey.header.zoomer.fly_right(href="/post/#{_id}")
+                |!{title}
+            .ui.label
+                i.globe.grey.icon 
+                |#{domain}
+            .ui.label
+                i.thumbs.up.grey.icon 
+                |#{ups}
+            .ui.label
+                i.comment.grey.icon 
+                |#{num_comments}
+            // .ui.label.zoomer.pick_subreddit
+            //     |subreddit: #{subreddit}
+            .ui.label(title="added {{long_date _timestamp}}")
+                i.grey.clock.icon
+                |#{_when}
+            if watson.analyzed_text
+                .smallcut
+                    |!{watson.analyzed_text}
+            each five_cleaned_tags
+                a.ui.label.pick_flat_tag.zoomer(title='add tag') 
+                    |#{this}
+            if points
+                .ui.inline.header
+                    |#{points}pts
+            
+            // if over_18
+            //     .ui.red.label
+            //         i.alert.icon
+            //         // +i name='nsfw'
+            if doc_sentiment_label
+                +doc_sentiment
+                +doc_emotion
+            // unless doc_sentiment_label 
+            //     .ui.icon.big.button.autotag.zoomer(title='breakdown emotions') 
+            //         i.large.chess.grey.icon
+            //     // +call_watson key=rd.selftext
+        .ui.attached.basic.buttons
+            .ui.icon.circular.button.vote_up
+                i.thumbs.up.green.icon(class=upvote_class)
+            .ui.icon.circular.button.vote_down
+                i.thumbs.down.red.icon(class=downvote_class)
+            
+            
+template(name='post_item')
+    .item 
+        if is_image
+            a.fly_right(href="/post/#{_id}")
+                img.ui.inline.small.image.rounded.superzoomer(src=url)
+        else if has_thumbnail
+            a.fly_right(href="/post/#{_id}")
+                img.ui.small.inline.image.superzoomer(src=thumbnail title='view article')
+        a.ui.inline.header.zoomer.fly_left(href="/post/#{_id}") !{title}
+        .ui.label
+            i.globe.grey.icon 
+            |#{domain}
+        .ui.label
+            i.thumbs.up.icon 
+            |#{ups}
+        .ui.label
+            i.comment.icon 
+            |#{num_comments}
+        .ui.label 
+            |subpost: #{subpost}
+        .ui.label 
+            i.plus.icon
+            |#{_when}
+        if over_18
+            .ui.red.label over 18
+        +voting
+        if doc_sentiment_label
+            +doc_sentiment
+            +doc_emotion
+        else 
+            +call_watson key=rd.selftext
+            
+            
+            
+template(name='post_card_big')
+    .ui.fluid.card.autotag.pointer(title="#{ups} ups, created #{_when}")
+        .ui.stackable.two.column.grid
+            .column
+                if watson.metadata.image.length
+                    // |watson image
+                    img.ui.fluid.image.minimize(src=watson.metadata.image title='view article')
+                
+                else if is_image
+                    img.ui.image.minimize(src=url title='view article')
+                else if has_thumbnail
+                    img.ui.fluid.image.minimize(src=thumbnail title='view article')
+            .column
+                if rd.media_embed.content
+                    .minimize
+                        |!{unescaped_content}
+                else if rd.selftext_html
+                    .minimize
+                        |!{unescaped}
+                else if watson.analyzed_text
+                    .minimize
+                        |!{watson.analyzed_text}
+        .content
+            .ui.grey.header !{title}
+            .ui.label
+                i.globe.grey.icon 
+                |#{domain}
+            .ui.label
+                i.thumbs.up.grey.icon 
+                |#{ups}
+            .ui.label
+                i.comment.grey.icon 
+                |#{num_comments}
+            // .ui.label.zoomer.pick_subpost
+            //     |subpost: #{subpost}
+            .ui.label(title="added {{long_date _timestamp}}")
+                i.grey.clock.icon
+                |#{_when}
+            each tags
+                +flat_tag_picker
+            // if over_18
+            //     .ui.red.label
+            //         i.alert.icon
+            //         // +i name='nsfw'
+            if watson 
+                +watson_view
+            // if doc_sentiment_label
+            //     +doc_sentiment
+            //     +doc_emotion
+            // unless doc_sentiment_label 
+            //     .ui.icon.big.button.autotag.zoomer(title='breakdown emotions') 
+            //         i.large.chess.grey.icon
+            //     // +call_watson key=rd.selftext
+        
+// template(name='session_toggle')
+//     .ui.button.toggle
+//         i.large.icon(class=icon)
+        
+        
+template(name='flat_tag_picker')
+    a.ui.large.label.pick_flat_tag.zoomer(title='add tag') 
+        |#{this}
+    if currentUser
+        i.remove.link.circular.icon.remove_tag.zoomer(title='remove tag')
+
+
+template(name='agg_tag')
+    // button.ui.big.compact.active.fade.animated.button.result(tabindex="0" title=count)
+    button.ui.image.basic.big.label.result.zoomer(tabindex="0" title=count)
+        // .visible.content
+        if subs_ready
+            if term_image.watson.metadata.image
+                img.ui.image.superzoomer.invert(src=term_image.watson.metadata.image)
+        else 
+            i.yin.yang.grey.loading.icon
+        | #{name}
+        // .hidden.content
+        //     |+ #{title}
+        // if term.image
+        //     //- button.ui.compact.button(tabindex="0" title=count)
+        //     //- img.ui.mini.inline.image(src=term.image)
+        //     img.ui.mini.inline.image(src=term.image)
+        //     .ui.inline.small.thin.header(class=tag_result_class) #{title}
+        // else
+        //     //- button.ui.compact.button(tabindex="0" title=count)
+        //- small #{count}
+                
+                
+                
+template(name='user_post')
+    .ui.two.column.stackable.grid 
+        .column
+            .ui.header 
+                +i name='post'
+                |#{mined_counter}
+                |total mined post posts
+            .ui.header 
+                +i name='post'
+                // |#{mined_counter}
+                |latest mined post posts
+            .ui.selection.animated.list 
+                each latest_mined_posts
+                    +post_small_item
+        if overlap_tags.count
+            .column
+                .ui.header 
+                    +i name='infinity-large'
+                    |your upvoted tag overlap 
+                each overlap_tags
+                    .ui.zoomer.label.pick_overlap_tag(title='drill down')
+                        strong #{name}
+                        small #{count}
+        .column
+            .ui.header 
+                +i name='facebook-like'
+                |latest upvoted post posts 
+            .ui.selection.animated.list 
+                each latest_upvoted_posts
+                    +post_small_item
+                    
+                    
+template(name='post_small_item')
+    a.item.fly_left(href="/post/#{_id}")
+        if watson.metadata.image
+            img.ui.avatar.image(src=watson.metadata.image)
+        .header #{title}
+        .content 
+            each five_tags 
+                .ui.label #{this}
+                
+                
+                
+                
+template(name='post_view')
+    with current_doc
+        if image_id
+            img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
+        else if watson.metadata.image
+            img.ui.fluid.image.checkin_banner(src=watson.metadata.image)
+        else
+            img.ui.fluid.image.checkin_banner(src=url)
+        .ui.stackable.padded.grid 
+            .eleven.wide.column
+                a.ui.compact.button.fly_left.zoomer(href="/posts" title='back to browse')
+                    i.chevron.left.icon
+                    +i name='news'
+                    |post
+                .ui.segment.alpha.scrollin
+                    .ui.inline.header !{title}
+                    if rd.selftext_html
+                        |!{unescaped}
+                    // blockquote(class="imgur-embed-pub" lang="en" data-id="UsxLSe0")
+                    //     a(href=rd.url) Lauren, supergirl, batgirl [Super best friends &amp; lauren faust])
+                    // script(async src="//s.imgur.com/min/embed.js" charset="utf-8")
+                    a.ui.header(href=rd.url target='_window') #{rd.url}
+                    
+                    // with rd
+                    //     embed(src=url)
+                    // if rd.media_embed
+                    //     // 
+                    //     |!{unescaped_content}
+                    // +call_watson key=rd.selftext
+                    if watson 
+                        +watson_view
+                    if in_dev
+                        +print_this
+                    if is_image
+                        img.ui.image.invert(src=url)
+                    .ui.button.get_comments     
+                        |get comments
+                    if comments 
+                        .ui.header comments
+                    +comments
+            .five.wide.column
+                if thumbnail
+                    img.ui.centered.rounded.image.invert(src=thumbnail)
+                .ui.list 
+                    .item domain #{domain}
+                    .item.goto_subreddit subreddit #{subreddit}
+                    // .item model #{model}
+                    .item permalink #{permalink}
+                    // .item post_id #{post_id}
+                    .item 
+                        small mined by
+                        strong #{_author_username}
+                .ui.button.pull_post
+                    i.download.icon
+                    |get post
+                +voting_full
+                .ui.large.label.zoomer
+                    +i name='chat'
+                    |#{comment_count} comments
+                if over_18
+                    .ui.large.red.label.zoomer(title='adult content')
+                        +i name='18-plus'
+                a.ui.large.button.zoomer(href=url target='_window')
+                    i.external.icon
+                    | #{url}
+                each tags 
+                    a.ui.large.label.zoomer.pick_flat_tag(title='search tag') #{this}
+                a.ui.big.label.zoomer.picker.goto_subreddit(title='browse subpost')
+                    +i name='post'
+                    |tribe #{subreddit}
+                .ui.big.label 
+                    +i name='facebook-like'
+                    | #{ups} upvotes
+                .ui.big.label 
+                    +i name='chat'
+                    | #{num_comments} comments
+            .sixteen.wide.column.scrollin
+                .ui.big.center.aligned.inline.header(class=emotion_color) 
+                    if price
+                        i.large.coins.icon(title='price')
+                    if private 
+                        i.large.lock.icon(title='private')
+                    if sentiment 
+                        if is sentiment 'positive'
+                            +i name='happy'
+                        else 
+                            +i name='sad'
+                if subtitle
+                    .ui.small.header #{subtitle}
+                // a.ui.header(href="/user/#{target.username}")
+                //     |#{target.username}
+
+            

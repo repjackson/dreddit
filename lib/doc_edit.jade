@@ -1,0 +1,115 @@
+template(name='doc_edit')
+    if doc_data
+        with doc_data
+            if background_image_id
+                img.ui.image.nav_banner(src="{{c.url background_image_id height=1000 crop='crop'}}")
+            else 
+                img.ui.image.nav_banner(src="{{c.url image_id height=1000 crop='crop'}}")
+        
+            .ui.stackable.padded.divided.grid
+                .row 
+                    .sixteen.wide.column
+                        .ui.inline.header
+                            +i name='cube'
+                            |model
+                        +key_value_edit key='model' value='post' label='post' icon='news'
+                        +key_value_edit key='model' value='event' label='event' icon='calendar'
+                        +key_value_edit key='model' value='group' label='group' icon='fire'
+                        +key_value_edit key='model' value='product' label='product' icon='shopping-cart'
+                        +key_value_edit key='model' value='service' label='service' icon='wrench'
+                        +key_value_edit key='model' value='transfer' label='transfer' icon='exchange'
+                        // +key_value_edit key='model' value='review' label='review' icon='megaphone'
+                        // +key_value_edit key='model' value='checkin' label='checkin' icon='checkmark'
+                        +key_value_edit key='model' value='task' label='task' icon='tasks'
+                        +key_value_edit key='model' value='rental' label='rental' icon='clock'
+                        +key_value_edit key='model' value='message' label='message' icon='envelope'
+                    // .ui.header #{model}
+                    // .ui.header #{model_template}
+                    .eight.wide.column.scrollin
+                        +doc_edit_leftbar
+        
+                    .eight.wide.column
+                        +Template.dynamic template=model_template
+                        // if currentUser.admin_mode 
+                        +author_edit
+    else 
+        .ui.basic.center.aligned.segment
+            i.massive.grey.yin.yang.loading.icon
+            
+            
+            
+            
+template(name='doc_edit_leftbar')
+    if in_dev 
+        +print_this
+    +model_label
+
+    .ui.inline.header 
+        +i name='pencil'
+        |editing #{model}: #{title}
+    if published
+        a.ui.big.icon.fluid.green.button.zoom.zoomer(href="/doc/#{_id}" title='save')
+            i.checkmark.big.icon
+    else 
+        a.ui.large.green.button.zoom.zoomer.publish(href="/doc/#{_id}" title='save & publish')
+            i.checkmark.big.icon
+            i.eye.big.icon
+            |save and publish -10p
+        a.ui.large.icon.yellow.button.zoom.zoomer(href="/doc/#{_id}" title='save')
+            i.save.big.icon
+            |save draft                       
+    // +boolean_edit key='published' label='published (-10)' 
+    div
+    +text_edit key='title' label='title' 
+    .ui.one.column.stackable.grid
+        .column
+            +image_edit key='image_id' label='image' 
+            .ui.horizontal.divider or
+            +image_link_edit key='image_link' label='image link'
+            +image_edit key='background_image_id' label='background image' 
+            .ui.horizontal.divider or
+            +image_link_edit key='background_image_link' label='background image link'
+        .column
+            if watson 
+                +i name='dna-helix' title='analyzed'
+            if tone 
+                +i name='happy' title='has tone'
+            +html_edit key='content' label='content'
+            if watson 
+                i.large.green.checkmark
+            +call_watson key='content'
+            +call_tone
+        .column
+            +array_edit key='tags' label='tags' icon='tags'
+            div
+            +array_edit key='location_tags' label='location tags' icon='marker' direct=true
+        .column
+            +group_picker
+        .column
+            .ui.inline.header
+                +i name='link'
+                |links
+            if link 
+                +i name='link'
+            if facebook_link
+                +i name='facebook'
+            if instagram_link
+                +i name='instagram'
+            if twitter_link
+                +i name='twitter'
+            if youtube_link
+                +i name='youtube'
+            +link_edit key='link' label='link'
+            +link_edit key='facebook_link' label='facebook link' icon='facebook'
+            +link_edit key='instagram_link' label='instagram link' icon='instagram'
+            +link_edit key='twitter_link' label='twitter link' icon='twitter'
+            +link_edit key='youtube_link' label='youtube link' icon='youtube'
+            +visibility_settings
+            +boolean_edit key='nsfw' label='nsfw' icon='18-plus'
+        .column
+            .ui.inline.header
+                +i name='youtube'
+                |youtube
+            +youtube_edit key='youtube_id' label='youtube id'
+    
+    +remove_button

@@ -1,0 +1,181 @@
+template(name='author_edit')
+    .ui.header  
+        i.shield.icon
+        |author edit 
+        +single_user_edit key='_author' label='username'
+                        
+template(name='doc_view')
+    if subs_ready
+        with doc_data
+            if is model 'group'
+                +group_layout
+            else
+                if background_image_id
+                    img.ui.image.checkin_banner(src="{{c.url background_image_id height=1000 crop='crop'}}")
+                else 
+                    img.ui.image.checkin_banner(src="{{c.url image_id height=1000 crop='crop'}}")
+                .ui.stackable.padded.grid
+                    .row 
+                        .sixteen.wide.column
+                            a.ui.circular.icon.button.fly_left(href="/m/#{model}" title="back to #{model}s")
+                                i.chevron.left.icon
+                                +model_label
+                            .ui.large.inline.header 
+                                //- small viewing
+                                | #{title}
+                            if can_edit
+                                +edit_button
+                            if youtube_id 
+                                span(title='has youtube video')
+                                    +i name='youtube'
+                            if tone 
+                                +tone
+                            +publish_info
+                            if facebook_link 
+                                a.zoomer(href=facebook_link target='_window' title='visit facebook page')
+                                    +i name='facebook'
+                            if instagram_link
+                                a.zoomer(href=instagram_link target='_window' title='visit instagram page')
+                                    +i name='instagram'
+                            if twitter_link
+                                a.zoomer(href=twitter_link target='_window' title='visit twitter page')
+                                    +i name='twitter'
+                            if link 
+                                a.ui.big.compact.button.zoomer(href=link target='_window' title=link)
+                                    i.external.icon
+                                    |link
+                                    // |#{hostname}
+                            i.big.eye.icon(title="#{read_user_ids.length} viewers") 
+                            each read_user_ids
+                                +user_avatar
+                            if member_ids
+                                i.big.users.icon(title="#{member_ids.length} members") 
+                                each member_ids
+                                    +user_avatar
+                                // img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+        
+                        .ui.stackable.padded.grid
+                            .row
+                                .ten.wide.column
+                                    +Template.dynamic template=model_template 
+                                    if youtube_id
+                                        +youtube_view key='youtube_id'
+                                    if image_id 
+                                        img.ui.rounded.centered.large.image(src="{{c.url image_id width=800 crop='scale'}}")
+                                    if image_id2
+                                        img.ui.rounded.image.zoomer(src="{{c.url image_id2}}")
+                                    .ui.segment.alpha.scrolling
+                                        |!{content}
+                                    +comments
+                                .six.wide.column
+                                    +author_segment
+                                    +group_widget
+                                    .ui.inline.header                                
+                                        |#{tags.length}
+                                        +i name='tags'
+                                    span.flat_tags
+                                        each tags 
+                                            a.ui.basic.label.pick_flat_tag.zoomer(title='browse tag') #{this}
+                                    if watson 
+                                        .column
+                                            +watson_view
+                                        if tone 
+                                            +tone
+                            .three.column.row
+                                .column
+                                    +message_author_button
+                                    div
+                                    +voting_full
+                                    div
+                                    if nsfw
+                                        .ui.red.basic.large.label
+                                            +i name='18-plus'
+                                            |nsfw
+        
+                                .column
+                                    +favorites
+                                    +viewing_info
+                                .column
+                                    .ui.dividing.header 
+                                        +i name='line-chart'
+                                        |stats
+                                    .ui.big.list
+                                        .item 
+                                            i.grey.line.chart.icon
+                                            |#{post_views_ranking} post views ranking
+                                        .item 
+                                            i.grey.eye.icon
+                                            |#{views} views
+                                        .item
+                                            i.grey.line.chart.icon
+                                            |#{views_ranking} view ranking
+                                        .item 
+                                            i.grey.user.secret.icon
+                                            |#{anon_views} anon views
+                                        .item 
+                                            |#{points}
+                                            |points
+                                        .item 
+                                            |#{tip_total}
+                                            |tip total
+                                .column
+                                    +follow_button
+                                    +tips
+                                    if has_price
+                                        +post_orders
+                                    div
+                                    .ui.inline.header 
+                                        +i name='binoculars'
+                                        |#{current_viewer_users.count} current viewers
+                                    each current_viewer_users
+                                        +user_info
+    else 
+        .ui.center.aligned.basic.segment 
+            i.massive.yin.yang.loading.grey.icon
+
+template(name='viewing_info')
+    .ui.header 
+        +i name='eye'
+        |viewing info
+    .ui.small.header 
+        |viewers
+    .ui.list 
+        each read_user_ids
+            +user_info
+            // img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+    .ui.small.header 
+        |#{views} views
+    .ui.small.header 
+        |last user viewed: {{med_date last_user_viewed_timestamp}}
+        |last user viewed
+    .ui.small.header 
+        |last anon viewed: {{med_date last_anon_viewed_timestamp}}
+
+
+template(name='publish_info')
+    if published 
+        i.big.green.eye.icon(title='published')
+    else 
+        i.big.yellow.save.icon(title='draft')
+    
+
+template(name='tip_button')
+    if can_tip
+        .ui.button.tip_doc
+            |tip #{amount}pts
+
+template(name='tips')
+    .ui.header 
+        +i name='donate'
+        |tips
+    +tip_button amount=10
+    +tip_button amount=50
+    .ui.large.divided.list
+        each post_tip_docs
+            .item #{when}: #{amount}pts
+                +author_info
+                if currentUser.admin_mode
+                    +remove_button doc=this redirect=false
+
+
+
