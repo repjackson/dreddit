@@ -397,19 +397,6 @@ if Meteor.isClient
 
 
 
-    Template.user_social.onCreated ->
-        @autorun => Meteor.subscribe 'user_friended', Router.current().params.username, ->
-        @autorun => Meteor.subscribe 'user_friended_by', Router.current().params.username, ->
-if Meteor.isServer
-    Meteor.publish 'user_friended', (username)->
-        user = Meteor.users.findOne username:username
-        Meteor.users.find 
-            _id:$in:user.friended_user_ids
-    Meteor.publish 'user_friended_by', (username)->
-        user = Meteor.users.findOne username:username
-        Meteor.users.find 
-            _id:$in:user.friended_by_user_ids
-
 if Meteor.isClient
     Template.friend_button.helpers
         is_friend: ->

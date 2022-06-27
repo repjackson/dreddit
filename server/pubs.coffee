@@ -22,12 +22,6 @@ Meteor.publish 'facet_sub', (
         match.model = model
         # if parent_id then match.parent_id = parent_id
 
-        # if view_private is true
-        #     match.author_id = Meteor.userId()
-
-        # if view_private is false
-        #     match.published = $in: [0,1]
-
         if title_search.length > 1
         #     console.log 'searching org_query', org_query
             match.title = {$regex:"#{title_search}", $options: 'i'}
@@ -391,9 +385,6 @@ Meteor.publish 'doc_results', (
 
     # console.log 'sort key', sort_key
     # console.log 'sort direction', sort_direction
-    unless Meteor.userId()
-        match.private = $ne:true
-        
     # console.log 'results match', match
     # console.log 'sort_key', sort_key
     # console.log 'sort_direction', sort_direction
