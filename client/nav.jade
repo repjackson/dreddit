@@ -58,50 +58,12 @@ template(name='nav')
                 // unless currentUser.hide_labels
                 //     |music
             +nav_item key='event' icon='calendar'
-            +nav_item key='transfer' icon='exchange'
-            +nav_item key='service' icon='wrench'
-            +nav_item key='rental' icon='clock'
-            +nav_item key='task' icon='tasks'
-            // +nav_item key='checkin' icon='checkmark'
-            +nav_item key='log' icon='code'
-        unless currentUser
-            // a.item(href="/register" title='register')
-            //     +i name='plus'
-            //     span.mobilehidden register            
-            a.item(href='/login' title='login' class="{{isActiveRoute 'login'}}" ) 
-                i.sign.in.large.icon
-                // +i name='internal'
-                // span.mobilehidden login
         unless is_connected
             a.item.zoomer.reconnect
                 i.yin.yang.big.loading.icon
                 +i name='disconnected'
                 |relink
                 i.large.circular.refresh.link.icon.zoomer.reconnect(title='reconnect now')
-        .right.menu
-            if currentUser
-                a.fly_up.zoomer.item.tada(href="/user/#{currentUser.username}" class=user_nav_button_class title='profile' class="{{isActiveRoute 'profile'}}" )
-                    if currentUser.image_id
-                        img.ui.avatar.image(src="{{c.url currentUser.image_id width=300 height=300 gravity='face' crop='fill'}}")
-                    else
-                        i.user.icon
-                    strong #{currentUser.username}
-                    |&nbsp;
-                a.fly_up.zoomer.item.tada(href="/user/#{currentUser.username}" title='bank' class="{{isActiveRoute 'user_points'}}" )
-                    |{{points_to_coins currentUser.points}}c
-                a.icon.item.zoomer.fly_down.add_doc(title='add doc')
-                    // +i name='plus'
-                    i.large.plus.icon
-                // a.icon.item(href="/mail/inbox")
-            a.icon.item.toggle_rightbar.no_blink
-                // .ui.avatar.image
-                //     if currentUser.image_id
-                //         img.ui.mini.inline.image(src="{{c.url currentUser.image_id width=200 height=200 gravity='face' crop='fill'}}")
-                //     else
-                //         i.user.big.icon
-                // strong.mobilehidden #{currentUser.name}
-                i.bars.large.grey.icon
-                            
                             
 template(name='footer')
     .ui.fluid.segment.stackable.grid.alpha

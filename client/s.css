@@ -6,7 +6,7 @@ body {
     /* font-size: 110% !important; */
     /*line-height: 200% !important;*/
     transition: all 1s !important;
-    filter: invert(.9) !important; 
+    /*filter: invert(.9) !important; */
     background: rgba(0,0,0,.5) !important; 
     /* background: rgba(200, 200, 200, .2) !important */
     /* background: #0e0e44 !important; */
