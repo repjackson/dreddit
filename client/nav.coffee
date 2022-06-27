@@ -18,42 +18,42 @@ Template.nav.onRendered ->
         $('.menu .item')
             .popup()
     , 3000
-    Meteor.setTimeout ->
-        $('.ui.left.sidebar')
-            .sidebar({
-                context: $('.bottom.segment')
-                transition:'push'
-                mobileTransition:'push'
-                exclusive:true
-                duration:200
-                scrollLock:true
-            })
-            .sidebar('attach events', '.toggle_leftbar')
-    , 4000
-    Meteor.setTimeout ->
-        $('.ui.rightbar')
-            .sidebar({
-                context: $('.bottom.segment')
-                transition:'push'
-                mobileTransition:'push'
-                exclusive:true
-                duration:200
-                scrollLock:true
-            })
-            .sidebar('attach events', '.toggle_rightbar')
-    , 3000
-    Meteor.setTimeout ->
-        $('.ui.topbar.sidebar')
-            .sidebar({
-                context: $('.bottom.segment')
-                transition:'push'
-                mobileTransition:'push'
-                exclusive:true
-                duration:200
-                scrollLock:true
-            })
-            .sidebar('attach events', '.toggle_topbar')
-    , 2000
+    # Meteor.setTimeout ->
+    #     $('.ui.left.sidebar')
+    #         .sidebar({
+    #             context: $('.bottom.segment')
+    #             transition:'push'
+    #             mobileTransition:'push'
+    #             exclusive:true
+    #             duration:200
+    #             scrollLock:true
+    #         })
+    #         .sidebar('attach events', '.toggle_leftbar')
+    # , 4000
+    # Meteor.setTimeout ->
+    #     $('.ui.rightbar')
+    #         .sidebar({
+    #             context: $('.bottom.segment')
+    #             transition:'push'
+    #             mobileTransition:'push'
+    #             exclusive:true
+    #             duration:200
+    #             scrollLock:true
+    #         })
+    #         .sidebar('attach events', '.toggle_rightbar')
+    # , 3000
+    # Meteor.setTimeout ->
+    #     $('.ui.topbar.sidebar')
+    #         .sidebar({
+    #             context: $('.bottom.segment')
+    #             transition:'push'
+    #             mobileTransition:'push'
+    #             exclusive:true
+    #             duration:200
+    #             scrollLock:true
+    #         })
+    #         .sidebar('attach events', '.toggle_topbar')
+    # , 2000
     
         
         

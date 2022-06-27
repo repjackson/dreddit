@@ -4,8 +4,6 @@ template(name='nav')
     // #topnav.topnav.ui.attached.borderless.big.menu.hscroll(style="background-color:#{currentUser.theme_color_main}")
     #topnav.topnav.ui.attached.borderless.menu.hscroll
         if is_connected
-            a.icon.item.toggle_leftbar
-                i.large.bars.grey.icon
             if currentUser
                 if unread_count
                     a.item(href="/user/#{currentUser.username}/inbox" title='unread messages')
@@ -26,38 +24,26 @@ template(name='nav')
                 .ui.icon.input
                     i.search.icon
                     input.global_search(type='text' placeholder='search...')
-            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/products" class="{{isActiveRoute 'products'}}" title=products)
-                // +i name='shopping-cart'
-                i.large.shopping.cart.icon
-                // unless currentUser.hide_labels
-                //     |products
-            // +nav_item key='product' icon='shopping-cart'
             a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/posts" class="{{isActiveRoute regex='post'}}" title='posts')
                 // +i name='news'
                 i.large.newspaper.icon
-                // unless currentUser.hide_labels
-                //     |posts
+                unless currentUser.hide_labels
+                    |posts
             a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/users" class="{{isActiveRoute 'users'}}" title=users)
                 // +i name='groups'
                 i.large.users.icon
-                // unless currentUser.hide_labels
-                //     |users
+                unless currentUser.hide_labels
+                    |users
             a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/groups" class="{{isActiveRoute regex='group'}}" title='groups')
                 // +i name='campfire'
                 i.large.fire.icon
-                // unless currentUser.hide_labels
-                //     |groups
-            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/food" class="{{isActiveRoute regex='food'}}" title='food')
-                i.large.food.icon
-                // +i name='food'
-                // unless currentUser.hide_labels
-                //     |recipes
+                unless currentUser.hide_labels
+                    |groups
             a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/music" class="{{isActiveRoute regex='music'}}" title='music')
                 i.large.music.icon
                 // +i name='music'
                 // unless currentUser.hide_labels
                 //     |music
-            +nav_item key='event' icon='calendar'
         unless is_connected
             a.item.zoomer.reconnect
                 i.yin.yang.big.loading.icon
