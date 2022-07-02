@@ -2,7 +2,7 @@ template(name='nav')
     // #topnav.topnav.ui.attached.borderless.big.four.item.menu.hscroll(class=darkmode_class)
         https://fomantic-ui.com/elements/icon.html#/icon
     // #topnav.topnav.ui.attached.borderless.big.menu.hscroll(style="background-color:#{currentUser.theme_color_main}")
-    #topnav.topnav.ui.attached.borderless.menu.hscroll
+    #topnav.topnav.ui.attached.borderless.three.item.menu.hscroll
         if is_connected
             if currentUser
                 if unread_count
@@ -18,12 +18,12 @@ template(name='nav')
                 +i name='one-ring' cl='spinning'
                 i.yin.yang.large.loading.icon
         if subs_ready
-            a.item.mobile.only(href="/search" title='global search')
-                i.search.large.icon
-            .item.mobile.hidden
-                .ui.icon.input
-                    i.search.icon
-                    input.global_search(type='text' placeholder='search...')
+            // a.item.mobile.only(href="/search" title='global search')
+            //     i.search.large.icon
+            // .item.mobile.hidden
+            //     .ui.icon.input
+            //         i.search.icon
+            //         input.global_search(type='text' placeholder='search...')
             a.item.zoomer.fly_right.clear_search.mobilehidden(href="/posts" class="{{isActiveRoute regex='post'}}" title='posts')
                 // +i name='news'
                 i.large.newspaper.icon
@@ -39,11 +39,6 @@ template(name='nav')
                 i.large.fire.icon
                 // unless currentUser.hide_labels
                 //     |groups
-            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/music" class="{{isActiveRoute regex='music'}}" title='music')
-                i.large.music.icon
-                // +i name='music'
-                // unless currentUser.hide_labels
-                //     |music
         unless is_connected
             a.item.zoomer.reconnect
                 i.yin.yang.big.loading.icon
