@@ -4,9 +4,7 @@ template(name='posts')
         .row
             .sixteen.wide.column
                 .ui.inline.header(title='i know right?')
-                    +i name='news'
                     |{{comma total_post_count}}
-                    |posts
                 // unless full_doc_id
                 if currentUser
                     .ui.circular.icon.button.toggle_porn(title='toggle adult' class=porn_class)
@@ -43,23 +41,23 @@ template(name='posts')
                         //     |{{to_percent avg_sent_score}}%
                         //     small sentiment
                         if above_50 avg_joy_score
-                            .ui.green.big.label
+                            .ui.green.label
                                 |{{to_percent avg_joy_score}}%
                                 small joyful
                         if above_50 avg_anger_score
-                            .ui.red.big.label
+                            .ui.red.label
                                 |{{to_percent avg_anger_score}}%
                                 small angry
                         if above_50 avg_sadness_score
-                            .ui.blue.big.label
+                            .ui.blue.label
                                 |{{to_percent avg_sadness_score}}%
                                 small sad
                         if above_50 avg_disgust_score
-                            .ui.orange.big.label
+                            .ui.orange.label
                                 |{{to_percent avg_disgust_score}}%
                                 small disgusted
                         if above_50 avg_fear_score
-                            .ui.grey.big.label
+                            .ui.grey.label
                                 |{{to_percent avg_fear_score}}%
                                 small fearful
                     
@@ -162,9 +160,9 @@ template(name='post_card')
                 |#{num_comments}
             // .ui.label.zoomer.pick_subreddit
             //     |subreddit: #{subreddit}
-            .ui.label(title="added {{long_date _timestamp}}")
-                i.grey.clock.icon
-                |#{_when}
+            // .ui.label(title="added {{long_date _timestamp}}")
+            //     i.grey.clock.icon
+            //     |#{_when}
             if watson.analyzed_text
                 .smallcut
                     |!{watson.analyzed_text}
@@ -186,11 +184,11 @@ template(name='post_card')
             //     .ui.icon.big.button.autotag.zoomer(title='breakdown emotions') 
             //         i.large.chess.grey.icon
             //     // +call_watson key=rd.selftext
-        .ui.attached.basic.buttons
-            .ui.icon.circular.button.vote_up
-                i.thumbs.up.green.icon(class=upvote_class)
-            .ui.icon.circular.button.vote_down
-                i.thumbs.down.red.icon(class=downvote_class)
+        // .ui.attached.basic.buttons
+        //     .ui.icon.circular.button.vote_up
+        //         i.thumbs.up.green.icon(class=upvote_class)
+        //     .ui.icon.circular.button.vote_down
+        //         i.thumbs.down.red.icon(class=downvote_class)
             
             
 template(name='post_item')
@@ -300,8 +298,8 @@ template(name='agg_tag')
         if subs_ready
             if term_image.watson.metadata.image
                 img.ui.image.superzoomer.invert(src=term_image.watson.metadata.image)
-        else 
-            i.yin.yang.grey.loading.icon
+        // else 
+        //     i.yin.yang.grey.loading.icon
         | #{name}
         // .hidden.content
         //     |+ #{title}

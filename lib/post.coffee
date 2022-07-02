@@ -134,19 +134,6 @@ if Meteor.isClient
     Template.post_card_big.events
         'click .minimize': ->
             Session.set('full_doc_id', null)
-    Template.post_card.helpers
-        upvote_class:->
-            if Meteor.user()
-                if @upvoter_ids and Meteor.userId() in @upvoter_ids
-                    'large'
-                else 
-                    'outline'
-        downvote_class:->
-            if Meteor.user()
-                if @downvoter_ids and Meteor.userId() in @downvoter_ids
-                    'large'
-                else 
-                    'outline'
     Template.post_card.events
         'click .vote_up': ->
             if Meteor.user()
@@ -154,12 +141,6 @@ if Meteor.isClient
                     $inc:
                         points:1
                         user_points:1
-                    $addToSet:
-                        upvoter_ids:Meteor.userId()
-                        upvoter_usernames:Meteor.user().username
-                    $pull:
-                        downvoter_ids:Meteor.userId()
-                        downvoter_usernames:Meteor.user().username
             else 
                 Docs.update @_id,
                     $inc:
@@ -174,12 +155,6 @@ if Meteor.isClient
                     $inc:
                         points:-1
                         user_points:-1
-                    $addToSet:
-                        downvoter_ids:Meteor.userId()
-                        downvoter_usernames:Meteor.user().username
-                    $pull:
-                        upvoter_ids:Meteor.userId()
-                        upvoter_usernames:Meteor.user().username
                         
             else 
                 Docs.update @_id,
@@ -694,7 +669,7 @@ if Meteor.isServer
                 { $match: count: $lt: agg_doc_count }
                 # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
                 { $sort: count: -1, _id: 1 }
-                { $limit: limit }
+                { $limit: 20 }
                 { $project: _id: 0, name: '$_id', count: 1 }
             ], {
                 allowDiskUse: true

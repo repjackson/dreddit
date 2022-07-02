@@ -96,7 +96,7 @@ Meteor.publish 'facet_sub', (
             { $match: _id: $nin: picked_tags }
             { $sort: count: -1, _id: 1 }
             { $match: count: $lt: total_count }
-            { $limit: 10 }
+            { $limit: 20 }
             { $project: _id: 0, name: '$_id', count: 1 }
             ]
         # console.log 'theme tag_cloud, ', tag_cloud
