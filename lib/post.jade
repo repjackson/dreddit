@@ -70,16 +70,16 @@ template(name='posts')
                         i.lightning.icon
                         |reconnect
                 // .ui.hidden.divider
-                unless is one_result
-                    span.sorting
-                        +session_icon_button key='view_mode' value='grid' icon='grid' 
-                        +session_icon_button key='view_mode' value='list' icon='list'
-                        +sort_direction_toggle
-                        +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
-                        +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
-                        +session_set key='sort_key' value='domain' label='domain' icon='globe'
-                        +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
-                        +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                // unless is one_result
+                    // span.sorting
+                    //     +session_icon_button key='view_mode' value='grid' icon='grid' 
+                    //     +session_icon_button key='view_mode' value='list' icon='list'
+                    //     +sort_direction_toggle
+                    //     +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                    //     +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
+                    //     +session_set key='sort_key' value='domain' label='domain' icon='globe'
+                    //     +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
+                    //     +session_set key='sort_key' value='points' label='points' icon='hashtag'
                     
                 if connected
                     // if searching 

@@ -405,18 +405,18 @@ template(name='session_boolean_toggle')
                 |#{value}
 
 template(name='session_set')
-    a.ui.large.image.label.zoomer.set_session_value(class=set_button_class title="sort by #{label}")
+    a.ui.large.label.zoomer.set_session_value(class=set_button_class title="sort by #{label}")
         if icon
             i.large.icon(class=icon)
             // +i name=icon
         // if icon_view 
         // else 
-        // if is_active
-        unless hide_label
-            if label
-                |#{label}
-            else 
-                |#{value}
+        if is_active
+            unless hide_label
+                if label
+                    |#{label}
+                else 
+                    |#{value}
            
            
 template(name='favorites')
