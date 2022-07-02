@@ -310,10 +310,6 @@ template(name='user_card')
                 |#{profile_views}
             +join
 
-template(name='join')
-    .ui.label(title='joined')
-        i.user.plus.icon
-        |{{from_now createdAt}}
             
 template(name='user_item')
     a.item.fly_left.zoomers(href="/user/#{username}")
@@ -363,23 +359,6 @@ template(name='user_item')
             
             +join
 
-template(name='addtoset_user')
-    // .ui.small.compact.button.toggle_value(class=ats_class) #{key} #{value}
-    .ui.small.compact.button.toggle_value(class=ats_class) +#{value}
-    
-
-
-template(name='user_email')
-    .ui.small.inline.header #{email_address}
-    if email_verified
-        .ui.label 
-            i.green.checkmark.icon
-            |verified
-    else
-        .ui.orange.label 
-            i.ban.icon
-            |unverified
-        
 
 template(name='big_user_card')
     with user
@@ -397,93 +376,6 @@ template(name='big_user_card')
                 .content
                     +array_view key='roles' direct=true
                         
-template(name='user_button')
-    a.ui.compact.button(href="/user/#{user.username}/")
-        if user.kiosk_photo
-            img.ui.avatar.inline.image(src="{{c.url user.kiosk_photo width=300 height=300 gravity='face' crop='fill'}}")
-        else if user.image_id
-            img.ui.avatar.inline.image(src="{{c.url user.image_id width=300 height=100 gravity='face' crop='fill'}}")
-        //- .visible.content
-        |#{user.first_name} #{user.last_name}
-        //- |@#{user.username}
-        +user_status user
-        //- .hidden.content
-        //-     |view
-        //-     i.right.chevron.icon
-
-
-
-// // template(name='user_card')
-// //     with user
-// //         .ui.card
-// //             //- if is_staff
-// //             a.image(href="/user/#{username}")
-// //                 img.ui.tiny.image(src="{{c.url image_id width=200 height=200 gravity='face' crop='fill'}}")
-// //             .content    
-// //                 .header 
-// //                     a.header(href="/user/#{username}") #{name} 
-// //                     .meta @#{username}
-// //                     if is_admin
-// //                         div
-// //                         +user_email
-// //                 //- +emails_edit    
-// //         //- +user_status user
-
-
-// template(name='user_email')
-//     .ui.small.inline.header #{email_address}
-//     if email_verified
-//         .ui.label 
-//             i.green.checkmark.icon
-//             |verified
-//     else
-//         .ui.orange.label 
-//             i.ban.icon
-//             |unverified
-        
-
-// template(name='big_user_card')
-//     with user
-//         //- .ui.card
-//         //- .ui.card(class=resident_status_class)
-//         .ui.card
-//             .image
-//                 img.ui.rounded.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
-//             .content
-//                 a.header(href="/user/#{username}")
-//                      |#{first_name} #{last_name} 
-//                     //- .meta @#{username}
-//                     //- +array_view key='tags' label='Tags' direct=true
-//             if is_staff
-//                 .content
-//                     +array_view key='roles' direct=true
-                        
-// template(name='user_button')
-//     a.ui.compact.button(href="/user/#{user.username}/")
-//         if user.kiosk_photo
-//             img.ui.avatar.inline.image(src="{{c.url user.kiosk_photo width=300 height=300 gravity='face' crop='fill'}}")
-//         else if user.image_id
-//             img.ui.avatar.inline.image(src="{{c.url user.image_id width=300 height=100 gravity='face' crop='fill'}}")
-//         //- .visible.content
-//         |#{user.first_name} #{user.last_name}
-//         //- |@#{user.username}
-//         +user_status user
-//         //- .hidden.content
-//         //-     |view
-//         //-     i.right.chevron.icon
-
-
-// template(name='username_info')
-//     .ui.small.compact.button.goto_profile
-//         if is_member
-//             img.ui.avatar.image(src="{{c.url user.image_id width=100}}")
-//         else if user.kiosk_photo
-//             img.ui.avatar.image(src="{{c.url user.kiosk_photo width=100}}")
-//         else if user.image_id
-//             img.ui.avatar.image(src="{{c.url user.image_id width=100}}")
-//         |#{user.name}
-//         //- |@#{user.username}
-//         +user_status user
 
 template(name='redditor_view')
     with current_redditor
@@ -641,7 +533,7 @@ template(name='redditor_view')
                     a.ui.large.label.zoomer.pick_flat_tag(title='search tag') #{this}
                 a.ui.big.label.zoomer.picker.goto_subreddit(title='browse subredditor')
                     +i name='redditor'
-                    |tribe #{subreddit}
+                    |subreddit #{subreddit}
                 .ui.big.label 
                     +i name='facebook-like'
                     | #{ups} upvotes

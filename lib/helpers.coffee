@@ -31,15 +31,6 @@ if Meteor.isClient
     })
     
     globalHotkeys.add({
-    	combo : "r a",
-    	callback : ()->
-    	    if Meteor.userId()
-    	        Meteor.users.update Meteor.userId(),
-    	            $set:
-    	                admin_mode:!Meteor.user().admin_mode
-    # 		alert("admin mode toggle")
-    })
-    globalHotkeys.add({
     	combo : "g g",
     	callback : ()-> Router.go "/groups"
     })
@@ -50,14 +41,6 @@ if Meteor.isClient
     globalHotkeys.add({
     	combo : "g s",
     	callback : ()-> Router.go "/search"
-    })
-    globalHotkeys.add({
-    	combo : "g p",
-    	callback : ()-> 
-    	    if Meteor.user()
-        	    Router.go "/user/#{Meteor.user().username}"
-        	else 
-        	    Router.go "/login"
     })
     globalHotkeys.add({
     	combo : "m p",
@@ -327,46 +310,6 @@ if Meteor.isClient
         #     # console.log @doc_sentiment_label
         #     if @doc_sentiment_label is 'positive' then 'green'
         #     else if @doc_sentiment_label is 'negative' then 'red'
-    Template.registerHelper 'current_viewer_users', () -> 
-        Meteor.users.find 
-            current_viewing_doc_id:Router.current().params.doc_id
-if Meteor.isServer 
-    Meteor.publish 'current_viewers', (doc_id)->
-        Meteor.users.find 
-            current_viewing_doc_id:doc_id
-        
-if Meteor.isClient
-    # Template.registerHelper 'user_group_memberships', () -> 
-    #     user = Meteor.users.findOne username:@username
-    #     Docs.find
-    #         model:'group'
-    #         member_ids: $in:[user._id]
-
-    
-    Template.registerHelper 'unread_log_docs', () -> 
-        Docs.find {
-            model:'log'
-            read_user_ids:$nin:[Meteor.userId()]
-        },
-            sort:_timestamp:-1
-        
-    Template.registerHelper 'user_friended', (user) ->
-        if user
-            Meteor.users.find 
-                _id:$in:user.friended_user_ids
-    Template.registerHelper '_viewers', () ->
-        if @read_user_ids
-            Meteor.users.find 
-                _id:$in:@read_user_ids
-    Template.registerHelper 'user_friended_by', (user) ->
-        if user
-            Meteor.users.find 
-                _id:$in:user.friended_by_user_ids
-    Template.registerHelper 'darkmode_class', () -> 
-        if Meteor.user()
-            if Meteor.user().darkmode then 'invert' else ''
-    
-    
     Template.registerHelper 'hostname', () -> 
         window.location.hostname
     
@@ -479,21 +422,6 @@ if Meteor.isClient
     Template.registerHelper 'from_now', (input) -> moment(input).fromNow()
     Template.registerHelper 'cal_time', (input) -> moment(input).calendar()
     # Template.registerHelper 'logging_out', () -> Session.get 'logging_out'
-    Template.registerHelper 'upvote_class', () ->
-        if Meteor.userId()
-            if @upvoter_ids and Meteor.userId() in @upvoter_ids then 'green' else 'outline'
-        else ''
-    Template.registerHelper 'downvote_class', () ->
-        if Meteor.userId()
-            if @downvoter_ids and Meteor.userId() in @downvoter_ids then 'red' else 'outline'
-        else ''
-    
-    Template.registerHelper '_upvoters', () ->
-        Meteor.users.find 
-            _id:$in:@upvoter_ids
-    Template.registerHelper '_downvoters', () ->
-        Meteor.users.find 
-            _id:$in:@downvoter_ids
     
     
     Template.registerHelper 'current_month', () -> moment(Date.now()).format("MMMM")

@@ -24,26 +24,21 @@ template(name='nav')
                 .ui.icon.input
                     i.search.icon
                     input.global_search(type='text' placeholder='search...')
-            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/posts" class="{{isActiveRoute regex='post'}}" title='posts')
+            a.item.zoomer.fly_right.clear_search.mobilehidden(href="/posts" class="{{isActiveRoute regex='post'}}" title='posts')
                 // +i name='news'
                 i.large.newspaper.icon
-                unless currentUser.hide_labels
-                    |posts
-            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/food" class="{{isActiveRoute regex='food'}}" title='food')
-                // +i name='news'
-                i.large.newspaper.icon
-                unless currentUser.hide_labels
-                    |food
-            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/users" class="{{isActiveRoute 'users'}}" title=users)
+                // unless currentUser.hide_labels
+                //     |posts
+            a.item.zoomer.fly_right.clear_search.mobilehidden(href="/users" class="{{isActiveRoute 'users'}}" title=users)
                 // +i name='groups'
                 i.large.users.icon
-                unless currentUser.hide_labels
-                    |users
-            a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/groups" class="{{isActiveRoute regex='group'}}" title='groups')
+                // unless currentUser.hide_labels
+                //     |users
+            a.item.zoomer.fly_right.clear_search.mobilehidden(href="/groups" class="{{isActiveRoute regex='group'}}" title='groups')
                 // +i name='campfire'
                 i.large.fire.icon
-                unless currentUser.hide_labels
-                    |groups
+                // unless currentUser.hide_labels
+                //     |groups
             a.item.mobile.hidden.zoomer.fly_right.clear_search.mobilehidden(href="/music" class="{{isActiveRoute regex='music'}}" title='music')
                 i.large.music.icon
                 // +i name='music'
