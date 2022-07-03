@@ -23,7 +23,6 @@ Meteor.publish 'facet_sub', (
         # if parent_id then match.parent_id = parent_id
 
         if title_search.length > 1
-        #     console.log 'searching org_query', org_query
             match.title = {$regex:"#{title_search}", $options: 'i'}
 
         if picked_tags.length > 0 then match.tags = $all: picked_tags
@@ -56,13 +55,11 @@ Meteor.publish 'facet_sub', (
         #     if view_bookmarked is true then match.bookmarked_ids = $in: [@userId]
         #     else if view_bookmarked is false then match.bookmarked_ids = $nin: [@userId]
         # if view_complete? then match.complete = view_complete
-        # console.log view_complete
 
 
 
         # match.site = Meteor.settings.public.site
 
-        # console.log 'match:', match
         # if view_images? then match.components?.image = view_images
 
         # lightbank models
@@ -79,15 +76,12 @@ Meteor.publish 'facet_sub', (
         #     { $limit: limit }
         #     { $project: _id: 0, name: '$_id', count: 1 }
         #     ]
-        # # console.log 'theme ancestor_ids_cloud, ', ancestor_ids_cloud
         # ancestor_ids_cloud.forEach (ancestor_id, i) ->
         #     self.added 'ancestor_ids', Random.id(),
         #         name: ancestor_id.name
         #         count: ancestor_id.count
         #         index: i
         total_count = Docs.find(match).count()
-        # console.log 'total count', total_count
-        # console.log 'facet match', match
         tag_cloud = Docs.aggregate [
             { $match: match }
             { $project: tags: 1 }
@@ -99,9 +93,7 @@ Meteor.publish 'facet_sub', (
             { $limit: 20 }
             { $project: _id: 0, name: '$_id', count: 1 }
             ]
-        # console.log 'theme tag_cloud, ', tag_cloud
         tag_cloud.forEach (tag, i) ->
-            # console.log tag
             self.added 'results', Random.id(),
                 name: tag.name
                 count: tag.count
@@ -120,7 +112,6 @@ Meteor.publish 'facet_sub', (
         # #     { $limit: limit }
         # #     { $project: _id: 0, name: '$_id', count: 1 }
         # #     ]
-        # # # console.log 'cloud, ', cloud
         # # watson_keyword_cloud.forEach (keyword, i) ->
         # #     self.added 'watson_keywords', Random.id(),
         # #         name: keyword.name
@@ -137,7 +128,6 @@ Meteor.publish 'facet_sub', (
             { $limit: 10 }
             { $project: _id: 0, name: '$_id', count: 1 }
             ]
-        # console.log 'timestamp_tags_cloud, ', timestamp_tags_cloud.count()
         timestamp_tags_cloud.forEach (timestamp_tag, i) ->
             self.added 'results', Random.id(),
                 name: timestamp_tag.name
@@ -156,7 +146,6 @@ Meteor.publish 'facet_sub', (
         #     { $limit: limit }
         #     { $project: _id: 0, name: '$_id', count: 1 }
         #     ]
-        # # console.log 'building building_tag_cloud, ', building_tag_cloud
         # building_tag_cloud.forEach (building_tag, i) ->
         #     self.added 'building_tags', Random.id(),
         #         name: building_tag.name
@@ -174,7 +163,6 @@ Meteor.publish 'facet_sub', (
         #     { $limit: limit }
         #     { $project: _id: 0, name: '$_id', count: 1 }
         #     ]
-        # # console.log 'location location_tag_cloud, ', location_tag_cloud
         # location_tag_cloud.forEach (location_tag, i) ->
         #     self.added 'location_tags', Random.id(),
         #         name: location_tag.name
@@ -196,7 +184,6 @@ Meteor.publish 'facet_sub', (
         #     ]
         #
         #
-        # # console.log author_tag_cloud
         #
         # # author_objects = []
         # # Docs.find _id: $in: author_tag_cloud.
@@ -216,14 +203,11 @@ Meteor.publish 'facet_sub', (
         # int_doc_limit = parseInt doc_limit
         # subHandle = Docs.find(match, {limit:20, sort: timestamp:-1}).observeChanges(
         #     added: (id, fields) ->
-        #         # console.log 'added doc', id, fields
         #         # doc_results.push id
         #         self.added 'docs', id, fields
         #     changed: (id, fields) ->
-        #         # console.log 'changed doc', id, fields
         #         self.changed 'docs', id, fields
         #     removed: (id) ->
-        #         # console.log 'removed doc', id, fields
         #         # doc_results.pull id
         #         self.removed 'docs', id
         # )
@@ -232,26 +216,21 @@ Meteor.publish 'facet_sub', (
 
         # user_results = Docs.find(_id:$in:doc_results).observeChanges(
         #     added: (id, fields) ->
-        #         # console.log 'added doc', id, fields
         #         self.added 'docs', id, fields
         #     changed: (id, fields) ->
-        #         # console.log 'changed doc', id, fields
         #         self.changed 'docs', id, fields
         #     removed: (id) ->
-        #         # console.log 'removed doc', id, fields
         #         self.removed 'docs', id
         # )
 
 
 
-        # console.log 'doc handle count', subHandle
 
         self.ready()
 
         # self.onStop ()-> subHandle.stop()
 
 # Meteor.publish 'ancestor_id_docs', (ancestor_ids)->
-#     console.log ancestor_ids
 #     # Docs.find
 #     #     _id: $in: ancestor_ids
 
@@ -270,7 +249,6 @@ Meteor.publish 'facet_sub', (
 
 #     match.ancestor_array = $exists:true
 #     # match._id = doc_id
-#     # console.log match
 #     # one_child = Docs.findOne(parent_id:doc_id)
 #     # if one_child
 #     #     match_array = one_child.ancestor_array
@@ -281,7 +259,6 @@ Meteor.publish 'facet_sub', (
 #     #     match_array = doc.ancestor_array
 #     # match.parent_id = $in:match_array
 
-#     # console.log 'match',match
 #     # if picked_ancestor_ids.length > 0 then match.ancestor_array = $all: picked_ancestor_ids
 #     ancestor_ids_cloud = Docs.aggregate [
 #         { $match: match }
@@ -293,7 +270,6 @@ Meteor.publish 'facet_sub', (
 #         { $limit: 10 }
 #         { $project: _id: 0, name: '$_id', count: 1 }
 #         ]
-#     # console.log 'ancestor_ids_cloud, ', ancestor_ids_cloud
 #     ancestor_ids_cloud.forEach (ancestor_id, i) ->
 #         self.added 'ancestor_ids', Random.id(),
 #             name: ancestor_id.name
@@ -305,14 +281,11 @@ Meteor.publish 'facet_sub', (
 #     # if username
 #     subHandle = Docs.find( {_id:$in:ancestor_doc_ids}, {limit:20, sort: timestamp:-1}).observeChanges(
 #         added: (id, fields) ->
-#             # console.log 'added doc', id, fields
 #             # doc_results.push id
 #             self.added 'docs', id, fields
 #         changed: (id, fields) ->
-#             # console.log 'changed doc', id, fields
 #             self.changed 'docs', id, fields
 #         removed: (id) ->
-#             # console.log 'removed doc', id, fields
 #             # doc_results.pull id
 #             self.removed 'docs', id
 #     )
@@ -333,7 +306,6 @@ Meteor.publish 'facet_sub', (
 # #             { $limit: limit }
 # #             { $project: _id: 0, name: '$_id', count: 1 }
 # #             ]
-# #         # console.log 'theme parent_tag_cloud, ', parent_tag_cloud
 # #         parent_tag_cloud.forEach (tag, i) ->
 # #             self.added 'tags', Random.id(),
 # #                 name: tag.doc_id
@@ -370,7 +342,6 @@ Meteor.publish 'doc_results', (
     # if view_gf
     #     match.gluten_free = true
     if current_query.length > 1
-    #     console.log 'searching org_query', org_query
         match.title = {$regex:"#{current_query}", $options: 'i'}
     #     # match.tags_string = {$regex:"#{query}", $options: 'i'}
 
@@ -381,14 +352,7 @@ Meteor.publish 'doc_results', (
     #     key_array = prematch["#{key}"]
     #     if key_array and key_array.length > 0
     #         match["#{key}"] = $all: key_array
-        # console.log 'current facet filter array', current_facet_filter_array
 
-    # console.log 'sort key', sort_key
-    # console.log 'sort direction', sort_direction
-    # console.log 'results match', match
-    # console.log 'sort_key', sort_key
-    # console.log 'sort_direction', sort_direction
-    # console.log 'limit', limit
     
     Docs.find match,
         sort:"#{sort_key}":sort_direction

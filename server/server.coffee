@@ -108,8 +108,6 @@ Meteor.methods
     rename: (old, newk)->
         old_count = Docs.find({"#{old}":$exists:true}).count()
         new_count = Docs.find({"#{newk}":$exists:true}).count()
-        console.log 'old count', old_count
-        console.log 'new count', new_count
         result = Docs.update({"#{old}":$exists:true}, {$rename:"#{old}":"#{newk}"}, {multi:true})
         result2 = Docs.update({"#{old}":$exists:true}, {$rename:"_#{old}":"_#{newk}"}, {multi:true})
 
@@ -127,27 +125,19 @@ Meteor.methods
         
     get_reddit_post: (doc_id, reddit_id, root)->
         doc = Docs.findOne doc_id
-        # console.log 'getting reddit post', doc_id, reddit_id
         if doc.reddit_id
-            console.log 'found doc for direct reddit pull', doc.reddit_id
         else
-            console.log 'NO found doc for direct reddit pull', doc
             
         HTTP.get "http://reddit.com/by_id/t3_#{doc.reddit_id}.json", (err,res)->
-            if err then console.error err
             else
                 rd = res.data.data.children[0].data
-                # console.log rd
                 result =
                     Docs.update doc_id,
                         $set:
                             rd: rd
-                # console.log rd
                 # if rd.is_video
-                #     # console.log 'pulling video comments watson'
                 #     Meteor.call 'call_watson', doc_id, 'url', 'video', ->
                 # else if rd.is_image
-                #     # console.log 'pulling image comments watson'
                 #     Meteor.call 'call_watson', doc_id, 'url', 'image', ->
                 # else
                 #     Meteor.call 'call_watson', doc_id, 'url', 'url', ->
@@ -156,13 +146,11 @@ Meteor.methods
                 # if rd.selftext
                 #     unless rd.is_video
                 #         # if Meteor.isDevelopment
-                #         #     console.log "self text", rd.selftext
                 #         Docs.update doc_id, {
                 #             $set:
                 #                 body: rd.selftext
                 #         }, ->
                 #         #     Meteor.call 'pull_site', doc_id, url
-                #             # console.log 'hi'
                 # if rd.selftext_html
                 #     unless rd.is_video
                 #         Docs.update doc_id, {
@@ -170,12 +158,10 @@ Meteor.methods
                 #                 html: rd.selftext_html
                 #         }, ->
                 #             # Meteor.call 'pull_site', doc_id, url
-                #             # console.log 'hi'
                 # if rd.url
                 #     unless rd.is_video
                 #         url = rd.url
                 #         # if Meteor.isDevelopment
-                #         #     console.log "found url", url
                 #         Docs.update doc_id, {
                 #             $set:
                 #                 reddit_url: url
@@ -197,7 +183,6 @@ Meteor.methods
                         over_18: rd.over_18
                     # $addToSet:
                     #     tags: $each: [rd.subreddit.toLowerCase()]
-                # console.log Docs.findOne(doc_id)
 
             
 Meteor.publish 'agg_emotions', (
