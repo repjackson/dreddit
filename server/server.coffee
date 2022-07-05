@@ -129,6 +129,8 @@ Meteor.methods
         else
             
         HTTP.get "http://reddit.com/by_id/t3_#{doc.reddit_id}.json", (err,res)->
+            if err 
+                console.log err
             else
                 rd = res.data.data.children[0].data
                 result =

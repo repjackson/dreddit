@@ -114,10 +114,6 @@ if Meteor.isClient
                       hideDuration : 250
                     })
     
-    Template.footer.onRendered ->
-        Meteor.setTimeout ->
-            $('.accordion').accordion()
-        , 1000
     Template.comments.onRendered ->
         Meteor.setTimeout ->
             $('.accordion').accordion()

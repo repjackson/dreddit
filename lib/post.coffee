@@ -563,7 +563,7 @@ if Meteor.isClient
             doc_count = Docs.find().count()
             # if doc_count is 1
             Docs.find({model:'reddit'}, 
-                limit:20
+                limit:10
                 sort:
                     points:-1
                     ups:-1
@@ -777,7 +777,7 @@ if Meteor.isServer
                 "#{sort_key}":sort_direction
                 points:-1
                 ups:-1
-            limit:20
+            limit:10
             fields:
                 # youtube_id:1
                 "rd.media_embed":1
@@ -838,7 +838,7 @@ if Meteor.isServer
             match.tags = $all: picked_tags
             limit = 10
         else
-            limit = 20
+            limit = 10
         # console.log 'match overlap', match, Docs.find(match).count()
         # else /
             # match.tags = $all: picked_tags

@@ -1,4 +1,6 @@
 if Meteor.isClient   
+    Template.registerHelper 'term', () ->
+        console.log @
     Template.registerHelper 'emotion_color', () ->
         if @sentiment
             if @sentiment is 'positive' then 'green' else 'red'
