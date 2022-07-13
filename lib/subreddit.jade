@@ -142,8 +142,6 @@ template(name='subreddit_sidebar')
     i.big.eye.icon(title="#{read_user_ids.length} viewers") 
     each read_user_ids
         +user_avatar
-    +comments
-    +author_segment
     .ui.inline.header                                
         |#{tags.length}
         +i name='tags'
@@ -153,14 +151,11 @@ template(name='subreddit_sidebar')
     +message_author_button
     +subreddit_widget
     div
-    +voting_full
     div
     if nsfw
         .ui.red.large.label
             +i name='18-plus'
             |nsfw
-    +favorites
-    +viewing_info
         
 template(name='subreddit_membership')
     .ui.header 
@@ -219,17 +214,12 @@ template(name='subreddit_dashboard')
                 |!{content}
             div
         .column
-            +voting_full
             div
             if nsfw
                 .ui.red.large.label
                     +i name='18-plus'
                     |nsfw
             +subreddit_stats
-            +follow_button
-            +tips
-            if has_price
-                +post_orders
             div
             +current_viewers
         .column

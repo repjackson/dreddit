@@ -397,7 +397,6 @@ template(name='post_view')
                         |get comments
                     if comments 
                         .ui.header comments
-                    +comments
             .five.wide.column
                 if thumbnail
                     img.ui.centered.rounded.image.invert(src=thumbnail)
@@ -413,7 +412,6 @@ template(name='post_view')
                 .ui.button.pull_post
                     i.download.icon
                     |get post
-                +voting_full
                 .ui.large.label.zoomer
                     +i name='chat'
                     |#{comment_count} comments
