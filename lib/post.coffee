@@ -650,7 +650,7 @@ if Meteor.isServer
         match.model = 'reddit'
         # if query
         # if view_nsfw
-        match.over_18 = porn
+        # match.over_18 = porn
         if picked_tags and picked_tags.length > 0
             match.tags = $all: picked_tags
             limit = 10
@@ -701,7 +701,7 @@ if Meteor.isServer
             $where: "this.watson.metadata.image.length > 1"
         }
         # if porn
-        match.over_18 = porn
+        # match.over_18 = porn
         # else 
         # added_tags = [term]
         # match = {model:'reddit'}
@@ -761,7 +761,7 @@ if Meteor.isServer
         # if picked_subreddit
         #     match.subreddit = picked_subreddit
         # if porn
-        match.over_18 = porn
+        # match.over_18 = porn
         # if picked_tags.length > 0
         #     # if picked_tags.length is 1
         #     #     found_doc = Docs.findOne(title:picked_tags[0])
@@ -872,10 +872,10 @@ if Meteor.isServer
             # response = HTTP.get("http://reddit.com/search.json?q=#{query}")
             # HTTP.get "http://reddit.com/search.json?q=#{query}+nsfw:0+sort:top",(err,response)=>
             # HTTP.get "http://reddit.com/search.json?q=#{query}",(err,response)=>
-            if porn 
-                link = "http://reddit.com/search.json?q=#{query}&nsfw=1&include_over_18=on"
-            else
-                link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off"
+            # if porn 
+            link = "http://reddit.com/search.json?q=#{query}&nsfw=1&include_over_18=on"
+            # else
+                # link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off"
             HTTP.get link,(err,response)=>
                 # console.log response
                 if response.data.data.dist > 1
