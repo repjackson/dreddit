@@ -40,39 +40,31 @@ if Meteor.isClient
     Template.post_view.onCreated ->
         @autorun => @subscribe 'doc_by_id', Router.current().params.doc_id, ->
     Template.post_view.onRendered ->
-        # console.log @
         found_doc = Docs.findOne Router.current().params.doc_id
         if found_doc 
             unless found_doc.watson
                 Meteor.call 'call_watson',Router.current().params.doc_id,'rd.selftext', ->
-                    console.log 'autoran watson'
 
 
     Template.agg_tag.onCreated ->
-        # console.log @
         @autorun => @subscribe 'tag_image', @data.name, Session.get('porn'),->
     Template.agg_tag.helpers
         term_image: ->
-            # console.log Template.currentData().name
             found = Docs.findOne {
                 model:'reddit'
                 tags:$in:[Template.currentData().name]
                 "watson.metadata.image":$exists:true
             }, sort:ups:-1
-            # console.log 'found image', found
             found
     Template.unpick_tag.onCreated ->
-        # console.log @
         @autorun => @subscribe 'tag_image', @data, Session.get('porn'),->
     Template.unpick_tag.helpers
         flat_term_image: ->
-            # console.log Template.currentData()
             found = Docs.findOne {
                 model:'reddit'
                 tags:$in:[Template.currentData()]
                 "watson.metadata.image":$exists:true
             }, sort:ups:-1
-            # console.log 'found flat image', found.watson.metadata.image
             found.watson.metadata.image
     Template.agg_tag.events
         'click .result': (e,t)->
@@ -107,9 +99,6 @@ if Meteor.isClient
     
     Template.post_card.helpers
         five_cleaned_tags: ->
-            # console.log picked_tags.array()
-            # console.log @tags[..5] not in picked_tags.array()
-            # console.log _.without(@tags[..5],picked_tags.array())
             if picked_tags.array().length
                 _.difference(@tags[..10],picked_tags.array())
             #     @tags[..5] not in picked_tags.array()
@@ -117,9 +106,7 @@ if Meteor.isClient
                 @tags[..5]
     Template.flat_tag_picker.events
         'click .remove_tag': ->
-            # console.log @
             parent = Template.parentData()
-            console.log parent
             # if confirm "remove #{@valueOf()} tag?"
             Docs.update parent._id,
                 $pull:
@@ -178,17 +165,10 @@ if Meteor.isClient
         # 'click .pick_subreddit': -> Session.set('subreddit',@subreddit)
         # 'click .pick_domain': -> Session.set('domain',@domain)
         'click .autotag': (e)->
-            console.log @
-            # console.log Template.currentData()
-            # console.log Template.parentData()
-            # console.log Template.parentData(1)
-            # console.log Template.parentData(2)
-            # console.log Template.parentData(3)
             # if @rd and @rd.selftext_html
             #     dom = document.createElement('textarea')
             #     # dom.innerHTML = doc.body
             #     dom.innerHTML = @rd.selftext_html
-            #     # console.log 'innner html', dom.value
             #     # return dom.value
             #     Docs.update @_id,
             #         $set:
@@ -199,7 +179,6 @@ if Meteor.isClient
             # doc = Docs.findOne Template.parentData()._id
             # Meteor.call 'call_watson', Template.parentData()._id, parent.key, @mode, ->
             # if doc 
-            # console.log 'calling client watson',doc, 'rd.selftext'
             $('body').toast({
                 title: "breaking down emotions"
                 # message: 'Please see desk staff for key.'
@@ -240,7 +219,6 @@ if Meteor.isClient
     Template.unpick_tag.events
         'click .unpick_tag': ->
             picked_tags.remove @valueOf()
-            console.log picked_tags.array()
             if picked_tags.array().length > 0
                 Session.set('is_loading', true)
                 Meteor.call 'search_reddit', picked_tags.array(), =>
@@ -253,7 +231,6 @@ if Meteor.isClient
     
     Template.posts.events
         'click .print_me': ->
-            console.log @
     
         # # 'keyup #search': _.throttle((e,t)->
         'click #search': (e,t)->
@@ -264,14 +241,12 @@ if Meteor.isClient
             search = $('#search').val().trim().toLowerCase()
             # if query.length > 0
             Session.set('current_search', search)
-            # console.log Session.get('current_search')
             if search.length > 0
                 if e.which is 13
                     if search.length > 0
                         # Session.set('searching', true)
                         picked_tags.push search
                         Session.set('full_doc_id',null)
-                        # console.log 'search', search
                         Session.set('is_loading', true)
                         Meteor.call 'search_reddit', picked_tags.array(), ->
                             Session.set('is_loading', false)
@@ -289,7 +264,6 @@ if Meteor.isClient
         #         search = $('#search').val()
         #         if search.length is 0
         #             last_val = picked_tags.array().slice(-1)
-        #             console.log last_val
         #             $('#search').val(last_val)
         #             picked_tags.pop()
         #             Meteor.call 'search_reddit', picked_tags.array(), ->
@@ -303,7 +277,6 @@ if Meteor.isClient
         # 'click .pick_domain': -> Session.set('domain',@name)
         # 'click .unpick_domain': -> Session.set('domain',null)
         'click .print_me': (e,t)->
-            console.log @
             
     Template.post_card.helpers
         unescaped: -> 
@@ -320,7 +293,6 @@ if Meteor.isClient
             # html.unescape(@rd.selftext_html)
     Template.post_view.events 
         'click .get_comments':->
-            console.log @
             Meteor.call 'get_comments', Router.current().params.doc_id, ->
                 
     Template.post_view.helpers
@@ -336,7 +308,6 @@ if Meteor.isClient
         full_doc: ->
             Docs.findOne Session.get('full_doc_id')
         current_bg:->
-            # console.log picked_tags.array()
             found = Docs.findOne {
                 model:'reddit'
                 tags:$in:picked_tags.array()
@@ -947,10 +918,9 @@ if Meteor.isClient
         'click .goto_subreddit': ->
             # console.log @subreddit
             Meteor.call 'find_tribe', @subreddit, (err,res)->
-                console.log res
+                # console.log res
                 Router.go "/group/#{res}"
         'click .get_comments': ->
-            console.log @
             Meteor.call 'get_reddit_comments', (Router.current().params.doc_id), ->
                 
                 
@@ -962,7 +932,6 @@ if Meteor.isServer
                 slug:tribe_slug
             
             if found 
-                console.log found 
                 return found._id
             else
                 new_id = 

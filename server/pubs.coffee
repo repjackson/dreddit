@@ -90,7 +90,7 @@ Meteor.publish 'facet_sub', (
             { $match: _id: $nin: picked_tags }
             { $sort: count: -1, _id: 1 }
             { $match: count: $lt: total_count }
-            { $limit: 20 }
+            { $limit: 42 }
             { $project: _id: 0, name: '$_id', count: 1 }
             ]
         tag_cloud.forEach (tag, i) ->
@@ -201,7 +201,7 @@ Meteor.publish 'facet_sub', (
 
         # doc_results = []
         # int_doc_limit = parseInt doc_limit
-        # subHandle = Docs.find(match, {limit:20, sort: timestamp:-1}).observeChanges(
+        # subHandle = Docs.find(match, {limit:42, sort: timestamp:-1}).observeChanges(
         #     added: (id, fields) ->
         #         # doc_results.push id
         #         self.added 'docs', id, fields
@@ -279,7 +279,7 @@ Meteor.publish 'facet_sub', (
 #     ancestor_doc_ids =  _.pluck ancestor_ids_cloud, 'name'
 
 #     # if username
-#     subHandle = Docs.find( {_id:$in:ancestor_doc_ids}, {limit:20, sort: timestamp:-1}).observeChanges(
+#     subHandle = Docs.find( {_id:$in:ancestor_doc_ids}, {limit:42, sort: timestamp:-1}).observeChanges(
 #         added: (id, fields) ->
 #             # doc_results.push id
 #             self.added 'docs', id, fields
@@ -356,7 +356,7 @@ Meteor.publish 'doc_results', (
     
     Docs.find match,
         sort:"#{sort_key}":sort_direction
-        limit: 20
+        limit: 42
         fields:
             title:1
             model:1
