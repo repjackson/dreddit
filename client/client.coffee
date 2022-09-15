@@ -24,7 +24,6 @@ Meteor.startup ->
 
 Template.nav.helpers
     is_connected: -> 
-        # console.log Meteor.status().connected
         Meteor.status().connected
     unread_count: ->
         Docs.find(
@@ -33,7 +32,6 @@ Template.nav.helpers
         ).count()
 Template.nav_item.helpers
     nav_item_class: (model)->
-        # console.log model
         if Router.current().params.model is model then 'active' else ''
         
         
@@ -89,12 +87,9 @@ Template.nav.events
             Router.go "/search"
     'click .refresh_gps': ->
         navigator.geolocation.getCurrentPosition (position) =>
-            console.log 'navigator position', position
             Session.set('current_lat', position.coords.latitude)
             Session.set('current_long', position.coords.longitude)
             
-            console.log 'saving long', position.coords.longitude
-            console.log 'saving lat', position.coords.latitude
         
             pos = Geolocation.currentLocation()
             Docs.update Router.current().params.doc_id, 
@@ -111,10 +106,8 @@ Template.nav.events
         new_id = Docs.insert {}
         Router.go "/doc/#{new_id}/edit"
     'mouseenter img': (e)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.image').addClass('spinning')
     'mouseleave img': (e)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.image').removeClass('spinning')
         
 Template.nav_item.events 
@@ -140,7 +133,6 @@ Template.nav.events
         Router.go "/doc/#{new_id}/edit"
     'click .locate': ->
         navigator.geolocation.getCurrentPosition (position) =>
-            console.log 'navigator position', position
             Session.set('current_lat', position.coords.latitude)
             Session.set('current_long', position.coords.longitude)
 
@@ -150,25 +142,18 @@ Template.nav_item.events
     'click .tada': (e,t)-> $(e.currentTarget).closest('.icon').transition('bounce', 1000)
 Template.layout.events
     'click .fly_down': (e,t)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.grid').transition('fade down', 500)
     'click .fly_up': (e,t)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.grid').transition('fade up', 500)
     'click .fly_left': (e,t)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.grid').transition('fade left', 500)
     'click .fly_right': (e,t)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.grid').transition('fade right', 500)
     'click .card_fly_right': (e,t)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.card').transition('fade right', 500)
     'click .zoom': (e,t)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.grid').transition('fade right', 500)
     'click .flip': (e,t)->
-        # console.log 'hi'
         $(e.currentTarget).closest('.grid').transition('flip', 500)
         
     # 'click a': ->

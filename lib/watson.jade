@@ -257,12 +257,12 @@ template(name='relations')
     .ui.list 
         each watson.relations 
             .item
-                .ui.inline.header type: #{type}
+                .ui.label type: #{type}
                 if is type 'residesIn'
                     i.home.big.icon
                 else if is type 'locatedAt'
                     i.marker.big.icon
-                .ui.inline.header !{sentence}
+                | !{sentence}
                 .ui.label score: #{score}
                 each arguments
                     .ui.label #{text}
@@ -283,7 +283,6 @@ template(name='semantic_roles')
 
 
 template(name='watson_view')
-    +relations
     +tone
     +doc_sentiment
     +doc_emotion
@@ -294,6 +293,7 @@ template(name='watson_view')
     // +keyword_list
     +concept_list
     +keywords
+    +relations
     // .ui.hidden.divider
     //- if dev
     //-     .ui.styled.accordion

@@ -151,15 +151,15 @@ template(name='post_card')
         .content
             a.ui.grey.header.zoomer.fly_right(href="/post/#{_id}")
                 |!{title}
-            .ui.label
-                i.globe.grey.icon 
-                |#{domain}
-            .ui.label
-                i.thumbs.up.grey.icon 
-                |#{ups}
-            .ui.label
-                i.comment.grey.icon 
-                |#{num_comments}
+            // .ui.label
+            //     i.globe.grey.icon 
+            //     |#{domain}
+            // .ui.label
+            //     i.thumbs.up.grey.icon 
+            //     |#{ups}
+            // .ui.label
+            //     i.comment.grey.icon 
+            //     |#{num_comments}
             // .ui.label.zoomer.pick_subreddit
             //     |subreddit: #{subreddit}
             // .ui.label(title="added {{long_date _timestamp}}")
@@ -316,50 +316,6 @@ template(name='agg_tag')
                 
                 
                 
-template(name='user_post')
-    .ui.two.column.stackable.grid 
-        .column
-            .ui.header 
-                +i name='post'
-                |#{mined_counter}
-                |total mined post posts
-            .ui.header 
-                +i name='post'
-                // |#{mined_counter}
-                |latest mined post posts
-            .ui.selection.animated.list 
-                each latest_mined_posts
-                    +post_small_item
-        if overlap_tags.count
-            .column
-                .ui.header 
-                    +i name='infinity-large'
-                    |your upvoted tag overlap 
-                each overlap_tags
-                    .ui.zoomer.label.pick_overlap_tag(title='drill down')
-                        strong #{name}
-                        small #{count}
-        .column
-            .ui.header 
-                +i name='facebook-like'
-                |latest upvoted post posts 
-            .ui.selection.animated.list 
-                each latest_upvoted_posts
-                    +post_small_item
-                    
-                    
-template(name='post_small_item')
-    a.item.fly_left(href="/post/#{_id}")
-        if watson.metadata.image
-            img.ui.avatar.image(src=watson.metadata.image)
-        .header #{title}
-        .content 
-            each five_tags 
-                .ui.label #{this}
-                
-                
-                
-                
 template(name='post_view')
     with current_doc
         if image_id
@@ -370,10 +326,9 @@ template(name='post_view')
             img.ui.fluid.image.checkin_banner(src=url)
         .ui.stackable.padded.grid 
             .eleven.wide.column
-                a.ui.compact.button.fly_left.zoomer(href="/posts" title='back to browse')
-                    i.chevron.left.icon
-                    +i name='news'
-                    |post
+                a.ui.big.button.fly_left.zoomer(href="/" title='back to browse')
+                    i.chevron.left.large.icon
+                    |back
                 .ui.segment.alpha.scrollin
                     .ui.inline.header !{title}
                     if rd.selftext_html

@@ -466,37 +466,6 @@ if Meteor.isClient
         #
         
         
-    Template.user_post.onCreated ->
-        @autorun => Meteor.subscribe 'user_post_mined_counter', Router.current().params.username, ->
-        @autorun => Meteor.subscribe 'latest_mined_reddit_posts', Router.current().params.username, ->
-        @autorun => Meteor.subscribe 'latest_upvoted_reddit_posts', Router.current().params.username, ->
-        if Meteor.user()
-            username = Meteor.user().username
-        else 
-            username = null
-        @autorun => Meteor.subscribe 'reddit_mined_overlap', 
-            Router.current().params.username, 
-            username, 
-            picked_tags.array(),
-    Template.user_post.helpers
-        mined_counter: -> Counts.get('mined_counter') 
-        latest_mined_posts: ->
-            user = Meteor.users.findOne username:Router.current().params.username
-            Docs.find {
-                model:'reddit'
-                _author_id:user._id
-            }, sort:_timestamp:-1
-        overlap_tags: ->
-        latest_upvoted_posts: ->
-            user = Meteor.users.findOne username:Router.current().params.username
-            Docs.find {
-                model:'reddit'
-                upvoter_ids:$in:[user._id]
-            }, sort:_timestamp:-1
-        overlap_tags: ->
-            Results.find 
-                model:'overlap_tag'
-
     Template.doc_results.helpers
         doc_results: ->
             current_docs = Docs.find()

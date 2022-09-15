@@ -45,14 +45,13 @@ Docs.before.insert (userId, doc)->
     doc.upvoters = []
     return
 
-Docs.after.insert (userId, doc)->
-    console.log doc.tags
-    return
+# Docs.after.insert (userId, doc)->
+    # return
 
-Docs.after.update ((userId, doc, fieldNames, modifier, options) ->
-    doc.tag_count = doc.tags?.length
-    # Meteor.call 'generate_authored_cloud'
-), fetchPrevious: true
+# Docs.after.update ((userId, doc, fieldNames, modifier, options) ->
+#     doc.tag_count = doc.tags?.length
+#     # Meteor.call 'generate_authored_cloud'
+# ), fetchPrevious: true
 
 
 Docs.helpers
