@@ -176,48 +176,7 @@ Template.layout.events
     #     .transition('fade out', 200)
     #     .transition('fade in', 200)
 
-
-# Template.layout.helpers
-#     usersOnline:()->
-#         Meteor.users.find({ "status.online": true })
-
-# Template.user_pill.helpers
-#     labelClass:->
-#         if @status.idle 
-#             "yellow"
-#         else if @status.online
-#             "green"
-#         else
-#             ""
-
-# Meteor.users.find({ "status.online": true }).observe({
-#     added: (id)->
-#         console.log id, 'just came online'
-#     removed: (id)->
-#         console.log id, 'just went offline'
-# })
-
-
-# Stripe.setPublishableKey Meteor.settings.public.stripe_publishable
 Router.route '/', (->
     @layout 'layout'
     @render 'posts'
     ), name:'home'
-# Router.route '/', (->
-#     @redirect('/');
-#     ), name:'home'
-Router.route '/docs', (->
-    @redirect('/posts');
-    ), name:'docs'
-
-Router.route '/m/:model', (->
-    @layout 'layout'
-    @render 'docs'
-    ), name:'model'
-
-
-# Router.route '/docs', (->
-#     @layout 'layout'
-#     @render 'docs'
-#     ), name:'docs'
-    
