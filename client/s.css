@@ -460,7 +460,7 @@ body {
 }
 
 .invert{
-    /*filter: invert(.9) !important; */
+    filter: invert(1) !important; 
     /*background-color:black !important; */
      /*height: 100%; */
  } 

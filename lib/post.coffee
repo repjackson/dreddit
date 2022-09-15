@@ -621,7 +621,7 @@ if Meteor.isServer
         match.model = 'reddit'
         # if query
         # if view_nsfw
-        # match.over_18 = porn
+        match.over_18 = porn
         if picked_tags and picked_tags.length > 0
             match.tags = $all: picked_tags
             limit = 10
@@ -672,7 +672,7 @@ if Meteor.isServer
             $where: "this.watson.metadata.image.length > 1"
         }
         # if porn
-        # match.over_18 = porn
+        match.over_18 = porn
         # else 
         # added_tags = [term]
         # match = {model:'reddit'}
