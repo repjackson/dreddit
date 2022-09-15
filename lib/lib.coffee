@@ -11,8 +11,7 @@ Router.configure
     loadingTemplate: 'splash'
     trackPageView: false
 
-Router.route '/reddit', -> @render 'posts'
-Router.route '*', -> @render 'food'
+Router.route '*', -> @render 'posts'
 # Router.route '/', -> @render 'reddit'
 
 # Router.route "/food/:food_id", -> @render 'food_doc'

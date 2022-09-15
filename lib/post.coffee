@@ -1,7 +1,5 @@
 if Meteor.isClient
     Template.posts.onCreated ->
-        document.title = 'posts'
-        
         Session.setDefault('current_search', null)
         Session.setDefault('porn', false)
         Session.setDefault('dummy', false)
@@ -315,10 +313,8 @@ if Meteor.isClient
                 # thumbnail:$nin:['default','self']
             },sort:ups:-1
             if found
-                # console.log 'found bg'
                 found.watson.metadata.image
             # else 
-            #     console.log 'no found bg'
     
         emotion_avg_result: ->
             Results.findOne 
@@ -348,21 +344,13 @@ if Meteor.isClient
         curent_date_setting: -> Session.get('date_setting')
     
         term_icon: ->
-            console.log @
         is_loading: -> Session.get('is_loading')
     
         tag_result_class: ->
             # ec = omega.emotion_color
-            # console.log @
-            # console.log omega.total_doc_result_count
             total_doc_result_count = Docs.find({}).count()
-            console.log total_doc_result_count
             percent = @count/total_doc_result_count
-            # console.log 'percent', percent
-            # console.log typeof parseFloat(@relevance)
-            # console.log typeof (@relevance*100).toFixed()
             whole = parseInt(percent*10)+1
-            # console.log 'whole', whole
     
             # if whole is 0 then "#{ec} f5"
             if whole is 0 then "f5"
@@ -378,13 +366,11 @@ if Meteor.isClient
             else if whole is 10 then "f20"
     
         connection: ->
-            # console.log Meteor.status()
             Meteor.status()
         connected: -> Meteor.status().connected
     
         unpicked_tags: ->
             # # doc_count = Docs.find().count()
-            # # console.log 'doc count', doc_count
             # # if doc_count < 3
             # #     Tags.find({count: $lt: doc_count})
             # # else
@@ -403,7 +389,6 @@ if Meteor.isClient
         picked_tags_plural: -> picked_tags.array().length > 1
     
         searching: ->
-            # console.log 'searching?', Session.get('searching')
             Session.get('searching')
     
         one_post: -> Docs.find().count() is 1
@@ -423,7 +408,6 @@ if Meteor.isClient
                 },
                     sort:
                         "#{Session.get('sort_key')}":Session.get('sort_direction')
-            # console.log cursor.fetch()
             cursor
     
     
@@ -431,14 +415,10 @@ if Meteor.isClient
             Template.instance().subscriptionsReady()
             
         #     @autorun => Meteor.subscribe 'current_doc', Router.current().params.doc_id
-        #     console.log @
         # Template.array_view.events
         #     'click .toggle_post_filter': ->
-        #         console.log @
         #         value = @valueOf()
-        #         console.log Template.currentData()
         #         current = Template.currentData()
-        #         console.log Template.parentData()
                 # match = Session.get('match')
                 # key_array = match["#{current.key}"]
                 # if key_array
@@ -453,7 +433,6 @@ if Meteor.isClient
                 #         Session.set('match', match)
                 #         Meteor.call 'search_reddit', picked_tags.array(), ->
                 #         # Meteor.call 'agg_idea', value, current.key, 'entity', ->
-                #         console.log @
                 #         # match["#{current.key}"] = ["#{value}"]
                 # else
                 # if value in picked_tags.array()
@@ -461,25 +440,18 @@ if Meteor.isClient
                 # else
                 #     # match["#{current.key}"] = ["#{value}"]
                 #     picked_tags.push value
-                #     # console.log picked_tags.array()
                 # # Session.set('match', match)
-                # # console.log picked_tags.array()
                 # if picked_tags.array().length > 0
                 #     Meteor.call 'search_reddit', picked_tags.array(), ->
-                # console.log Session.get('match')
     
         # Template.array_view.helpers
         #     values: ->
-        #         # console.log @key
         #         Template.parentData()["#{@key}"]
         #
         #     post_label_class: ->
         #         match = Session.get('match')
         #         key = Template.parentData().key
         #         doc = Template.parentData(2)
-        #         # console.log key
-        #         # console.log doc
-        #         # console.log @
         #         if @valueOf() in picked_tags.array()
         #             'active'
         #         else
@@ -529,7 +501,6 @@ if Meteor.isClient
         doc_results: ->
             current_docs = Docs.find()
             # if Session.get('selected_doc_id') in current_docs.fetch()
-            # console.log current_docs.fetch()
             # Docs.findOne Session.get('selected_doc_id')
             doc_count = Docs.find().count()
             # if doc_count is 1
@@ -549,16 +520,13 @@ if Meteor.isServer
         get_reddit_comments: (post_id)->
             post =
                 Docs.findOne post_id
-            # console.log post
             # response = HTTP.get("http://reddit.com/search.json?q=#{query}")
             # HTTP.get "http://reddit.com/search.json?q=#{query}+nsfw:0+sort:top",(err,response)=>
             # HTTP.get "http://reddit.com/search.json?q=#{query}",(err,response)=>
             link = "http://reddit.com/comments/#{post.reddit_id}?depth=1"
             HTTP.get link,(err,response)=>
-                console.log _.keys(response)
                 # if response.data.data.dist > 1
                 #     _.each(response.data.data.children, (item)=>
-                #         console.log 'item', item
                         # unless item.domain is "OneWordBan"
                         #     data = item.data
 
@@ -661,8 +629,6 @@ if Meteor.isServer
         porn=false
         )->
         # added_tags = []
-        # console.log 'match term', term
-        # console.log 'match picked tags', picked_tags
         # if picked_tags.length > 0
         #     added_tags = picked_tags.push(term)
         match = {
@@ -678,12 +644,8 @@ if Meteor.isServer
         # match = {model:'reddit'}
         # match.thumbnail = $nin:['default','self']
         # match.url = { $regex: /^.*(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png).*/, $options: 'i' }
-        # console.log "added tags", added_tags
-        # console.log 'looking up added tags', added_tags
         # found = Docs.findOne match
-        # console.log "TERM", term, found.
         # if found
-        #     # console.log "FOUND THUMBNAIL",found.thumbnail
         Docs.find match,{
             limit:1
             sort:
@@ -704,7 +666,6 @@ if Meteor.isServer
         #             model:'reddit'
         #             thumbnail:$exists:true
         #             tags:$in:[term]
-        #     console.log 'BACKUP', backup
         #     if backup
         #         Docs.find { 
         #             model:'reddit'
@@ -732,7 +693,7 @@ if Meteor.isServer
         # if picked_subreddit
         #     match.subreddit = picked_subreddit
         # if porn
-        # match.over_18 = porn
+        match.over_18 = porn
         # if picked_tags.length > 0
         #     # if picked_tags.length is 1
         #     #     found_doc = Docs.findOne(title:picked_tags[0])
@@ -810,7 +771,6 @@ if Meteor.isServer
             limit = 10
         else
             limit = 10
-        # console.log 'match overlap', match, Docs.find(match).count()
         # else /
             # match.tags = $all: picked_tags
         agg_doc_count = Docs.find(match).count()
@@ -848,10 +808,8 @@ if Meteor.isServer
             # else
                 # link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off"
             HTTP.get link,(err,response)=>
-                # console.log response
                 if response.data.data.dist > 1
                     _.each(response.data.data.children, (item)=>
-                        # console.log 'item', item
                         unless item.domain is "OneWordBan"
                             data = item.data
                             len = 200
@@ -859,7 +817,6 @@ if Meteor.isServer
                             # added_tags.push data.domain.toLowerCase()
                             # added_tags.push data.author.toLowerCase()
                             # added_tags = _.flatten(added_tags)
-                            # console.log 'data', data
                             reddit_post =
                                 reddit_id: data.id
                                 url: data.url
@@ -916,9 +873,7 @@ if Meteor.isClient
                 Session.set('loading',false)
             Router.go "/posts"
         'click .goto_subreddit': ->
-            # console.log @subreddit
             Meteor.call 'find_tribe', @subreddit, (err,res)->
-                # console.log res
                 Router.go "/group/#{res}"
         'click .get_comments': ->
             Meteor.call 'get_reddit_comments', (Router.current().params.doc_id), ->

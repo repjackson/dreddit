@@ -2,9 +2,9 @@ template(name='posts')
     img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
     .ui.stackable.padded.grid
         .row
-            .sixteen.wide.column
-                .ui.inline.header(title='i know right?')
-                    |{{comma total_post_count}}
+            .sixteen.wide.center.aligned.column
+                // .ui.inline.header(title='i know right?')
+                    // |{{comma total_post_count}}
                 // unless full_doc_id
                 // if currentUser
                 // .ui.circular.icon.button.toggle_porn(title='toggle adult' class=porn_class)
@@ -175,10 +175,10 @@ template(name='post_card')
                 .ui.inline.header
                     |#{points}pts
             
-            // if over_18
-            //     .ui.red.label
-            //         i.alert.icon
-            //         // +i name='nsfw'
+            if over_18
+                .ui.red.label
+                    i.alert.icon
+                    // +i name='nsfw'
             if doc_sentiment_label
                 +doc_sentiment
                 +doc_emotion

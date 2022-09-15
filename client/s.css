@@ -1121,8 +1121,8 @@ h1.ui.header{
 .scrolling{
 	overflow-y:scroll;
 	overflow-x:hidden;
-	max-height:150vh;
-	/*max-height:85vh;*/
+	/*max-height:150vh;*/
+	max-height:85vh;
 	/*padding-top: 2em;*/
 	/*padding-left: 1em;*/
 }
