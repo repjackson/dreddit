@@ -2,42 +2,42 @@ template(name='posts')
     img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
     .ui.stackable.padded.grid
         .row
-            .sixteen.wide.center.aligned.column
-                // .ui.inline.header(title='i know right?')
-                    // |{{comma total_post_count}}
+            .sixteen.wide.column
+                .ui.inline.header(title='i know right?')
+                    |{{comma total_post_count}}
                 // unless full_doc_id
                 // if currentUser
-                // .ui.circular.icon.button.toggle_porn(title='toggle adult' class=porn_class)
-                //     i.skull.crossbones.large.icon
+                .ui.circular.icon.button.toggle_porn(title='toggle adult' class=porn_class)
+                    i.skull.crossbones.large.icon
                 each picked_tags
                     +unpick_tag
                     //- button.ui.active.large.button.unpick_tag(tabindex='0' style=background_style class=emotion_color)
                 //- .ui.inline.small.header(class=emotion_color) {{fixed omega_doc.current_max_emotion_percent}}% #{omega_doc.current_most_emotion}
-                // if not_searching 
-                //     .ui.center.aligned.segment
-                // if unpicked_groups
-                //     .ui.inline.header 
-                //         +i name='campfire'
-                //         |groups
-                //     each unpicked_groups
-                //         .ui.label #{name}
+                if not_searching 
+                    .ui.center.aligned.segment
+                if unpicked_groups
+                    .ui.inline.header 
+                        +i name='campfire'
+                        |groups
+                    each unpicked_groups
+                        .ui.label #{name}
                 
-                //         i.massive.yin.yang.grey.icon
+                        i.massive.yin.yang.grey.icon
                 // +session_toggle key='view_images' label='images' icon='image'
                 // +session_toggle key='view_external' label='external' icon='external'
                 .ui.big.icon.input
                     i.search.icon
                     input#search(type='text' autofocus='' autocomplete="off" placeholder='search...')
                 // .ui.icon.input(class=search_class title="#{emotion_avg_result.avg_sent_score} sentiment")
-                //     // if is_loading
-                //     //     if home_subs_ready
-                //     unless is_loading
-                //         i.search.link.icon.refresh_agg
-                //         // i.yin.yang.big.loading.link.icon.reconnect
-                //     if is_loading
-                //         i.yin.yang.big.loading.icon
-                //     //- input#search(type='text' autofocus='' autocomplete="off" value=current_query)
-                //     //- .ui.header #{connection.status}
+                    // if is_loading
+                    //     if home_subs_ready
+                unless is_loading
+                    i.search.link.icon.refresh_agg
+                    // i.yin.yang.big.loading.link.icon.reconnect
+                if is_loading
+                    i.yin.yang.big.loading.icon
+                //- input#search(type='text' autofocus='' autocomplete="off" value=current_query)
+                //- .ui.header #{connection.status}
                 with emotion_avg_result
                     // .ui.label
                     //     |{{to_percent avg_sent_score}}%
@@ -281,9 +281,9 @@ template(name='post_card_big')
             //         i.large.chess.grey.icon
             //     // +call_watson key=rd.selftext
         
-// template(name='session_toggle')
-//     .ui.button.toggle
-//         i.large.icon(class=icon)
+template(name='session_toggle')
+    .ui.button.toggle
+        i.large.icon(class=icon)
         
         
 template(name='flat_tag_picker')
