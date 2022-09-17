@@ -253,8 +253,8 @@ if Meteor.isClient
             _id:$in:@following_user_ids
     
     Template.registerHelper 'all_docs', () -> Docs.find()
-    Template.registerHelper 'one_result', () -> Docs.find(model:Session.get('model')).count() is 1
-    Template.registerHelper 'two_results', () -> Docs.find(model:Session.get('model')).count() is 2
+    Template.registerHelper 'one_result', () -> Docs.find(model:'reddit').count() is 1
+    Template.registerHelper 'two_results', () -> Docs.find(model:'reddit').count() is 2
     
     
     Template.registerHelper 'parent', () -> Template.parentData()
@@ -515,7 +515,3 @@ if Meteor.isClient
     
     
     Template.registerHelper 'in_dev', () -> Meteor.isDevelopment
-    
-    Template.registerHelper 'is_current_user', (key, value)->
-        if Meteor.user()
-            Meteor.user().username is Router.current().params.username

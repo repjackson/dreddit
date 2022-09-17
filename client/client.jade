@@ -29,9 +29,17 @@ head
     
     
 template(name='session_icon_button')
+    .ui.icon.button
+        +i name=icon
+        i.large.icon(class=icon)
 template(name='session_set')
+    .ui.icon.button
+        +i name=icon
 template(name='print_this')
+    .ui.icon.button
 template(name='sort_direction_toggle')
+    .ui.icon.button
+        +i name='sort'
 template(name='i')
     i.large.icon(class=icon)
   

@@ -13,8 +13,8 @@ template(name='posts')
                     +unpick_tag
                     //- button.ui.active.large.button.unpick_tag(tabindex='0' style=background_style class=emotion_color)
                 //- .ui.inline.small.header(class=emotion_color) {{fixed omega_doc.current_max_emotion_percent}}% #{omega_doc.current_most_emotion}
-                if not_searching 
-                    .ui.center.aligned.segment
+                // if not_searching 
+                //     .ui.center.aligned.segment
                 if unpicked_groups
                     .ui.inline.header 
                         +i name='campfire'
@@ -70,16 +70,7 @@ template(name='posts')
                         i.lightning.icon
                         |reconnect
                 // .ui.hidden.divider
-                unless is one_result
-                    span.sorting
-                        +session_icon_button key='view_mode' value='grid' icon='grid' 
-                        +session_icon_button key='view_mode' value='list' icon='list'
-                        +sort_direction_toggle
-                        +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
-                        +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
-                        +session_set key='sort_key' value='domain' label='domain' icon='globe'
-                        +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
-                        +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                // unless one_result
                     
                 if connected
                     // if searching 
@@ -90,7 +81,20 @@ template(name='posts')
                         each unpicked_tags
                             +agg_tag
                 // .ui.hidden.divider
-            .sixteen.wide.column
+            .two.wide.column
+                .ui.header location
+                .ui.header people
+                .ui.header time
+                .ui.header emotions
+            .fourteen.wide.column
+                +session_icon_button key='view_mode' value='grid' icon='th' 
+                +session_icon_button key='view_mode' value='list' icon='list'
+                +sort_direction_toggle
+                +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
+                +session_set key='sort_key' value='domain' label='domain' icon='globe'
+                +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
+                +session_set key='sort_key' value='points' label='points' icon='hashtag'
                 +doc_results
                 
 template(name='doc_results')
@@ -130,7 +134,7 @@ template(name='unpick_tag')
 
                             
 template(name='post_card')
-    .card.autotag(title="#{ups} ups, created #{_when}")
+    .card(title="#{ups} ups, created #{_when}")
         if watson.metadata.image.length
             // |watson image
             a.fly_right(href="/post/#{_id}")
@@ -151,20 +155,20 @@ template(name='post_card')
         .content
             a.ui.grey.header.zoomer.fly_right(href="/post/#{_id}")
                 |!{title}
-            // .ui.label
-            //     i.globe.grey.icon 
-            //     |#{domain}
-            // .ui.label
-            //     i.thumbs.up.grey.icon 
-            //     |#{ups}
-            // .ui.label
-            //     i.comment.grey.icon 
-            //     |#{num_comments}
-            // .ui.label.zoomer.pick_subreddit
-            //     |subreddit: #{subreddit}
-            // .ui.label(title="added {{long_date _timestamp}}")
-            //     i.grey.clock.icon
-            //     |#{_when}
+            .ui.label
+                i.globe.grey.icon 
+                |#{domain}
+            .ui.label
+                i.thumbs.up.grey.icon 
+                |#{ups}
+            .ui.label
+                i.comment.grey.icon 
+                |#{num_comments}
+            .ui.label.zoomer.pick_subreddit
+                |subreddit: #{subreddit}
+            .ui.label(title="added {{long_date _timestamp}}")
+                i.grey.clock.icon
+                |#{_when}
             if watson.analyzed_text
                 .smallcut
                     |!{watson.analyzed_text}
@@ -182,10 +186,10 @@ template(name='post_card')
             if doc_sentiment_label
                 +doc_sentiment
                 +doc_emotion
-            // unless doc_sentiment_label 
-            //     .ui.icon.big.button.autotag.zoomer(title='breakdown emotions') 
-            //         i.large.chess.grey.icon
-            //     // +call_watson key=rd.selftext
+            unless doc_sentiment_label 
+                .ui.icon.big.button.autotag.zoomer(title='breakdown emotions') 
+                    i.large.chess.grey.icon
+                // +call_watson key=rd.selftext
         // .ui.attached.basic.buttons
         //     .ui.icon.circular.button.vote_up
         //         i.thumbs.up.green.icon(class=upvote_class)
