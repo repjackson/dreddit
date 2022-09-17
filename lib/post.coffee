@@ -76,7 +76,7 @@ if Meteor.isClient
             Session.set('is_loading', true)
             # Meteor.call 'call_wiki', @name, ->
     
-            Meteor.call 'search_reddit', picked_tags.array(), ->
+            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
                 Session.set('is_loading', false)
                 Session.set('searching', false)
             Meteor.setTimeout ->
@@ -91,7 +91,7 @@ if Meteor.isClient
             picked_tags.push @name
             Session.set('full_doc_id', null)
     
-            Meteor.call 'search_reddit', picked_tags.array(), ->
+            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
             $('#search').val('')
             Session.set('current_search', null)
     
@@ -114,7 +114,7 @@ if Meteor.isClient
             Session.set('full_doc_id', null)
     
             Session.set('loading',true)
-            Meteor.call 'search_reddit', picked_tags.array(), ->
+            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
                 Session.set('loading',false)
     Template.post_card_big.events
         'click .minimize': ->
@@ -158,7 +158,7 @@ if Meteor.isClient
             $(e.currentTarget).closest('.pick_flat_tag').transition('fly up', 500)
     
             Session.set('loading',true)
-            Meteor.call 'search_reddit', picked_tags.array(), ->
+            Meteor.call 'search_reddit', picked_tags.array(), Session.get('porn'),->
                 Session.set('loading',false)
         # 'click .pick_subreddit': -> Session.set('subreddit',@subreddit)
         # 'click .pick_domain': -> Session.set('domain',@domain)
@@ -219,7 +219,7 @@ if Meteor.isClient
             picked_tags.remove @valueOf()
             if picked_tags.array().length > 0
                 Session.set('is_loading', true)
-                Meteor.call 'search_reddit', picked_tags.array(), =>
+                Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), =>
                     Session.set('is_loading', false)
                 Meteor.setTimeout ->
                     Session.set('dummy', !Session.get('dummy'))
@@ -246,7 +246,7 @@ if Meteor.isClient
                         picked_tags.push search
                         Session.set('full_doc_id',null)
                         Session.set('is_loading', true)
-                        Meteor.call 'search_reddit', picked_tags.array(), ->
+                        Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
                             Session.set('is_loading', false)
                             # Session.set('searching', false)
                         # Meteor.setTimeout ->
@@ -673,7 +673,7 @@ if Meteor.isServer
     
     
     Meteor.methods
-        search_reddit: (query,porn)->
+        search_reddit: (query,porn=false)->
             # response = HTTP.get("http://reddit.com/search.json?q=#{query}")
             # HTTP.get "http://reddit.com/search.json?q=#{query}+nsfw:0+sort:top",(err,response)=>
             # HTTP.get "http://reddit.com/search.json?q=#{query}",(err,response)=>
