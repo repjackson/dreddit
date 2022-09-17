@@ -20,35 +20,6 @@ if Meteor.isClient
     #         model:'group'
     #         member_ids: $in:[user._id]
     
-    globalHotkeys = new Hotkeys();
-    
-    globalHotkeys.add({
-    	combo : "ctrl+4",
-    	eventType: "keydown",
-    	callback : ()->
-    		alert("You pressed ctrl+4");
-    })
-    
-    globalHotkeys.add({
-    	combo : "g g",
-    	callback : ()-> Router.go "/groups"
-    })
-    globalHotkeys.add({
-    	combo : "g u",
-    	callback : ()-> Router.go "/users"
-    })
-    globalHotkeys.add({
-    	combo : "g s",
-    	callback : ()-> Router.go "/search"
-    })
-    globalHotkeys.add({
-    	combo : "m p",
-    	callback : ()-> Router.go "/posts"
-    })
-    globalHotkeys.add({
-    	combo : "m e",
-    	callback : ()-> Router.go "/events"
-    })
     
     Template.registerHelper 'cal_time', (input) -> moment(input).calendar()
 

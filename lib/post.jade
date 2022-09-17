@@ -38,30 +38,30 @@ template(name='posts')
                 //         i.yin.yang.big.loading.icon
                 //     //- input#search(type='text' autofocus='' autocomplete="off" value=current_query)
                 //     //- .ui.header #{connection.status}
-                //     with emotion_avg_result
-                //         // .ui.label
-                //         //     |{{to_percent avg_sent_score}}%
-                //         //     small sentiment
-                //         if above_50 avg_joy_score
-                //             .ui.green.label
-                //                 |{{to_percent avg_joy_score}}%
-                //                 small joyful
-                //         if above_50 avg_anger_score
-                //             .ui.red.label
-                //                 |{{to_percent avg_anger_score}}%
-                //                 small angry
-                //         if above_50 avg_sadness_score
-                //             .ui.blue.label
-                //                 |{{to_percent avg_sadness_score}}%
-                //                 small sad
-                //         if above_50 avg_disgust_score
-                //             .ui.orange.label
-                //                 |{{to_percent avg_disgust_score}}%
-                //                 small disgusted
-                //         if above_50 avg_fear_score
-                //             .ui.grey.label
-                //                 |{{to_percent avg_fear_score}}%
-                //                 small fearful
+                with emotion_avg_result
+                    // .ui.label
+                    //     |{{to_percent avg_sent_score}}%
+                    //     small sentiment
+                    if above_50 avg_joy_score
+                        .ui.green.label
+                            |{{to_percent avg_joy_score}}%
+                            small joyful
+                    if above_50 avg_anger_score
+                        .ui.red.label
+                            |{{to_percent avg_anger_score}}%
+                            small angry
+                    if above_50 avg_sadness_score
+                        .ui.blue.label
+                            |{{to_percent avg_sadness_score}}%
+                            small sad
+                    if above_50 avg_disgust_score
+                        .ui.orange.label
+                            |{{to_percent avg_disgust_score}}%
+                            small disgusted
+                    if above_50 avg_fear_score
+                        .ui.grey.label
+                            |{{to_percent avg_fear_score}}%
+                            small fearful
                     
                 unless connected
                     //- .ui.header disconnected
@@ -70,16 +70,16 @@ template(name='posts')
                         i.lightning.icon
                         |reconnect
                 // .ui.hidden.divider
-                // unless is one_result
-                    // span.sorting
-                    //     +session_icon_button key='view_mode' value='grid' icon='grid' 
-                    //     +session_icon_button key='view_mode' value='list' icon='list'
-                    //     +sort_direction_toggle
-                    //     +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
-                    //     +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
-                    //     +session_set key='sort_key' value='domain' label='domain' icon='globe'
-                    //     +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
-                    //     +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                unless is one_result
+                    span.sorting
+                        +session_icon_button key='view_mode' value='grid' icon='grid' 
+                        +session_icon_button key='view_mode' value='list' icon='list'
+                        +sort_direction_toggle
+                        +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                        +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
+                        +session_set key='sort_key' value='domain' label='domain' icon='globe'
+                        +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
+                        +session_set key='sort_key' value='points' label='points' icon='hashtag'
                     
                 if connected
                     // if searching 
@@ -305,13 +305,13 @@ template(name='agg_tag')
         | #{name}
         // .hidden.content
         //     |+ #{title}
-        // if term.image
-        //     //- button.ui.compact.button(tabindex="0" title=count)
-        //     //- img.ui.mini.inline.image(src=term.image)
-        //     img.ui.mini.inline.image(src=term.image)
-        //     .ui.inline.small.thin.header(class=tag_result_class) #{title}
+        if term.image
+            //- button.ui.compact.button(tabindex="0" title=count)
+            //- img.ui.mini.inline.image(src=term.image)
+            img.ui.mini.inline.image(src=term.image)
+            .ui.inline.small.thin.header(class=tag_result_class) #{title}
         // else
-        //     //- button.ui.compact.button(tabindex="0" title=count)
+            //- button.ui.compact.button(tabindex="0" title=count)
         //- small #{count}
                 
                 

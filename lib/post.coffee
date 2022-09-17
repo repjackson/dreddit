@@ -499,49 +499,6 @@ if Meteor.isServer
                         # unless item.domain is "OneWordBan"
                         #     data = item.data
 
-    Meteor.publish 'latest_mined_reddit_posts', (username)->
-        user = Meteor.users.findOne username:username
-        Docs.find {
-            model:'reddit'
-            _author_id:user._id
-        }, 
-            limit:10
-            sort:_timestamp:-1
-            fields:
-                "watson.metadata.image":1
-                title:1
-                tags:1
-                model:1
-                _timestamp:1
-                
-        
-    Meteor.publish 'latest_upvoted_reddit_posts', (username)->
-        user = Meteor.users.findOne username:username
-        Docs.find {
-            model:'reddit'
-            upvoter_ids:$in:[user._id]
-        }, 
-            limit:10
-            sort:_timestamp:-1
-        
-    Meteor.publish 'user_post_mined_counter', (username)->
-        user = Meteor.users.findOne username:username
-        Counts.publish this, 'mined_counter', 
-            Docs.find({
-                _author_id:user._id
-                model:'reddit'
-            })
-        return undefined    # otherwise coffeescript returns a Counts.publish
-                          # handle when Meteor expects a Mongo.Cursor object.
-        
-    Meteor.publish 'product_counter', ()->
-        Counts.publish this, 'product_counter', 
-            Docs.find({
-                model:'product'
-            })
-        return undefined    # otherwise coffeescript returns a Counts.publish
-                          # handle when Meteor expects a Mongo.Cursor object.
-        
         
     Meteor.publish 'post_tag_results', (
         picked_tags=null

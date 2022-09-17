@@ -18,7 +18,6 @@ mobile-experience@1.1.0
 
 blaze-html-templates
 dburles:collection-helpers
-zimme:active-route
 momentjs:moment
 reactive-var@1.0.11
 matb33:collection-hooks
@@ -26,10 +25,7 @@ mquandalle:jade
 underscore@1.0.10
 coffeescript
 tmeasday:publish-counts
-reywood:publish-composite
-multiply:iron-router-progress
 ecmascript
 modules
 shell-server
-flowkey:hotkeys
 http
