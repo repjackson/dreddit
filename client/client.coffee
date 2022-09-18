@@ -21,7 +21,7 @@
 #     });
 
     
-Template.layout.events
+Template.body.events
     'click .fly_down': (e,t)->
         $(e.currentTarget).closest('.grid').transition('fade down', 500)
     'click .fly_up': (e,t)->
@@ -41,8 +41,3 @@ Template.layout.events
     #     $('.global_container')
     #     .transition('fade out', 200)
     #     .transition('fade in', 200)
-
-Router.route '/', (->
-    @layout 'layout'
-    @render 'posts'
-    ), name:'home'

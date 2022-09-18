@@ -44,20 +44,6 @@ template(name='i')
     i.large.icon(class=icon)
   
   
-template(name='layout')
-    div(class=darkmode_class)
-        // unless currentUser.darkmode
-        // +nav
-        // .ui.bottom.attached.pushable.segment.scrollin.fullheight(class=darkmode_class)
-        //     // img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
-        +yield
-
-// template(name='map')
-//     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1527.9701169651082!2d-105.25585774191387!3d40.0097825492517!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x876bedc5f7dbe969%3A0x1315eee779732075!2sShadow%20Creek%20Dr%2C%20Boulder%2C%20CO%2080303!5e0!3m2!1sen!2sus!4v1632511679104!5m2!1sen!2sus" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-template(name='not_found')
-    // +docs
-    .ui.center.aligned.basic.segment
-        .ui.header not found 
-        a.ui.big.button(href="/docs")
-            +i name='home'
-            |home
+  
+body 
+    +posts

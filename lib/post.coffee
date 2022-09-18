@@ -21,14 +21,6 @@ if Meteor.isClient
     
     
     
-    Router.route '/post/:doc_id', (->
-        @layout 'layout'
-        @render 'post_view'
-        ), name:'post_view'
-    Router.route '/posts', (->
-        @layout 'layout'
-        @render 'posts'
-        ), name:'posts'
     Template.posts.onCreated ->
         @autorun => Meteor.subscribe 'model_counter',('reddit'), ->
     Template.posts.helpers
