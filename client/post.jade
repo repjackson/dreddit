@@ -25,7 +25,7 @@ template(name='posts')
                         i.massive.yin.yang.grey.icon
                 // +session_toggle key='view_images' label='images' icon='image'
                 // +session_toggle key='view_external' label='external' icon='external'
-                .ui.big.icon.input
+                .ui.big.icon.input.invert
                     i.search.icon
                     input#search(type='text' autofocus='' autocomplete="off" placeholder='search...')
                 // .ui.icon.input(class=search_class title="#{emotion_avg_result.avg_sent_score} sentiment")
@@ -304,11 +304,15 @@ template(name='flat_tag_picker')
 
 template(name='agg_tag')
     // button.ui.big.compact.active.fade.animated.button.result(tabindex="0" title=count)
-    button.ui.image.basic.big.label.result.zoomer(tabindex="0" title=count)
+    button.ui.image.massive.black.label.result.zoomer.invert(tabindex="0" title=count)
         // .visible.content
+        with term
+            if is_image
+                if url
+                    img.ui.image.zoomer.invert(src=url)
         if subs_ready
-            if term_image.watson.metadata.image
-                img.ui.image.superzoomer.invert(src=term_image.watson.metadata.image)
+            if term.watson.metadata.image
+                img.ui.image.superzoomer(src=term.watson.metadata.image)
         else 
             i.yin.yang.grey.loading.icon
         | #{name}

@@ -39,11 +39,11 @@ if Meteor.isClient
     Template.agg_tag.onCreated ->
         @autorun => @subscribe 'tag_image', @data.name, Session.get('porn'),->
     Template.agg_tag.helpers
-        term_image: ->
+        term: ->
             found = Docs.findOne {
                 model:'reddit'
                 tags:$in:[Template.currentData().name]
-                "watson.metadata.image":$exists:true
+                # "watson.metadata.image":$exists:true
             }, sort:ups:-1
             found
     Template.unpick_tag.onCreated ->
@@ -526,7 +526,7 @@ if Meteor.isServer
                 { $match: count: $lt: agg_doc_count }
                 # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
                 { $sort: count: -1, _id: 1 }
-                { $limit: 15 }
+                { $limit: 11 }
                 { $project: _id: 0, name: '$_id', count: 1 }
             ], {
                 allowDiskUse: true
@@ -552,8 +552,8 @@ if Meteor.isServer
         match = {
             model:'reddit'
             tags: $in: [term]
-            "watson.metadata.image": $exists:true
-            $where: "this.watson.metadata.image.length > 1"
+            # "watson.metadata.image": $exists:true
+            # $where: "this.watson.metadata.image.length > 1"
         }
         # if porn
         match.over_18 = porn
@@ -569,14 +569,14 @@ if Meteor.isServer
             sort:
                 points:-1
                 ups:-1
-            fields:
-                "watson.metadata.image":1
-                model:1
-                thumbnail:1
-                tags:1
-                ups:1
-                over_18:1
-                url:1
+            # fields:
+            #     "watson.metadata.image":1
+            #     model:1
+            #     thumbnail:1
+            #     tags:1
+            #     ups:1
+            #     over_18:1
+            #     url:1
         }
         # else
         #     backup = 
