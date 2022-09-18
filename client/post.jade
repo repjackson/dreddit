@@ -3,8 +3,8 @@ template(name='posts')
     .ui.stackable.padded.grid
         .row
             .sixteen.wide.column
-                .ui.inline.header(title='i know right?')
-                    |{{comma total_post_count}}
+                // .ui.inline.header(title='i know right?')
+                //     |{{comma total_post_count}}
                 // unless full_doc_id
                 // if currentUser
                 .ui.circular.icon.button.toggle_porn(title='toggle adult' class=porn_class)
@@ -82,19 +82,23 @@ template(name='posts')
                             +agg_tag
                 // .ui.hidden.divider
             .two.wide.column
-                .ui.header location
-                .ui.header people
-                .ui.header time
-                .ui.header emotions
+                // +session_icon_button key='view_mode' value='grid' icon='th' 
+                // +session_icon_button key='view_mode' value='list' icon='list'
+                // +sort_direction_toggle
+                // +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                // +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
+                // +session_set key='sort_key' value='domain' label='domain' icon='globe'
+                // +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
+                // +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                // .ui.header 
+                //     i.marker.grey.icon
+                // .ui.header 
+                //     i.users.grey.icon
+                // .ui.header
+                //     i.clock.grey.icon
+                // .ui.header 
+                //     i.smile.grey.icon
             .fourteen.wide.column
-                +session_icon_button key='view_mode' value='grid' icon='th' 
-                +session_icon_button key='view_mode' value='list' icon='list'
-                +sort_direction_toggle
-                +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
-                +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
-                +session_set key='sort_key' value='domain' label='domain' icon='globe'
-                +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
-                +session_set key='sort_key' value='points' label='points' icon='hashtag'
                 +doc_results
                 
 template(name='doc_results')
@@ -137,14 +141,14 @@ template(name='post_card')
     .card(title="#{ups} ups, created #{_when}")
         if watson.metadata.image.length
             // |watson image
-            a.fly_right(href="/post/#{_id}")
+            a(href=url target='_window' title=url)
                 img.ui.fluid.image.zoomer(src=watson.metadata.image title='view article')
-        
+
         else if is_image
-            a.fly_right(href="/post/#{_id}")
+            a(href=url target='_window' title=url)
                 img.ui.image.zoomer(src=url title='view article')
         else if has_thumbnail
-            a.fly_right(href="/post/#{_id}")
+            a(href=url target='_window' title=url)
                 img.ui.fluid.image.zoomer(src=thumbnail title='view article')
         if rd.media_embed.content
             span.invert
@@ -153,19 +157,19 @@ template(name='post_card')
             |!{unescaped}
 
         .content
-            a.ui.grey.header.zoomer.fly_right(href="/post/#{_id}")
+            a.ui.grey.header.zoomer(href=url target='_window' title=url)
                 |!{title}
-            .ui.label
-                i.globe.grey.icon 
-                |#{domain}
-            .ui.label
-                i.thumbs.up.grey.icon 
-                |#{ups}
-            .ui.label
-                i.comment.grey.icon 
-                |#{num_comments}
-            .ui.label.zoomer.pick_subreddit
-                |subreddit: #{subreddit}
+            // .ui.label
+            //     i.globe.grey.icon 
+            //     |#{domain}
+            // .ui.label
+            //     i.thumbs.up.grey.icon 
+            //     |#{ups}
+            // .ui.label
+            //     i.comment.grey.icon 
+            //     |#{num_comments}
+            // .ui.label.zoomer.pick_subreddit
+            //     |subreddit: #{subreddit}
             .ui.label(title="added {{long_date _timestamp}}")
                 i.grey.clock.icon
                 |#{_when}
@@ -187,8 +191,9 @@ template(name='post_card')
                 +doc_sentiment
                 +doc_emotion
             unless doc_sentiment_label 
-                .ui.icon.big.button.autotag.zoomer(title='breakdown emotions') 
+                .ui.big.button.autotag.zoomer(title='breakdown emotions') 
                     i.large.chess.grey.icon
+                    |analyze 
                 // +call_watson key=rd.selftext
         // .ui.attached.basic.buttons
         //     .ui.icon.circular.button.vote_up
@@ -255,15 +260,15 @@ template(name='post_card_big')
                         |!{watson.analyzed_text}
         .content
             .ui.grey.header !{title}
-            .ui.label
-                i.globe.grey.icon 
-                |#{domain}
-            .ui.label
-                i.thumbs.up.grey.icon 
-                |#{ups}
-            .ui.label
-                i.comment.grey.icon 
-                |#{num_comments}
+            // .ui.label
+            //     i.globe.grey.icon 
+            //     |#{domain}
+            // .ui.label
+            //     i.thumbs.up.grey.icon 
+            //     |#{ups}
+            // .ui.label
+            //     i.comment.grey.icon 
+            //     |#{num_comments}
             // .ui.label.zoomer.pick_subpost
             //     |subpost: #{subpost}
             .ui.label(title="added {{long_date _timestamp}}")
@@ -304,8 +309,8 @@ template(name='agg_tag')
         if subs_ready
             if term_image.watson.metadata.image
                 img.ui.image.superzoomer.invert(src=term_image.watson.metadata.image)
-        // else 
-        //     i.yin.yang.grey.loading.icon
+        else 
+            i.yin.yang.grey.loading.icon
         | #{name}
         // .hidden.content
         //     |+ #{title}
