@@ -28,275 +28,8 @@ if Meteor.isClient
         @autorun => Meteor.subscribe 'model_counter',('reddit'), ->
     Template.posts.helpers
         total_post_count: -> Counts.get('model_counter') 
-
-
-    Template.post_view.onCreated ->
-        @autorun => @subscribe 'doc_by_id', Router.current().params.doc_id, ->
-    Template.post_view.onRendered ->
-        found_doc = Docs.findOne Router.current().params.doc_id
-        if found_doc 
-            unless found_doc.watson
-                Meteor.call 'call_watson',Router.current().params.doc_id,'rd.selftext', ->
-
-
-    Template.agg_tag.onCreated ->
-        @autorun => @subscribe 'tag_image', @data.name, Session.get('porn'),->
-    Template.agg_tag.helpers
-        term: ->
-            found = Docs.findOne {
-                model:'reddit'
-                tags:$in:[Template.currentData().name]
-                # "watson.metadata.image":$exists:true
-            }, sort:ups:-1
-            found
-    Template.unpick_tag.onCreated ->
-        @autorun => @subscribe 'tag_image', @data, Session.get('porn'),->
-    Template.unpick_tag.helpers
-        flat_term_image: ->
-            found = Docs.findOne {
-                model:'reddit'
-                tags:$in:[Template.currentData()]
-                "watson.metadata.image":$exists:true
-            }, sort:ups:-1
-            found.watson.metadata.image
-    Template.agg_tag.events
-        'click .result': (e,t)->
-            # Meteor.call 'log_term', @title, ->
-            picked_tags.push @name
-            $('#search').val('')
-            Session.set('full_doc_id', null)
-            
-            Session.set('current_search', null)
-            Session.set('searching', true)
-            Session.set('is_loading', true)
-            # Meteor.call 'call_wiki', @name, ->
-    
-            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
-                Session.set('is_loading', false)
-                Session.set('searching', false)
-            Meteor.setTimeout ->
-                Session.set('dummy',!Session.get('dummy'))
-            , 5000
-            
-    
-    Template.session_icon_button.helpers 
-        session_set_class: ->
-            if Session.equals(@key,@value)
-                'active'
-            else 
-                'basic'
-    Template.session_icon_button.events
-        'click .set_session': ->
-            Session.set(@key,@value)
-    Template.posts.events
-        'click .toggle_porn': ->
-            Session.set('porn',!Session.get('porn'))
-        'click .select_search': ->
-            picked_tags.push @name
-            Session.set('full_doc_id', null)
-    
-            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
-            $('#search').val('')
-            Session.set('current_search', null)
-    
-    Template.post_card.helpers
-        five_cleaned_tags: ->
-            if picked_tags.array().length
-                _.difference(@tags[..10],picked_tags.array())
-            #     @tags[..5] not in picked_tags.array()
-            else 
-                @tags[..5]
-    Template.flat_tag_picker.events
-        'click .remove_tag': ->
-            parent = Template.parentData()
-            # if confirm "remove #{@valueOf()} tag?"
-            Docs.update parent._id,
-                $pull:
-                    tags:@valueOf()
-        'click .pick_flat_tag': -> 
-            picked_tags.push @valueOf()
-            Session.set('full_doc_id', null)
-    
-            Session.set('loading',true)
-            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
-                Session.set('loading',false)
-    Template.post_card_big.events
-        'click .minimize': ->
-            Session.set('full_doc_id', null)
-    Template.post_card.events
-        'click .vote_up': (e)->
-            $(e.currentTarget).closest('.card').transition('jiggle', 500)
-            Docs.update @_id,
-                $inc:
-                    points:1
-                    upvotes:1
-            # Session.set('dummy', !Session.get('dummy'))
-
-            
-        'click .vote_down': (e)->
-            $(e.currentTarget).closest('.card').transition('shake', 500)
-            Docs.update @_id,
-                $inc:
-                    points:-1
-                $inc:
-                    downvotes:1
-            # Session.set('dummy', !Session.get('dummy'))
-
-        'click .expand': ->
-            Session.set('full_doc_id', @_id)
-            Session.set('dummy', !Session.get('dummy'))
-    
-        'click .pick_flat_tag': (e)-> 
-            picked_tags.push @valueOf()
-            Session.set('full_doc_id', null)
-            $(e.currentTarget).closest('.pick_flat_tag').transition('fly up', 500)
-    
-            Session.set('loading',true)
-            Meteor.call 'search_reddit', picked_tags.array(), Session.get('porn'),->
-                Session.set('loading',false)
-        # 'click .pick_subreddit': -> Session.set('subreddit',@subreddit)
-        # 'click .pick_domain': -> Session.set('domain',@domain)
-        'click .autotag': (e)->
-            $(e.currentTarget).closest('.button').transition('fade', 500)
-            
-            # if @rd and @rd.selftext_html
-            #     dom = document.createElement('textarea')
-            #     # dom.innerHTML = doc.body
-            #     dom.innerHTML = @rd.selftext_html
-            #     # return dom.value
-            #     Docs.update @_id,
-            #         $set:
-            #             parsed_selftext_html:dom.value
-            Meteor.call 'get_reddit_post', @_id, (err,res)->
-    
-            # doc = Template.parentData()
-            # doc = Docs.findOne Template.parentData()._id
-            # Meteor.call 'call_watson', Template.parentData()._id, parent.key, @mode, ->
-            # if doc 
-            $('body').toast({
-                title: "breaking down emotions"
-                # message: 'Please see desk staff for key.'
-                class : 'black'
-                showIcon:'chess loading'
-                # showProgress:'bottom'
-                position:'bottom right'
-                # className:
-                #     toast: 'ui massive message'
-                # displayTime: 5000
-                transition:
-                  showMethod   : 'zoom',
-                  showDuration : 250,
-                  hideMethod   : 'fade',
-                  hideDuration : 250
-                })
-            
-            Meteor.call 'call_watson', @_id, 'rd.selftext', 'html', (err,res)->
-                # $(e.currentTarget).closest('.button').transition('scale', 500)
-                $('body').toast({
-                    title: "emotions brokedown"
-                    # message: 'Please see desk staff for key.'
-                    class : 'black'
-                    showIcon:'smile'
-                    # showProgress:'bottom'
-                    position:'bottom right'
-                    # className:
-                    #     toast: 'ui massive message'
-                    # displayTime: 5000
-                    transition:
-                      showMethod   : 'zoom',
-                      showDuration : 250,
-                      hideMethod   : 'fade',
-                      hideDuration : 250
-                    })
-                Session.set('dummy', !Session.get('dummy'))
-            # Meteor.call 'call_watson', doc._id, @key, @mode, ->
-    Template.unpick_tag.events
-        'click .unpick_tag': ->
-            picked_tags.remove @valueOf()
-            if picked_tags.array().length > 0
-                Session.set('is_loading', true)
-                Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), =>
-                    Session.set('is_loading', false)
-                Meteor.setTimeout ->
-                    Session.set('dummy', !Session.get('dummy'))
-                , 5000
-            
-    
-    
-    Template.posts.events
-        'click .print_me': ->
-    
-        # # 'keyup #search': _.throttle((e,t)->
-        'click #search': (e,t)->
-            if picked_tags.array().length > 0
-                Session.set('dummy', !Session.get('dummy'))
-        'keydown #search': (e,t)->
-            # query = $('#search').val()
-            search = $('#search').val().trim().toLowerCase()
-            # if query.length > 0
-            Session.set('current_search', search)
-            if search.length > 0
-                if e.which is 13
-                    if search.length > 0
-                        # Session.set('searching', true)
-                        picked_tags.push search
-                        Session.set('full_doc_id',null)
-                        Session.set('is_loading', true)
-                        Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
-                            Session.set('is_loading', false)
-                            # Session.set('searching', false)
-                        # Meteor.setTimeout ->
-                        #     Session.set('dummy', !Session.get('dummy'))
-                        # , 5000
-                        $('#search').val('')
-                        $('#search').blur()
-                        Session.set('current_search', null)
-        # , 200)
-    
-        # 'keydown #search': _.throttle((e,t)->
-        #     if e.which is 8
-        #         search = $('#search').val()
-        #         if search.length is 0
-        #             last_val = picked_tags.array().slice(-1)
-        #             $('#search').val(last_val)
-        #             picked_tags.pop()
-        #             Meteor.call 'search_reddit', picked_tags.array(), ->
-        # , 1000)
-    
-        'click .reconnect': -> Meteor.reconnect()
-    
-        'click .toggle_tag': (e,t)-> picked_tags.push @valueOf()
-        'click .pick_subreddit': -> Session.set('subreddit',@name)
-        'click .unpick_subreddit': -> Session.set('subreddit',null)
-        'click .pick_domain': -> Session.set('domain',@name)
-        'click .unpick_domain': -> Session.set('domain',null)
-        'click .print_me': (e,t)->
-            
-    Template.post_card.helpers
-        unescaped: -> 
-            txt = document.createElement("textarea")
-            txt.innerHTML = @rd.selftext_html
-            return txt.value
-    
-            # html.unescape(@rd.selftext_html)
-        unescaped_content: -> 
-            txt = document.createElement("textarea")
-            txt.innerHTML = @rd.media_embed.content
-            return txt.value
-    
-            # html.unescape(@rd.selftext_html)
-    Template.post_view.events 
-        'click .get_comments':->
-            Meteor.call 'get_comments', Router.current().params.doc_id, ->
-                
-    Template.post_view.helpers
-        comment_docs: ->
-            Docs.find 
-                model:'comment'
-                parent_id:Router.current().params.doc_id
-    Template.posts.helpers
         porn_class: ->
-            if Session.get('porn') then 'large red' else 'compact'
+            if Session.get('porn') then 'red' else 'compact basic'
         full_doc_id: ->
             Session.get('full_doc_id')
         full_doc: ->
@@ -309,6 +42,8 @@ if Meteor.isClient
                 # thumbnail:$nin:['default','self']
             },sort:ups:-1
             if found
+                console.log 'found', found
+                console.log 'found', found.watson.metadata.image
                 found.watson.metadata.image
             # else 
     
@@ -460,6 +195,271 @@ if Meteor.isClient
         #         # else
         #         #     'basic'
         #
+
+
+    Template.post_view.onCreated ->
+        @autorun => @subscribe 'doc_by_id', Router.current().params.doc_id, ->
+    Template.post_view.onRendered ->
+        found_doc = Docs.findOne Router.current().params.doc_id
+        if found_doc 
+            unless found_doc.watson
+                Meteor.call 'call_watson',Router.current().params.doc_id,'rd.selftext', ->
+
+
+    Template.agg_tag.onCreated ->
+        @autorun => @subscribe 'tag_image', @data.name, Session.get('porn'),->
+    Template.agg_tag.helpers
+        term: ->
+            found = Docs.findOne {
+                model:'reddit'
+                tags:$in:[Template.currentData().name]
+                # "watson.metadata.image":$exists:true
+            }, sort:ups:-1
+            found
+    Template.unpick_tag.onCreated ->
+        @autorun => @subscribe 'tag_image', @data, Session.get('porn'),->
+    Template.unpick_tag.helpers
+        flat_term_image: ->
+            found = Docs.findOne {
+                model:'reddit'
+                tags:$in:[Template.currentData()]
+                "watson.metadata.image":$exists:true
+            }, sort:ups:-1
+            found.watson.metadata.image
+    Template.agg_tag.events
+        'click .result': (e,t)->
+            # Meteor.call 'log_term', @title, ->
+            picked_tags.push @name
+            $('#search').val('')
+            Session.set('full_doc_id', null)
+            
+            Session.set('current_search', null)
+            Session.set('searching', true)
+            Session.set('is_loading', true)
+            # Meteor.call 'call_wiki', @name, ->
+    
+            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
+                Session.set('is_loading', false)
+                Session.set('searching', false)
+            Meteor.setTimeout ->
+                Session.set('dummy',!Session.get('dummy'))
+            , 5000
+            
+    
+    Template.session_icon_button.helpers 
+        session_set_class: ->
+            if Session.equals(@key,@value)
+                'active'
+            else 
+                'basic'
+    Template.session_icon_button.events
+        'click .set_session': ->
+            Session.set(@key,@value)
+    Template.posts.events
+        'click .toggle_porn': ->
+            Session.set('porn',!Session.get('porn'))
+        'click .select_search': ->
+            picked_tags.push @name
+            Session.set('full_doc_id', null)
+    
+            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
+            $('#search').val('')
+            Session.set('current_search', null)
+    
+    Template.post_card.helpers
+        five_cleaned_tags: ->
+            if picked_tags.array().length
+                _.difference(@tags[..10],picked_tags.array())
+            #     @tags[..5] not in picked_tags.array()
+            else 
+                @tags[..5]
+    Template.flat_tag_picker.events
+        'click .remove_tag': ->
+            parent = Template.parentData()
+            # if confirm "remove #{@valueOf()} tag?"
+            Docs.update parent._id,
+                $pull:
+                    tags:@valueOf()
+        'click .pick_flat_tag': -> 
+            picked_tags.push @valueOf()
+            Session.set('full_doc_id', null)
+    
+            Session.set('loading',true)
+            Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
+                Session.set('loading',false)
+    Template.post_card_big.events
+        'click .minimize': ->
+            Session.set('full_doc_id', null)
+    Template.post_card.events
+        'click .vote_up': (e)->
+            $(e.currentTarget).closest('.card').transition('jiggle', 500)
+            Docs.update @_id,
+                $inc:
+                    points:1
+                    upvotes:1
+            # Session.set('dummy', !Session.get('dummy'))
+
+            
+        'click .vote_down': (e)->
+            $(e.currentTarget).closest('.card').transition('shake', 500)
+            Docs.update @_id,
+                $inc:
+                    points:-1
+                    downvotes:1
+            # Session.set('dummy', !Session.get('dummy'))
+
+        'click .expand': ->
+            Session.set('full_doc_id', @_id)
+            Session.set('dummy', !Session.get('dummy'))
+    
+        'click .pick_flat_tag': (e)-> 
+            picked_tags.push @valueOf()
+            Session.set('full_doc_id', null)
+            $(e.currentTarget).closest('.pick_flat_tag').transition('fly up', 500)
+    
+            Session.set('loading',true)
+            Meteor.call 'search_reddit', picked_tags.array(), Session.get('porn'),->
+                Session.set('loading',false)
+        'click .pick_subreddit': -> Session.set('subreddit',@subreddit)
+        'click .pick_domain': -> Session.set('domain',@domain)
+        'click .autotag': (e)->
+            $(e.currentTarget).closest('.button').transition('fade', 500)
+            
+            # if @rd and @rd.selftext_html
+            #     dom = document.createElement('textarea')
+            #     # dom.innerHTML = doc.body
+            #     dom.innerHTML = @rd.selftext_html
+            #     # return dom.value
+            #     Docs.update @_id,
+            #         $set:
+            #             parsed_selftext_html:dom.value
+            Meteor.call 'get_reddit_post', @_id, (err,res)->
+    
+            # doc = Template.parentData()
+            # doc = Docs.findOne Template.parentData()._id
+            # Meteor.call 'call_watson', Template.parentData()._id, parent.key, @mode, ->
+            # if doc 
+            $('body').toast({
+                title: "breaking down emotions"
+                # message: 'Please see desk staff for key.'
+                class : 'black'
+                showIcon:'chess loading'
+                # showProgress:'bottom'
+                position:'bottom right'
+                # className:
+                #     toast: 'ui massive message'
+                # displayTime: 5000
+                transition:
+                  showMethod   : 'zoom',
+                  showDuration : 250,
+                  hideMethod   : 'fade',
+                  hideDuration : 250
+                })
+            
+            Meteor.call 'call_watson', @_id, 'rd.selftext', 'html', (err,res)->
+                # $(e.currentTarget).closest('.button').transition('scale', 500)
+                $('body').toast({
+                    title: "emotions brokedown"
+                    # message: 'Please see desk staff for key.'
+                    class : 'black'
+                    showIcon:'smile'
+                    # showProgress:'bottom'
+                    position:'bottom right'
+                    # className:
+                    #     toast: 'ui massive message'
+                    # displayTime: 5000
+                    transition:
+                      showMethod   : 'zoom',
+                      showDuration : 250,
+                      hideMethod   : 'fade',
+                      hideDuration : 250
+                    })
+                Session.set('dummy', !Session.get('dummy'))
+            # Meteor.call 'call_watson', doc._id, @key, @mode, ->
+    Template.unpick_tag.events
+        'click .unpick_tag': ->
+            picked_tags.remove @valueOf()
+            if picked_tags.array().length > 0
+                Session.set('is_loading', true)
+                Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), =>
+                    Session.set('is_loading', false)
+                Meteor.setTimeout ->
+                    Session.set('dummy', !Session.get('dummy'))
+                , 5000
+            
+    
+    
+    Template.posts.events
+        'click .print_me': ->
+    
+        # # 'keyup #search': _.throttle((e,t)->
+        'click #search': (e,t)->
+            if picked_tags.array().length > 0
+                Session.set('dummy', !Session.get('dummy'))
+        'keydown #search': (e,t)->
+            # query = $('#search').val()
+            search = $('#search').val().trim().toLowerCase()
+            # if query.length > 0
+            Session.set('current_search', search)
+            if search.length > 0
+                if e.which is 13
+                    if search.length > 0
+                        # Session.set('searching', true)
+                        picked_tags.push search
+                        Session.set('full_doc_id',null)
+                        Session.set('is_loading', true)
+                        Meteor.call 'search_reddit', picked_tags.array(),Session.get('porn'), ->
+                            Session.set('is_loading', false)
+                            # Session.set('searching', false)
+                        # Meteor.setTimeout ->
+                        #     Session.set('dummy', !Session.get('dummy'))
+                        # , 5000
+                        $('#search').val('')
+                        $('#search').blur()
+                        Session.set('current_search', null)
+        # , 200)
+    
+        # 'keydown #search': _.throttle((e,t)->
+        #     if e.which is 8
+        #         search = $('#search').val()
+        #         if search.length is 0
+        #             last_val = picked_tags.array().slice(-1)
+        #             $('#search').val(last_val)
+        #             picked_tags.pop()
+        #             Meteor.call 'search_reddit', picked_tags.array(), ->
+        # , 1000)
+    
+        'click .reconnect': -> Meteor.reconnect()
+    
+        'click .toggle_tag': (e,t)-> picked_tags.push @valueOf()
+        'click .pick_subreddit': -> Session.set('subreddit',@name)
+        'click .unpick_subreddit': -> Session.set('subreddit',null)
+        'click .pick_domain': -> Session.set('domain',@name)
+        'click .unpick_domain': -> Session.set('domain',null)
+        'click .print_me': (e,t)->
+            
+    Template.post_card.helpers
+        unescaped: -> 
+            txt = document.createElement("textarea")
+            txt.innerHTML = @rd.selftext_html
+            return txt.value
+    
+            # html.unescape(@rd.selftext_html)
+        unescaped_content: -> 
+            txt = document.createElement("textarea")
+            txt.innerHTML = @rd.media_embed.content
+            return txt.value
+    
+            # html.unescape(@rd.selftext_html)
+    Template.post_view.events 
+        'click .get_comments':->
+            Meteor.call 'get_comments', Router.current().params.doc_id, ->
+                
+    Template.post_view.helpers
+        comment_docs: ->
+            Docs.find 
+                model:'comment'
+                parent_id:Router.current().params.doc_id
         
         
     Template.doc_results.helpers
