@@ -112,7 +112,8 @@ if Meteor.isClient
         'click .minimize': ->
             Session.set('full_doc_id', null)
     Template.post_card.events
-        'click .vote_up': ->
+        'click .vote_up': (e)->
+            $(e.currentTarget).closest('.card').transition('jiggle', 500)
             Docs.update @_id,
                 $inc:
                     points:1
@@ -120,7 +121,8 @@ if Meteor.isClient
             # Session.set('dummy', !Session.get('dummy'))
 
             
-        'click .vote_down': ->
+        'click .vote_down': (e)->
+            $(e.currentTarget).closest('.card').transition('shake', 500)
             Docs.update @_id,
                 $inc:
                     points:-1
@@ -615,7 +617,7 @@ if Meteor.isServer
                 "#{sort_key}":sort_direction
                 points:-1
                 ups:-1
-            limit:20
+            limit:42
             fields:
                 # youtube_id:1
                 "rd.media_embed":1

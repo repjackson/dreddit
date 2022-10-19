@@ -77,8 +77,8 @@ template(name='posts')
                         .ui.label #{name}
                 
                         i.massive.yin.yang.grey.icon
-                +session_toggle key='view_images' label='images' icon='image'
-                +session_toggle key='view_external' label='external' icon='external'
+                // +session_toggle key='view_images' label='images' icon='image'
+                // +session_toggle key='view_external' label='external' icon='external'
                 .ui.big.icon.input.invert
                     i.search.icon
                     input#search(type='text' autofocus='' autocomplete="off" placeholder='search...')
@@ -205,10 +205,11 @@ template(name='post_card')
             a(href=url target='_window' title=url)
                 img.ui.fluid.image.zoomer(src=thumbnail title='view article')
         if rd.media_embed.content
-            span.invert
+            span.invert.fullheight
                 |!{unescaped_content}
         else if rd.selftext_html
-            |!{unescaped}
+            .smallcut
+                |!{unescaped}
 
         .content
             a.ui.grey.header.zoomer(href=url target='_window' title=url)
@@ -234,9 +235,16 @@ template(name='post_card')
                 a.ui.label.pick_flat_tag.zoomer(title='add tag') 
                     |#{this}
             if points
-                .ui.inline.header
+                .ui.label
                     |#{points}pts
-            
+            if upvotes 
+                .ui.label(title='upvotes')
+                    i.thumbs.up.grey.outline.icon
+                    |#{upvotes}
+            if downvotes 
+                .ui.label(title='downvotes')
+                    i.thumbs.down.outline.grey.icon
+                    |#{downvotes}
             if over_18
                 .ui.red.label
                     i.alert.icon
@@ -244,16 +252,16 @@ template(name='post_card')
             if doc_sentiment_label
                 +doc_sentiment
                 +doc_emotion
-            unless doc_sentiment_label 
-                .ui.big.button.autotag.zoomer(title='breakdown emotions') 
-                    i.large.chess.grey.icon
-                    |analyze 
-                // +call_watson key=rd.selftext
-        // .ui.attached.basic.buttons
-        //     .ui.icon.circular.button.vote_up
-        //         i.thumbs.up.green.icon(class=upvote_class)
-        //     .ui.icon.circular.button.vote_down
-        //         i.thumbs.down.red.icon(class=downvote_class)
+        unless doc_sentiment_label 
+            .ui.fluid.button.autotag.zoomer(title='breakdown emotions') 
+                i.large.chess.grey.icon
+                |analyze 
+            // +call_watson key=rd.selftext
+        .ui.attached.basic.buttons
+            .ui.icon.circular.button.vote_up
+                i.thumbs.up.green.icon(class=upvote_class)
+            .ui.icon.circular.button.vote_down
+                i.thumbs.down.red.icon(class=downvote_class)
             
             
 template(name='post_item')
