@@ -236,4 +236,277 @@ Meteor.publish 'agg_emotions', (
             avg_disgust_score: res.avg_disgust_score
             avg_fear_score: res.avg_fear_score
     self.ready()    
+
+
+
+Meteor.methods 
+    get_reddit_comments: (post_id)->
+        post =
+            Docs.findOne post_id
+        # response = HTTP.get("http://reddit.com/search.json?q=#{query}")
+        # HTTP.get "http://reddit.com/search.json?q=#{query}+nsfw:0+sort:top",(err,response)=>
+        # HTTP.get "http://reddit.com/search.json?q=#{query}",(err,response)=>
+        link = "http://reddit.com/comments/#{post.reddit_id}?depth=1"
+        HTTP.get link,(err,response)=>
+            # if response.data.data.dist > 1
+            #     _.each(response.data.data.children, (item)=>
+                    # unless item.domain is "OneWordBan"
+                    #     data = item.data
+
+    
+Meteor.publish 'post_tag_results', (
+    picked_tags=null
+    picked_subreddit=null
+    picked_author=null
+    # query
+    porn=false
+    # searching
+    dummy
+    )->
+
+    self = @
+    match = {}
+
+    # match.model = $in: ['reddit','wikipedia']
+    match.model = 'reddit'
+    # if query
+    # if view_nsfw
+    match.over_18 = porn
+    if picked_tags and picked_tags.length > 0
+        match.tags = $all: picked_tags
+        if picked_subreddit
+            match.subreddit = picked_subreddit
+        limit = 10
+        # else
+        #     limit = 10
+        #     match._timestamp = $gt:moment().subtract(1, 'days')
+        # else /
+            # match.tags = $all: picked_tags
+        agg_doc_count = Docs.find(match).count()
+        tag_cloud = Docs.aggregate [
+            { $match: match }
+            { $project: "tags": 1 }
+            { $unwind: "$tags" }
+            { $group: _id: "$tags", count: $sum: 1 }
+            { $match: _id: $nin: picked_tags }
+            { $match: count: $lt: agg_doc_count }
+            # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
+            { $sort: count: -1, _id: 1 }
+            { $limit: 11 }
+            { $project: _id: 0, name: '$_id', count: 1 }
+        ], {
+            allowDiskUse: true
+        }
+    
+        tag_cloud.forEach (tag, i) =>
+            self.added 'results', Random.id(),
+                name: tag.name
+                count: tag.count
+                model:'tag'
+                # index: i
+        author_cloud = Docs.aggregate [
+            { $match: match }
+            { $project: "tags": 1 }
+            { $unwind: "$tags" }
+            { $group: _id: "$tags", count: $sum: 1 }
+            { $match: _id: $nin: picked_tags }
+            { $match: count: $lt: agg_doc_count }
+            # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
+            { $sort: count: -1, _id: 1 }
+            { $limit: 11 }
+            { $project: _id: 0, name: '$_id', count: 1 }
+        ], {
+            allowDiskUse: true
+        }
+    
+        tag_cloud.forEach (tag, i) =>
+            self.added 'results', Random.id(),
+                name: tag.name
+                count: tag.count
+                model:'tag'
+                # index: i
         
+        self.ready()
+        # else []
+
+Meteor.publish 'tag_image', (
+    term=null
+    porn=false
+    )->
+    # added_tags = []
+    # if picked_tags.length > 0
+    #     added_tags = picked_tags.push(term)
+    match = {
+        model:'reddit'
+        tags: $in: [term]
+        # "watson.metadata.image": $exists:true
+        # $where: "this.watson.metadata.image.length > 1"
+    }
+    # if porn
+    match.over_18 = porn
+    # else 
+    # added_tags = [term]
+    # match = {model:'reddit'}
+    # match.thumbnail = $nin:['default','self']
+    # match.url = { $regex: /^.*(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png).*/, $options: 'i' }
+    # found = Docs.findOne match
+    # if found
+    Docs.find match,{
+        limit:1
+        sort:
+            points:-1
+            ups:-1
+        # fields:
+        #     "watson.metadata.image":1
+        #     model:1
+        #     thumbnail:1
+        #     tags:1
+        #     ups:1
+        #     over_18:1
+        #     url:1
+    }
+    # else
+    #     backup = 
+    #         Docs.findOne 
+    #             model:'reddit'
+    #             thumbnail:$exists:true
+    #             tags:$in:[term]
+    #     if backup
+    #         Docs.find { 
+    #             model:'reddit'
+    #             thumbnail:$exists:true
+    #             tags:$in:[term]
+    #         }, 
+    #             limit:1
+    #             sort:ups:1
+Meteor.publish 'reddit_doc_results', (
+    picked_tags=null
+    picked_subreddit=null
+    porn=false
+    sort_key='_timestamp'
+    sort_direction=-1
+    # dummy
+    # current_query
+    # date_setting
+    )->
+    # else
+    self = @
+    # match = {model:$in:['reddit','wikipedia']}
+    match = {model:'reddit'}
+    # match.over_18 = $ne:true
+    #         yesterday = now-day
+    #         match._timestamp = $gt:yesterday
+    # if picked_subreddit
+    #     match.subreddit = picked_subreddit
+    # if porn
+    match.over_18 = porn
+    # if picked_tags.length > 0
+    #     # if picked_tags.length is 1
+    #     #     found_doc = Docs.findOne(title:picked_tags[0])
+    #     #
+    #     #     match.title = picked_tags[0]
+    #     # else
+    if picked_tags and picked_tags.length > 0
+        match.tags = $all: picked_tags
+    else 
+        match._timestamp = $gt:moment().subtract(1, 'days')
+    Docs.find match,
+        sort:
+            "#{sort_key}":sort_direction
+            points:-1
+            ups:-1
+        limit:42
+        fields:
+            # youtube_id:1
+            "rd.media_embed":1
+            "rd.url":1
+            "rd.thumbnail":1
+            "rd.analyzed_text":1
+            subreddit:1
+            thumbnail:1
+            doc_sentiment_label:1
+            doc_sentiment_score:1
+            joy_percent:1
+            sadness_percent:1
+            fear_percent:1
+            disgust_percent:1
+            anger_percent:1
+            over_18:1
+            points:1
+            upvoter_ids:1
+            downvoter_ids:1
+            url:1
+            ups:1
+            "watson.metadata":1
+            "watson.analyzed_text":1
+            title:1
+            model:1
+            num_comments:1
+            tags:1
+            _timestamp:1
+            domain:1
+    # else 
+    #     Docs.find match,
+    #         sort:_timestamp:-1
+    #         limit:10
+
+
+
+Meteor.methods
+    search_reddit: (query,porn=false)->
+        # response = HTTP.get("http://reddit.com/search.json?q=#{query}")
+        # HTTP.get "http://reddit.com/search.json?q=#{query}+nsfw:0+sort:top",(err,response)=>
+        # HTTP.get "http://reddit.com/search.json?q=#{query}",(err,response)=>
+        if porn 
+            link = "http://reddit.com/search.json?q=#{query}&nsfw=1&include_over_18=on&limit=100"
+        else
+            link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off&limit=100"
+        HTTP.get link,(err,response)=>
+            if response.data.data.dist > 1
+                _.each(response.data.data.children, (item)=>
+                    unless item.domain is "OneWordBan"
+                        data = item.data
+                        len = 200
+                        # added_tags = [query]
+                        # added_tags.push data.domain.toLowerCase()
+                        # added_tags.push data.author.toLowerCase()
+                        # added_tags = _.flatten(added_tags)
+                        reddit_post =
+                            reddit_id: data.id
+                            url: data.url
+                            domain: data.domain
+                            comment_count: data.num_comments
+                            permalink: data.permalink
+                            title: data.title
+                            # root: query
+                            ups:data.ups
+                            num_comments:data.num_comments
+                            # selftext: false
+                            points:0
+                            over_18:data.over_18
+                            thumbnail: data.thumbnail
+                            tags: query
+                            model:'reddit'
+                        existing_doc = Docs.findOne url:data.url
+                        if existing_doc
+                            # if Meteor.isDevelopment
+                            if typeof(existing_doc.tags) is 'string'
+                                Docs.update existing_doc._id,
+                                    $unset: tags: 1
+                            Docs.update existing_doc._id,
+                                $addToSet: tags: $each: query
+                                $set:
+                                    title:data.title
+                                    ups:data.ups
+                                    num_comments:data.num_comments
+                                    over_18:data.over_18
+                                    thumbnail:data.thumbnail
+                                    permalink:data.permalink
+                            # Meteor.call 'get_reddit_post', existing_doc._id, data.id, (err,res)->
+                            # Meteor.call 'call_watson', new_reddit_post_id, data.id, (err,res)->
+                        unless existing_doc
+                            new_reddit_post_id = Docs.insert reddit_post
+                            # Meteor.call 'get_reddit_post', new_reddit_post_id, data.id, (err,res)->
+                            # Meteor.call 'call_watson', new_reddit_post_id, data.id, (err,res)->
+                        return true
+                )

@@ -28,3 +28,4 @@ ecmascript
 modules
 shell-server
 http
+reactive-dict

@@ -29,11 +29,11 @@ head
     
     
 template(name='session_icon_button')
-    .ui.icon.button
+    .ui.icon.inverted.button.set_session(class=session_set_class)
         // +i name=icon
         i.large.icon(class=icon)
 template(name='session_set')
-    .ui.icon.button
+    .ui.icon.inverted.basic.button
         i.large.icon(class=icon)
         // +i name=icon
 template(name='print_this')
@@ -61,8 +61,6 @@ template(name='posts')
                     |{{comma total_post_count}}
                 // unless full_doc_id
                 // if currentUser
-                .ui.circular.icon.button.toggle_porn(title='toggle adult' class=porn_class)
-                    i.skull.crossbones.large.icon
                 each picked_tags
                     +unpick_tag
                     //- button.ui.active.large.button.unpick_tag(tabindex='0' style=background_style class=emotion_color)
@@ -75,13 +73,12 @@ template(name='posts')
                         |groups
                     each unpicked_groups
                         .ui.label #{name}
-                
                         i.massive.yin.yang.grey.icon
                 // +session_toggle key='view_images' label='images' icon='image'
                 // +session_toggle key='view_external' label='external' icon='external'
                 .ui.big.icon.input.invert
                     i.search.icon
-                    input#search(type='text' autofocus='' autocomplete="off" placeholder='search...')
+                    input#search(type='text' autofocus='' autocomplete="off" placeholder='search/add tags...')
                 // .ui.icon.input(class=search_class title="#{emotion_avg_result.avg_sent_score} sentiment")
                     // if is_loading
                     //     if home_subs_ready
@@ -136,6 +133,8 @@ template(name='posts')
                             +agg_tag
                 // .ui.hidden.divider
             .sixteen.wide.column
+                .ui.icon.button.toggle_porn(title='toggle adult' class=porn_class)
+                    i.skull.crossbones.large.icon
                 +session_icon_button key='view_mode' value='grid' icon='th' 
                 +session_icon_button key='view_mode' value='list' icon='list'
                 +sort_direction_toggle
@@ -158,10 +157,9 @@ template(name='posts')
 template(name='doc_results')
     if subs_ready
         if session_is 'view_mode' 'list'
-            .ui.segment.alpha
-                .ui.selection.animated.divided.list 
-                    each doc_results
-                        +post_item
+            .ui.selection.animated.divided.list 
+                each doc_results
+                    +post_item
         else
             if full_doc_id
                 with full_doc 
@@ -208,7 +206,7 @@ template(name='post_card')
             span.invert.fullheight
                 |!{unescaped_content}
         else if rd.selftext_html
-            .smallcut
+            .smallscroll
                 |!{unescaped}
 
         .content
@@ -229,7 +227,7 @@ template(name='post_card')
                 i.grey.clock.icon
                 |#{_when}
             if watson.analyzed_text
-                .smallcut
+                .smallscroll
                     |!{watson.analyzed_text}
             each five_cleaned_tags
                 a.ui.label.pick_flat_tag.zoomer(title='add tag') 
@@ -253,15 +251,15 @@ template(name='post_card')
                 +doc_sentiment
                 +doc_emotion
         unless doc_sentiment_label 
-            .ui.fluid.button.autotag.zoomer(title='breakdown emotions') 
-                i.large.chess.grey.icon
-                |analyze 
+            .ui.fluid.basic.button.autotag.zoomer(title='breakdown emotions') 
+                i.large.calculator.grey.icon
+                // |analyze 
             // +call_watson key=rd.selftext
         .ui.attached.basic.buttons
             .ui.icon.circular.button.vote_up
-                i.thumbs.up.green.icon(class=upvote_class)
+                i.thumbs.up.outline.icon(class=upvote_class)
             .ui.icon.circular.button.vote_down
-                i.thumbs.down.red.icon(class=downvote_class)
+                i.thumbs.down.outline.icon(class=downvote_class)
             
             
 template(name='post_item')
@@ -289,7 +287,7 @@ template(name='post_item')
             |#{_when}
         if over_18
             .ui.red.label over 18
-        +voting
+        // +voting
         if doc_sentiment_label
             +doc_sentiment
             +doc_emotion
