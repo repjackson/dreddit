@@ -113,32 +113,20 @@ if Meteor.isClient
             Session.set('full_doc_id', null)
     Template.post_card.events
         'click .vote_up': ->
-            if Meteor.user()
-                Docs.update @_id,
-                    $inc:
-                        points:1
-                        user_points:1
-            else 
-                Docs.update @_id,
-                    $inc:
-                        points:1
-                        anon_points:1
-            Session.set('dummy', !Session.get('dummy'))
+            Docs.update @_id,
+                $inc:
+                    points:1
+                    upvotes:1
+            # Session.set('dummy', !Session.get('dummy'))
 
             
         'click .vote_down': ->
-            if Meteor.user()
-                Docs.update @_id,
-                    $inc:
-                        points:-1
-                        user_points:-1
-                        
-            else 
-                Docs.update @_id,
-                    $inc:
-                        points:1
-                        anon_points:1
-            Session.set('dummy', !Session.get('dummy'))
+            Docs.update @_id,
+                $inc:
+                    points:-1
+                $inc:
+                    downvotes:1
+            # Session.set('dummy', !Session.get('dummy'))
 
         'click .expand': ->
             Session.set('full_doc_id', @_id)
@@ -262,10 +250,10 @@ if Meteor.isClient
         'click .reconnect': -> Meteor.reconnect()
     
         'click .toggle_tag': (e,t)-> picked_tags.push @valueOf()
-        # 'click .pick_subreddit': -> Session.set('subreddit',@name)
-        # 'click .unpick_subreddit': -> Session.set('subreddit',null)
-        # 'click .pick_domain': -> Session.set('domain',@name)
-        # 'click .unpick_domain': -> Session.set('domain',null)
+        'click .pick_subreddit': -> Session.set('subreddit',@name)
+        'click .unpick_subreddit': -> Session.set('subreddit',null)
+        'click .pick_domain': -> Session.set('domain',@name)
+        'click .unpick_domain': -> Session.set('domain',null)
         'click .print_me': (e,t)->
             
     Template.post_card.helpers
