@@ -431,6 +431,12 @@ Meteor.publish 'reddit_doc_results', (
             fear_percent:1
             disgust_percent:1
             anger_percent:1
+            happy_votes:1
+            sad_votes:1
+            angry_votes:1
+            fearful_votes:1
+            disgust_votes:1
+            funny_votes:1
             over_18:1
             points:1
             upvoter_ids:1
@@ -458,9 +464,9 @@ Meteor.methods
         # HTTP.get "http://reddit.com/search.json?q=#{query}+nsfw:0+sort:top",(err,response)=>
         # HTTP.get "http://reddit.com/search.json?q=#{query}",(err,response)=>
         if porn 
-            link = "http://reddit.com/search.json?q=#{query}&nsfw=1&include_over_18=on&limit=100"
+            link = "http://reddit.com/search.json?q=#{query}&nsfw=1&include_over_18=on&limit=42"
         else
-            link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off&limit=100"
+            link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off&limit=42"
         HTTP.get link,(err,response)=>
             if response.data.data.dist > 1
                 _.each(response.data.data.children, (item)=>

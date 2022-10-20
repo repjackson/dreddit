@@ -53,8 +53,7 @@ body
     
     
 template(name='posts')
-    img.ui.fluid.image(src=current_bg)
-    // img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
+    img.ui.fluid.image.checkin_banner(src="{{c.url 'frontrange' width=1000 height=1000 crop='crop'}}")
     .ui.stackable.padded.grid
         .row
             .sixteen.wide.column
@@ -233,6 +232,12 @@ template(name='post_card')
             each five_cleaned_tags
                 a.ui.label.pick_flat_tag.zoomer(title='add tag') 
                     |#{this}
+            +emotion_vote name='happy' icon='happy' color='green'
+            +emotion_vote name='sad' icon='sad' color='blue'
+            +emotion_vote name='angry' icon='angry' color='red'
+            +emotion_vote name='fearful' icon='scream' color='black'
+            +emotion_vote name='disgust' icon='disgust' color='orange'
+            +emotion_vote name='funny' icon='funny' color='yellow'
             if points
                 .ui.label
                     |#{points}pts
@@ -262,6 +267,14 @@ template(name='post_card')
             .ui.icon.circular.button.vote_down
                 i.thumbs.down.outline.icon(class=downvote_class)
             
+            
+template(name='emotion_vote')
+    .ui.basic.compact.circular.button.vote_emotion(class=color title=name)
+        img(src="https://img.icons8.com/color/48/000000/#{icon}.png")
+        // |#{name}
+        |#{emotion_count}
+
+
             
 template(name='post_item')
     .item 
