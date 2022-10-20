@@ -236,8 +236,8 @@ template(name='post_card')
             +emotion_vote name='sad' icon='sad' color='blue'
             +emotion_vote name='angry' icon='angry' color='red'
             +emotion_vote name='fearful' icon='scream' color='black'
-            +emotion_vote name='disgust' icon='disgust' color='orange'
-            +emotion_vote name='funny' icon='funny' color='yellow'
+            +emotion_vote name='disgust' icon='disgusting' color='orange'
+            +emotion_vote name='funny' icon='comedy' color='yellow'
             if points
                 .ui.label
                     |#{points}pts
@@ -259,7 +259,7 @@ template(name='post_card')
         unless doc_sentiment_label 
             .ui.fluid.basic.button.autotag.zoomer(title='breakdown emotions') 
                 i.large.calculator.grey.icon
-                // |analyze 
+                |autotag 
             // +call_watson key=rd.selftext
         .ui.attached.basic.buttons
             .ui.icon.circular.button.vote_up
@@ -269,8 +269,8 @@ template(name='post_card')
             
             
 template(name='emotion_vote')
-    .ui.basic.compact.circular.button.vote_emotion(class=color title=name)
-        img(src="https://img.icons8.com/color/48/000000/#{icon}.png")
+    .ui.basic.compact.circular.tiny.button.vote_emotion(class="#{color} basic" title=name)
+        img(src="https://img.icons8.com/color/24/000000/#{icon}.png")
         // |#{name}
         |#{emotion_count}
 
