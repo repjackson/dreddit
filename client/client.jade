@@ -169,10 +169,12 @@ template(name='doc_results')
                     each doc_results
                         +post_card_big
             else 
-                .ui.stackable.centered.link.cards.scrolling
-                    each doc_results
-                        +post_card
-                    // +small_card
+                // .ui.stackable.centered.link.cards.scrolling
+                .ui.stackable.padded.grid.scrolling
+                    .five.column.row
+                        each doc_results
+                            +post_card
+                        // +small_card
     else 
         if picked_tags
             .ui.center.aligned.basic.segment
@@ -190,7 +192,7 @@ template(name='unpick_tag')
 
                             
 template(name='post_card')
-    .inverted.card(title="#{ups} ups, created #{_when}")
+    .column(title="#{ups} ups, created #{_when}")
         if watson.metadata.image.length
             // |watson image
             a(href=url target='_window' title=url)
@@ -210,7 +212,7 @@ template(name='post_card')
                 |!{unescaped}
 
         .content
-            a.ui.grey.header.zoomer(href=url target='_window' title=url)
+            a.ui.header.zoomer(href=url target='_window' title=url)
                 |!{title}
             .ui.label
                 i.globe.grey.icon 
@@ -235,7 +237,7 @@ template(name='post_card')
             +emotion_vote name='happy' icon='happy' color='green'
             +emotion_vote name='sad' icon='sad' color='blue'
             +emotion_vote name='angry' icon='angry' color='red'
-            +emotion_vote name='fearful' icon='scream' color='black'
+            +emotion_vote name='fearful' icon='scream' color='grey'
             +emotion_vote name='disgust' icon='disgusting' color='orange'
             +emotion_vote name='funny' icon='comedy' color='yellow'
             if points
