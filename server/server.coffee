@@ -276,7 +276,7 @@ Meteor.publish 'post_tag_results', (
         match.tags = $all: picked_tags
         if picked_subreddit
             match.subreddit = picked_subreddit
-        limit = 10
+        limit = 20
         # else
         #     limit = 10
         #     match._timestamp = $gt:moment().subtract(1, 'days')
@@ -292,7 +292,7 @@ Meteor.publish 'post_tag_results', (
             { $match: count: $lt: agg_doc_count }
             # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
             { $sort: count: -1, _id: 1 }
-            { $limit: 11 }
+            { $limit: 20 }
             { $project: _id: 0, name: '$_id', count: 1 }
         ], {
             allowDiskUse: true
@@ -313,7 +313,7 @@ Meteor.publish 'post_tag_results', (
             { $match: count: $lt: agg_doc_count }
             # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
             { $sort: count: -1, _id: 1 }
-            { $limit: 11 }
+            { $limit: 20 }
             { $project: _id: 0, name: '$_id', count: 1 }
         ], {
             allowDiskUse: true
