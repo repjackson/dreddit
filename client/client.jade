@@ -134,28 +134,31 @@ template(name='posts')
                     |groups
                     each unpicked_subreddits 
                         .ui.label #{name}
-            .sixteen.wide.column
                 // .ui.hidden.divider
-                .ui.icon.button.toggle_porn(title='toggle adult' class=porn_class)
-                    i.skull.crossbones.large.icon
-                +session_icon_button key='view_mode' value='grid' icon='th' 
-                +session_icon_button key='view_mode' value='one' icon='square'
-                +session_icon_button key='view_mode' value='list' icon='list'
-                +sort_direction_toggle
-                +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
-                +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
-                +session_set key='sort_key' value='domain' label='domain' icon='globe'
-                +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
-                +session_set key='sort_key' value='points' label='points' icon='hashtag'
-                // .ui.header 
-                //     i.marker.grey.icon
-                // .ui.header 
-                //     i.users.grey.icon
-                // .ui.header
-                //     i.clock.grey.icon
-                // .ui.header 
-                //     i.smile.grey.icon
-                .ui.hidden.divider
+                +session_icon_button key='show_more' value=true icon='info' 
+                +session_icon_button key='show_more' value=false icon='minus' 
+                if session_is 'show_more' true
+                    .ui.icon.button.toggle_porn(title='toggle adult' class=porn_class)
+                        i.skull.crossbones.large.icon
+                    +session_icon_button key='view_mode' value='grid' icon='th' 
+                    +session_icon_button key='view_mode' value='one' icon='square'
+                    +session_icon_button key='view_mode' value='list' icon='list'
+                    +sort_direction_toggle
+                    +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
+                    +session_set key='sort_key' value='comment_count' label='comments' icon='chat'
+                    +session_set key='sort_key' value='domain' label='domain' icon='globe'
+                    +session_set key='sort_key' value='ups' label='ups' icon='thumbs up'
+                    +session_set key='sort_key' value='points' label='points' icon='hashtag'
+                    // .ui.header 
+                    //     i.marker.grey.icon
+                    // .ui.header 
+                    //     i.users.grey.icon
+                    // .ui.header
+                    //     i.clock.grey.icon
+                    // .ui.header 
+                    //     i.smile.grey.icon
+                    .ui.hidden.divider
+            .sixteen.wide.column
                 +doc_results
                 
 template(name='doc_results')
