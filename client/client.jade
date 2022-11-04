@@ -67,13 +67,13 @@ template(name='posts')
                 //- .ui.inline.small.header(class=emotion_color) {{fixed omega_doc.current_max_emotion_percent}}% #{omega_doc.current_most_emotion}
                 // if not_searching 
                 //     .ui.center.aligned.segment
-                if unpicked_groups
-                    .ui.inline.header 
-                        +i name='campfire'
-                        |groups
-                    each unpicked_groups
-                        .ui.label #{name}
-                        i.massive.yin.yang.grey.icon
+                // if unpicked_groups
+                //     .ui.inline.header 
+                //         +i name='campfire'
+                //         |groups
+                //     each unpicked_groups
+                //         .ui.label #{name}
+                //         i.massive.yin.yang.grey.icon
                 // +session_toggle key='view_images' label='images' icon='image'
                 // +session_toggle key='view_external' label='external' icon='external'
                 .ui.big.icon.input.invert
@@ -122,8 +122,7 @@ template(name='posts')
                         |reconnect
                 // .ui.hidden.divider
                 // unless one_result
-                    
-                if connected
+                if connected    
                     // if searching 
                     //     each terms 
                     //         +search_term
@@ -131,11 +130,16 @@ template(name='posts')
                     unless full_doc_id
                         each unpicked_tags
                             +agg_tag
-                // .ui.hidden.divider
+                if connected    
+                    |groups
+                    each unpicked_subreddits 
+                        .ui.label #{name}
             .sixteen.wide.column
+                // .ui.hidden.divider
                 .ui.icon.button.toggle_porn(title='toggle adult' class=porn_class)
                     i.skull.crossbones.large.icon
                 +session_icon_button key='view_mode' value='grid' icon='th' 
+                +session_icon_button key='view_mode' value='one' icon='square'
                 +session_icon_button key='view_mode' value='list' icon='list'
                 +sort_direction_toggle
                 +session_set key='sort_key' value='_timestamp' label='added' icon='clock'
@@ -160,6 +164,10 @@ template(name='doc_results')
             .ui.selection.animated.divided.list 
                 each doc_results
                     +post_item
+        else if session_is 'view_mode' 'one'
+            .ui.stackable.centered.link.one.cards
+                each doc_results
+                    +post_card_big
         else
             if full_doc_id
                 with full_doc 

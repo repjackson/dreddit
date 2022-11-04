@@ -534,6 +534,11 @@ if Meteor.isClient
         #
         
         
+    Template.posts.helpers
+        unpicked_subreddits: ->
+            Results.find 
+                model:'subreddit'
+                
     Template.doc_results.helpers
         doc_results: ->
             current_docs = Docs.find()
@@ -542,7 +547,7 @@ if Meteor.isClient
             doc_count = Docs.find().count()
             # if doc_count is 1
             Docs.find({model:'reddit'}, 
-                limit:10
+                limit:20
                 sort:
                     points:-1
                     ups:-1

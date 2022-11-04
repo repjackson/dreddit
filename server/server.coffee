@@ -292,7 +292,7 @@ Meteor.publish 'post_tag_results', (
             { $match: count: $lt: agg_doc_count }
             # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
             { $sort: count: -1, _id: 1 }
-            { $limit: 20 }
+            { $limit: 11 }
             { $project: _id: 0, name: '$_id', count: 1 }
         ], {
             allowDiskUse: true
@@ -304,26 +304,26 @@ Meteor.publish 'post_tag_results', (
                 count: tag.count
                 model:'tag'
                 # index: i
-        author_cloud = Docs.aggregate [
+        subreddit_cloud = Docs.aggregate [
             { $match: match }
-            { $project: "tags": 1 }
-            { $unwind: "$tags" }
-            { $group: _id: "$tags", count: $sum: 1 }
-            { $match: _id: $nin: picked_tags }
+            { $project: "subreddit": 1 }
+            # { $unwind: "$tags" }
+            { $group: _id: "$subreddit", count: $sum: 1 }
+            { $match: _id: $ne: picked_subreddit }
             { $match: count: $lt: agg_doc_count }
             # { $match: _id: {$regex:"#{current_query}", $options: 'i'} }
             { $sort: count: -1, _id: 1 }
-            { $limit: 20 }
+            { $limit: 11 }
             { $project: _id: 0, name: '$_id', count: 1 }
         ], {
             allowDiskUse: true
         }
     
-        tag_cloud.forEach (tag, i) =>
+        subreddit_cloud.forEach (sub, i) =>
             self.added 'results', Random.id(),
-                name: tag.name
-                count: tag.count
-                model:'tag'
+                name: sub.name
+                count: sub.count
+                model:'subreddit'
                 # index: i
         
         self.ready()
@@ -464,9 +464,9 @@ Meteor.methods
         # HTTP.get "http://reddit.com/search.json?q=#{query}+nsfw:0+sort:top",(err,response)=>
         # HTTP.get "http://reddit.com/search.json?q=#{query}",(err,response)=>
         if porn 
-            link = "http://reddit.com/search.json?q=#{query}&nsfw=1&include_over_18=on&limit=42"
+            link = "http://reddit.com/search.json?q=#{query}&nsfw=1&include_over_18=on"
         else
-            link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off&limit=42"
+            link = "http://reddit.com/search.json?q=#{query}&nsfw=0&include_over_18=off"
         HTTP.get link,(err,response)=>
             if response.data.data.dist > 1
                 _.each(response.data.data.children, (item)=>
