@@ -1,0 +1,243 @@
+template(name='transfers')
+    .ui.stackable.padded.grid
+        .four.wide.column
+            .ui.inline.header 
+                +i name='donate'
+                |transfers
+            .ui.basic.icon.button.add_transfer
+                i.large.plus.icon
+            .ui.button.request_transfer 
+                i.bullhorn.icon 
+                |request
+            .ui.header #{points_sent} pts sent
+            .ui.header #{points_received} pts received
+        .twelve.wide.column
+            .ui.five.stackable.centered.cards
+                each model_docs_helper 'transfer'
+                    +transfer_card
+                    
+template(name='transfer_card')
+    .ui.card.zoomer
+        a.fly_right(href="/transfer/#{_id}") 
+            img.ui.image(src="{{c.url image_id width=400 height=400 crop='pad'}}")
+        a.content(href="/transfer/#{_id}") 
+            .ui.header 
+                |#{amount}p
+            if description
+                |!{description}
+            i.tag.icon
+            each tags 
+                .ui.label #{this}
+            if location_tags
+                i.marker.icon
+            each location_tags 
+                .ui.label #{this}
+            |#{when} by #{_author_username} to
+            |#{recipient_username}
+            with target_user_id
+                +user_info
+                
+// template(name='transfer_edit')
+//     with current_doc
+//         .ui.stackable.padded.grid
+//             .row
+//                 .six.wide.column
+//                     .ui.inline.header
+//                         i.pencil.icon
+//                         strong !{notes}
+//                         small transfer edit
+//                     a.ui.large.icon.green.button(href="/transfer/#{_id}" title='save draft')
+//                         i.checkmark.big.icon
+//                         |save draft
+//                     +image_edit key='image_id' label='image' direct=true icon='image'
+//                     div
+//                     +array_edit key='location_tags' label='location tags' direct=true icon='marker'
+//                 .ten.wide.column
+//                     div
+//                     +array_edit key='tags' label='tags' direct=true icon='tags'
+//                     +textarea_edit key='notes' label='notes' direct=true icon='content'
+//                     +user_picker
+                    
+//                     if can_edit
+//                         .ui.red.button.delete_transfer
+//                             i.remove.icon   
+//                             | delete
+//                     unless complete
+//                         a.ui.big.green.button.complete_transfer(href="/transfer/#{_id}")
+//                             |complete transfer
+                
+                
+template(name='user_picker')
+    .ui.header 
+        |user picker
+    with picked_user
+        .ui.header #{username}
+        i.remove.link.icon.clear_target
+    .ui.fluid.input
+        input.search_user(type='text' placeholder='search...')
+    each unpicked_users
+        .ui.button.pick_user
+            |#{username}
+                
+                
+template(name='transfer_view')
+    with current_doc
+        .ui.stackable.padded.grid
+            .centered.row 
+                .five.wide.column
+                    a(href="/user/#{_author.username}") 
+                        img.ui.circular.centered.pointer.zoom.image(src="{{c.url _author.image_id height=500 width=500 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                        .ui.large.center.aligned.header.pointer.zoom
+                            |#{_author.name}
+                .five.wide.column
+                    .ui.huge.center.aligned.header
+                        |#{amount}pts
+                    if is_dev
+                        +remove_button
+                    .f14
+                        |!{description}
+                    .spacer
+                    +image_view key='image_id' label='image' direct=true
+                    div 
+                    if tags
+                        i.tags.icon
+                        each tags 
+                            .ui.big.basic.circular.label #{this}
+                    +voting_full
+                    .ui.small.header
+                        i.clock.icon
+                        | #{when}
+                    .spacer
+                    .spacer
+                    +comments
+                    //- +array_view key='location_tags' label='location_tags' direct=true
+                .five.wide.column
+                    a(href="/user/#{recipient_username}")
+                        img.ui.circular.centered.fluid.pointer.zoom.image(src="{{c.url recipient.image_id height=500 width=500 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                        .ui.large.center.aligned.header.pointer.zoom
+                            |#{recipient_username}
+                            
+                            
+                            
+template(name='transfer_edit')
+    with current_doc
+        .ui.stackable.padded.grid
+            .row 
+                .five.wide.column
+                    .ui.large.fluid.basic.circular.button.cancel_debit
+                        i.large.remove.red.icon
+                        |cancel
+                    .ui.segment
+                        .ui.inline.grey.header sender
+                        .ui.inline.header
+                            img.ui.small.image(src="{{c.url _author.image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                            |#{_author.name}
+                    +date_edit key='date' label='date' direct=true   
+                    +time_edit key='time' label='time' direct=true   
+                    +array_edit key='location_tags' label='location tags' icon='marker' direct=true
+                .six.wide.column
+                    .ui.segment
+                        +boolean_edit key='request' label='is request'
+                        .ui.header recipient
+                        with recipient
+                            i.large.remove.link.icon.remove_recipient
+                            a.pointer(href="/user/#{name}")
+                                img.ui.tiny.inline.image(src="{{c.url image_id height=400 width=400 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                                .ui.inline.header #{name}
+                                .ui.small.grey.inline.header #{points}
+                        unless recipient
+                            .ui.divider
+                            // i.large.user.plus.icon
+                            +single_user_edit key='recipient' label='search member' icon='user plus' direct=true
+                            // .ui.icon.input
+                            //     i.search.icon
+                            //     input.search_username(type='text' placeholder='username')
+                            // each members
+                            //     .ui.compact.basic.circular.button.add_recipient
+                            //         // i.plus.icon
+                            //         img.ui.avatar.image(src="{{c.url image_id height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                            //         |#{name}
+                            //         small #{points}p
+                    +html_edit key='description' label='description' direct=true
+                    +image_edit key='image_id' label='image' direct=true
+                    if in_dev 
+                        +print_this
+                    div 
+                    div
+                    .ui.inline.header
+                        i.tag.red.icon
+                        |tags
+                    .ui.input
+                        input.new_tag(type='text' placeholder='+' autocomplete="off")
+                        //- +clear_value                
+                    // each terms 
+                    //     a.ui.large.circular.basic.button.select_term(href='#')
+                    //         if image
+                    //             img.ui.mini.rounded.inline.image(src="{{c.url image height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                    //         |#{title}
+                    each tags
+                        .ui.big.basic.circular.label
+                            i.delete.icon.remove_element
+                            |#{this}
+                    // if suggestions
+                    //     .ui.small.inline.header suggestions
+                    // each suggestions
+                    //     a.ui.large.circular.basic.button.select_term(href='#')
+                    //         // if image
+                    //         //     img.ui.mini.rounded.inline.image(src="{{c.url image height=200 width=200 gravity='face' crop='fill'}}" class=currentUser.invert_class)
+                    //         |#{title}
+                .five.wide.center.aligned.column
+                    .ui.big.header #{amount}pts
+                    .ui.big.input
+                        input.point_amount(type='number' value=amount min='1' max=point_max)
+                    div
+                    +key_value_edit key='amount' value=1
+                    +key_value_edit key='amount' value=5
+                    +key_value_edit key='amount' value=10
+                    +key_value_edit key='amount' value=20
+                    +key_value_edit key='amount' value=50
+                    .spacer
+                    .ui.center.aligned.basic.segment
+                        if can_submit
+                            .ui.green.huge.circular.button.submit
+                                i.big.send.icon
+                                |send
+                        else 
+                            .ui.green.huge.circular.disabled.button
+                                i.send.big.icon
+                                |send                            
+                                
+                                
+                                
+template(name='bank')
+    .ui.padded.stackable.grid 
+        .four.wide.column
+            .ui.header 
+                +i name='bank'
+                |bank
+            +send_transfer_button 
+            with currentUser 
+                .ui.header.recalc
+                    +i name='coins'
+                    |#{points} pts
+            
+        .twelve.wide.column
+            +action_points
+            .ui.list 
+                each my_transfer_docs 
+                    a.item.fly_right(href="/transfer/#{_id}") #{_when}
+                        .ui.header #{amount}
+                        each tags 
+                            .ui.label #{this}
+                    
+template(name='action_points')
+    .ui.header action points 
+    .ui.large.list 
+        .item 
+            |docs read: #{user_docs_read}
+        .item 
+            |logins: #{login_count}
+                    
+template(name='send_transfer_button')
+    .ui.button.new_transfer
+        |send transfer

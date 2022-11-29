@@ -1,0 +1,142 @@
+template(name='login')
+    .ui.padded.stackable.grid
+        .centered.row
+            .eight.wide.column
+                .ui.center.aligned.basic.segment
+                    +ibig name='one-ring' class='spinning' cl='ui inline image'
+                    .ui.inline.big.header
+                        | gold run login
+                .ui.inline.header 
+                    +i name='user-male'
+                    |username
+                .ui.fluid.big.input(class=login_class)
+                    input.username(type='text')
+                .spacer
+                .ui.inline.header 
+                    +i name='password'
+                    | password
+                .ui.fluid.big.input(class=login_class)
+                    input#pass(type='password')
+                //- if username
+                //- if logging_in
+                .ui.hidden.divider
+                .ui.fluid.big.green.button.enter(title="login #{username}" class=enter_class)
+                    +i name='enter-2' cl='ui mini inline image'
+                    |login
+                    strong #{username}
+                    //- i.right.chevron.icon
+                .ui.center.aligned.basic.segment    
+                    // a.ui.compact.small.button(href='/forgot_password')
+                    //     +i name='forgot-password' cl='ui mini inline image'                    
+                    //     |forgot password
+                    a.ui.button.fly_left(href='/register')
+                        +i name='plus' cl='ui mini inline image' 
+                        |register
+
+template(name='register')
+    //- img.ui.fluid.image.bg_overlay(src="{{c.url 'forest-bg2' width=1000 crop='fit'}}")    
+    .ui.padded.stackable.grid
+        .centered.middle.aligned.row
+            .ten.wide.column
+                h1.ui.center.aligned.header
+                    +i name='home' cl='ui image'
+                    |gold run 
+                    | register
+                .ui.inline.small.header 
+                    +i name='user-male'
+                    |username
+                .ui.fluid.large.input(class=login_class)
+                    input.username(type='text')
+                .spacer
+                .ui.inline.small.header 
+                    +i name='password'
+                    | password
+                .ui.fluid.large.input(class=login_class)
+                    input#pass(type='password')
+
+                //- .ui.fluid.labeled.input(class=login_class)
+                //-     .ui.small.inline.header 
+                //-         i.lock.grey.icon
+                //-         | password again
+                //-     input.password2(type='password')
+                .ui.hidden.divider
+                if can_register
+                    //- if registering
+                    .ui.fluid.big.green.button.register(class=enter_class)
+                        // i.user.plus.big.icon
+                        +i name='plus'
+                        |register
+                else
+                    .ui.fluid.big.disabled.button(class=enter_class)
+                        // i.user.plus.icon
+                        +i name='plus'
+                        |register
+                    // // .ui.small.header username "#{username}" found
+                .ui.horizontal.divider or
+                .ui.basic.center.aligned.segment
+                    a.ui.center.aligned.big.button.fly_right(href='/login') 
+                        // i.right.chevron.icon
+                        +i name='enter-2' 
+                        |login
+
+
+
+template(name='forgot_password')
+    .ui.padded.stackable.grid
+        .centered.row
+            .fifteen.wide.column
+                //- h1.ui.center.aligned.header Reset Password
+                h1.ui.center.aligned.grey.header
+                    +i name='forgot-password' cl='ui mini inline image'                    
+                    |forgot password 
+                if message
+                    h4.ui.center.aligned.header #{message}
+                .ui.center.aligned.basic.segment
+                    // .ui.inline.header
+                    //     //- +i name='user'
+                    //     | username
+                    // .ui.large.input(class=login_class)
+                    //     input.username(type='text')
+                    // .ui.submit.button.submit_username submit
+                    // .ui.header or
+                    .ui.inline.header
+                        +icon name='email'
+                        | email
+                    .ui.labeled.large.input
+                        input.email(type='email')
+                    .ui.submit.button.submit_email submit
+                if username
+                    if logging_in
+                        .ui.fluid.large.button.enter(title="login #{username}" class=enter_class)
+                            |login '#{username}'
+                            i.right.arrow.icon
+                    else
+                        .ui.center.aligned.secondary.segment
+                            .ui.small.grey.header username "#{username}" not found
+                            a(href='/choose_persona') register
+                .ui.center.aligned.basic.segment    
+                    a.ui.big.basic.button(href='/login') 
+                        i.sign.in.icon
+                        |login
+                    // a.ui.big.basic.button(href='/register')
+                    //     +icon name='add-user-male' cl='ui mini inline image'
+                    //     |register
+template(name='reset_password')
+    .ui.padded.stackable.grid
+        .centered.row
+            .fifteen.wide.column
+                .ui.center.aligned.grey.header
+                    i.refresh.icon
+                    |reset password 
+                form#reset_password_form.ui.form
+                    .field
+                        label password
+                        .ui.input
+                            input.password1(type='password')
+                            //- i.lock.icon
+                    //- .field
+                    //-     label password 2
+                    //-     .ui.input
+                    //-         input.password2(type='password')
+                    //-         //- i.lock.icon
+                    button.ui.submit.button(type='submit') Submit

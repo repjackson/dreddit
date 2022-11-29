@@ -2,7 +2,7 @@ template(name='nav')
     // #topnav.topnav.ui.attached.borderless.big.four.item.menu.hscroll(class=darkmode_class)
         https://fomantic-ui.com/elements/icon.html#/icon
     // #topnav.topnav.ui.attached.borderless.big.menu.hscroll(style="background-color:#{currentUser.theme_color_main}")
-    #topnav.topnav.ui.attached.borderless.three.item.menu.hscroll
+    #topnav.topnav.ui.attached.borderless.menu.hscroll
         if is_connected
             if currentUser
                 if unread_count
@@ -45,6 +45,49 @@ template(name='nav')
                 +i name='disconnected'
                 |relink
                 i.large.circular.refresh.link.icon.zoomer.reconnect(title='reconnect now')
+        .right.menu
+            a.item.toggle_darkmode.zoomer(title='toggle darkmode')
+                if is_darkmode
+                    i.large.moon.icon.zoomer
+                else
+                    i.large.sun.icon.zoomer
+            unless currentUser
+                // a.item(href="/register" title='register')
+                //     +i name='plus'
+                //     span.mobilehidden register            
+                a.item(href='/login' title='login' class="{{isActiveRoute 'login'}}" ) 
+                    // i.sign.in.large.green.zoomer2
+                    +i name='enter-2'
+                    span.mobile.hidden.zoomer login
+            if currentUser
+                a.item(href="/inbox" class="{{isActiveRoute 'inbox'}}" title='inbox')
+                    +i name='inbox'
+                    if unread_count
+                        strong #{unread_count}
+                // a.item(href="/chat" class="{{isActiveRoute 'chat'}}" title='chat')
+                //     +i name='comments'
+                //     if unread_chat_count
+                //         strong #{unread_chat_count}
+                // if currentUser.points 
+                a.item(href="/bank" class="{{isActiveRoute 'bank'}}" title='bank')
+                    |#{currentUser.points}
+                    +i name='coins'
+                a.zoomer2.item.tada(href="/user/#{currentUser.username}" class=user_nav_button_class title='profile' class="{{isActiveRoute 'profile'}}" )
+                    if currentUser.image_id
+                        img.ui.avatar.image(src="{{c.url currentUser.image_id width=300 height=300 gravity='face' crop='fill'}}")
+                    else
+                        // i.user.icon
+                        +i name='user-male'
+                    strong #{currentUser.username}
+                    |&nbsp;
+                // a.icon.item(href="/mail/inbox")
+                a.icon.item(href="/user/#{currentUser._id}/edit" title='account settings')
+                    i.cog.large.icon
+            // if currentUser
+            // .ui.attached.borderless.menu.hscroll.secnav
+                  
+                  
+                  
                             
 template(name='footer')
     .ui.fluid.segment.stackable.grid.alpha

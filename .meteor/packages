@@ -17,6 +17,10 @@ manuel:reactivearray
 meteorhacks:aggregate
 mobile-experience@1.1.0
 
+accounts-base@1.9.0
+accounts-password@1.7.0
+
+
 blaze-html-templates
 dburles:collection-helpers
 momentjs:moment
@@ -30,8 +34,13 @@ ecmascript
 modules
 shell-server
 reactive-dict
-zimme:active-route
 reywood:publish-composite
+
+
+lepozepo:cloudinary
+
+
+zimme:active-route
 multiply:iron-router-progress
 flowkey:hotkeys
 http

@@ -1,0 +1,98 @@
+template(name='inbox')
+    .ui.padded.stackable.grid
+        .row
+            .four.wide.column
+                .ui.inline.header
+                    i.inbox.icon
+                    |inbox
+                //- +view_notifications
+                .ui.button.new_message
+                    i.plus.icon
+                    |new message
+            .six.wide.column
+                with editing_doc 
+                    .ui.segment 
+                        |edit message 
+                        +text_edit key='title'
+                        +html_edit key='body'
+                        .ui.big.green.button.submit
+                            |submit
+                each all_messages
+                    +message_segment
+            .six.wide.column
+                +chat
+                
+template(name='chat')
+    .ui.header 
+        +i name='chat'
+        |chat
+    .ui.bottom.attached.fluid.icon.input
+        i.plus.chat.large.icon
+        input.new_chat_message(type='text' placeholder='new message...')
+    .ui.list.scroll
+        each chat_message_docs 
+            +chat_message 
+            
+template(name='chat_message')
+    .item(title="by #{_author.name} #{_when}")
+        if author
+            img.ui.avatar.image(src="{{c.url author.image_id width=200 height=200 gravity='face' crop='fill'}}")
+        |!{body}
+        small #{_when} by 
+        a(href="/user/#{_author_username")
+            |#{_author.name}
+        if is_author
+            span
+                i.remove.link.icon.remove_message.zoomer(title='delete message')
+    
+
+template(name='message_segment')                  
+    .ui.segment
+        .ui.header #{title} #{_when}
+        .ui.header !{body}
+        +author_info
+        .ui.header parent #{parent_id} #{parent_doc.model}
+        +remove_button
+        
+        
+template(name='view_notifications')
+    .centered.row
+        .four.wide.column
+            //- +cloud key='tags' filter='notification'
+            #mark_all_read.ui.button 
+                i.visible.icon
+                |mark all read
+             if is_admin
+                 .ui.header options
+                 if notifications_allowed
+                    .ui.disabled.button notifications allowed
+                    #disallow_notifications.ui.red.button
+                        i.remove.icon
+                        |remove permissions
+            else
+                #allow_notifications.ui.button allow desktop notifications
+        .ten.wide.column.shadowed
+            each notifications
+                +notification
+
+            
+template(name='notification')
+    .ui.segment.notification_segment(class=notification_segment_class)
+        .ui.feed
+            .event
+                .label
+                    img.ui.avatar.image(src="{{c.url recipient.profile.image_id width=50 height=50 gravity='face' crop='fill'}}")
+                .content
+                    .summary
+                        // a.user(href="/profile/#{subject.username}")
+                        //     | #{subject_name}
+                        // | #{predicate}
+                        a.user(href="/profile/#{recipient.username}")
+                            | #{recipient.username}.
+                        .date
+                            | #{when}
+                    .extra.text
+                        p !{content}
+                    .meta
+                        +mark_read_button
+                        +session_delete_button

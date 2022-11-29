@@ -6,12 +6,12 @@
 
 Router.configure
     layoutTemplate: 'layout'
-    notFoundTemplate: 'not_found'
+    notFoundTemplate: 'posts'
     loadingTemplate: 'splash'
     trackPageView: false
 
 Router.route '/posts', -> @render 'posts'
-Router.route '/users', -> @render 'posts'
+# Router.route '/users', -> @render 'posts'
 Router.route '*', -> @render 'posts'
 # Router.route '/', -> @render 'reddit'
 
