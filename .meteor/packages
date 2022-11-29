@@ -5,6 +5,8 @@
 # but you can also edit it by hand.
 
 meteor-base@1.4.0             # Packages every Meteor app needs to have
+iron:router@=1.0.13
+
 mongo@1.11.0                   # The database Meteor supports right now
 session@1.2.0                 # Client-side reactive dictionary for your app
 tracker@1.2.0                 # Meteor's client-side reactive programming library
@@ -27,5 +29,9 @@ tmeasday:publish-counts
 ecmascript
 modules
 shell-server
-http
 reactive-dict
+zimme:active-route
+reywood:publish-composite
+multiply:iron-router-progress
+flowkey:hotkeys
+http

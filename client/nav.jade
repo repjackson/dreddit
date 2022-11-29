@@ -1,0 +1,106 @@
+template(name='nav')
+    // #topnav.topnav.ui.attached.borderless.big.four.item.menu.hscroll(class=darkmode_class)
+        https://fomantic-ui.com/elements/icon.html#/icon
+    // #topnav.topnav.ui.attached.borderless.big.menu.hscroll(style="background-color:#{currentUser.theme_color_main}")
+    #topnav.topnav.ui.attached.borderless.three.item.menu.hscroll
+        if is_connected
+            if currentUser
+                if unread_count
+                    a.item(href="/user/#{currentUser.username}/inbox" title='unread messages')
+                        // +i name='inbox'
+                        i.envelope.icon
+                        strong #{unread_count}
+                    a.item.zoomer.clear_read(title='mark all read')
+                        i.envelope.icon
+                        i.remove.icon
+        unless subs_ready
+            .icon.item
+                +i name='one-ring' cl='spinning'
+                i.yin.yang.large.loading.icon
+        if subs_ready
+            // a.item.mobile.only(href="/search" title='global search')
+            //     i.search.large.icon
+            // .item.mobile.hidden
+            //     .ui.icon.input
+            //         i.search.icon
+            //         input.global_search(type='text' placeholder='search...')
+            a.item.zoomer.fly_right.clear_search.mobilehidden(href="/posts" class="{{isActiveRoute regex='post'}}" title='posts')
+                // +i name='news'
+                i.large.newspaper.icon
+                // unless currentUser.hide_labels
+                //     |posts
+            a.item.zoomer.fly_right.clear_search.mobilehidden(href="/users" class="{{isActiveRoute 'users'}}" title=users)
+                // +i name='groups'
+                i.large.users.icon
+                // unless currentUser.hide_labels
+                //     |users
+            a.item.zoomer.fly_right.clear_search.mobilehidden(href="/groups" class="{{isActiveRoute regex='group'}}" title='groups')
+                // +i name='campfire'
+                i.large.fire.icon
+                // unless currentUser.hide_labels
+                //     |groups
+        unless is_connected
+            a.item.zoomer.reconnect
+                i.yin.yang.big.loading.icon
+                +i name='disconnected'
+                |relink
+                i.large.circular.refresh.link.icon.zoomer.reconnect(title='reconnect now')
+                            
+template(name='footer')
+    .ui.fluid.segment.stackable.grid.alpha
+        .two.column.row
+            .column
+                // .ui.accordion
+                //     .title.zoomer
+                //         .ui.small.inline.header 
+                //             |goldrun is community supported and will never sell your info
+                //         // i.dropdown.grey.icon
+                //     .content
+                //         img.ui.image(src="{{c.url 'dao_venmo'}}")
+                // +music
+                if currentUser.admin
+                    with currentUser
+                        +boolean_edit key='admin_mode' label='admin mode' icon='shield'
+                        
+                if currentUser.admin_mode
+                    .ui.inline.header 
+                        i.blog.icon
+                        | #{all_docs.count}
+                        |docs
+                    each all_docs 
+                        .ui.image.label 
+                            img.ui.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+                            |#{title}
+                            +model_label
+                            +print_this
+                            |#{when}
+            if currentUser.admin_mode
+                .column
+                    .ui.inline.header 
+                        i.chess.icon
+                        |#{result_docs.count}
+                        |results
+                    each result_docs 
+                        .ui.label #{name}: #{count} [#{model}]
+                    .ui.inline.header 
+                        i.users.icon
+                        |#{all_users.count}
+                        |users
+                    each all_users
+                        .ui.label 
+                            a(href="/user/#{username}") 
+                                img.ui.avatar.image(src="{{c.url image_id width=300 height=300 gravity='face' crop='fill'}}")
+                                |#{username}
+                                
+                            +print_this
+            
+            
+
+
+
+template(name='nav_item')
+    a.item.zoomer.fly_right.clear_search.go_route.tada.mobile.hidden(href="/m/#{key}" class="{{nav_item_class key}}" title=key)
+        // +i name=icon
+        i.large.icon(class=icon)
+        // unless currentUser.hide_labels
+        //     |#{key}s

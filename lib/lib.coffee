@@ -4,6 +4,19 @@
 @Tags = new Meteor.Collection 'tags'
 
 
+Router.configure
+    layoutTemplate: 'layout'
+    notFoundTemplate: 'not_found'
+    loadingTemplate: 'splash'
+    trackPageView: false
+
+Router.route '/posts', -> @render 'posts'
+Router.route '/users', -> @render 'posts'
+Router.route '*', -> @render 'posts'
+# Router.route '/', -> @render 'reddit'
+
+# Router.route "/food/:food_id", -> @render 'food_doc'
+
 
 Docs.before.insert (userId, doc)->
     # doc._author_id = Meteor.userId()

@@ -8,7 +8,7 @@ body {
     transition: all 1s !important;
     /*filter: invert(.9) !important; */
     color: white !important;
-    background: rgba(100,100,100,1) !important; 
+    background: rgba(100,100,100,.8) !important; 
     /*background: black !important; */
     /* background: rgba(200, 200, 200, .2) !important */
     /* background: #0e0e44 !important; */
